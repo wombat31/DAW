@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - Podcast Maker</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body>
+    <h1>Dashboard</h1>
+    <p>
+        Welcome, {{ user.username }}
+        {% if user.profile.is_teacher %} (Teacher){% endif %}
+    </p>
+
+    <a href="{% url 'create_project' %}">Create New Project</a> |
+    <a href="{% url 'logout' %}">Logout</a>
+
+    <hr>
+
+    <h2>Your Projects</h2>
+    <ul>
+        {% for project in projects %}
+            <li>
+                {{ project.title }}
+                <a href="{% url 'project_daw' project.pk %}">Open DAW</a>
+            </li>
+        {% empty %}
+            <li>No projects yet. <a href="{% url 'create_project' %}">Create one</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

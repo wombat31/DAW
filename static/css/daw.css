@@ -1,0 +1,115 @@
+/* DAW Wrapper */
+#daw-wrapper {
+    display: flex;
+    font-family: Arial, sans-serif;
+    gap: 10px;
+}
+
+/* Sidebar for clip library */
+.sidebar {
+    width: 200px;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background: #f8f8f8;
+}
+
+/* Main DAW area */
+#daw-main {
+    flex-grow: 1;
+}
+
+/* Controls */
+#controls {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+/* Tracks */
+.track {
+    margin-bottom: 10px;
+    position: relative;
+}
+
+/* Timeline */
+.timeline {
+    position: relative;
+    height: 60px;
+    background: linear-gradient(to right, #eee 1px, transparent 1px);
+    background-size: 8.333px 100%; /* 120px / 120s = 10px per second; adjust TIMELINE_WIDTH */
+    border: 1px solid #ccc;
+    overflow: hidden;
+}
+
+/* Clips */
+.clip {
+    border-radius: 3px;
+    font-size: 12px;
+    line-height: 60px;
+    text-align: center;
+}
+
+.timeline-clip {
+    position: absolute;       /* needed for left/top positioning */
+    top: 0;
+    height: 100%;             /* fill timeline track */
+    display: flex;            /* allow vertical text centering */
+    align-items: center;      /* center text vertically */
+    justify-content: center;  /* optional: center text horizontally */
+    background-color: #4caf50;
+    color: #fff;
+    cursor: pointer;
+    user-select: none;
+    box-sizing: border-box;   /* include padding in width */
+    padding: 0 5px;           /* text padding inside clip */
+    border-radius: 3px;       /* rounded corners */
+    font-size: 12px;
+    white-space: nowrap;      /* prevent text wrapping */
+    overflow: hidden;         /* clip text if too long */
+}
+
+/* Library Clips */
+.library-clip {
+    background-color: #2196f3;
+    color: #fff;
+    padding: 5px;
+    margin-bottom: 5px;
+    border-radius: 3px;
+    cursor: grab;
+    user-select: none;
+    display: block;           /* ensures width 100% */
+}
+
+/* Timeline ruler */
+#timeline-ruler {
+    height: 20px;
+    position: relative;
+    margin-bottom: 5px;
+}
+
+#timeline-ruler div {
+    position: absolute;
+    font-size: 10px;
+    top: 0;
+    border-left: 1px solid #333;
+    padding-left: 2px;
+}
+
+/* Playhead */
+#daw-playhead {
+    width: 2px;
+    background-color: red;
+    position: absolute;
+    top: 0;
+    z-index: 1000;
+}
+
+/* Clip Info Panel */
+#clip-info {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+}
