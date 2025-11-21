@@ -1,14 +1,15 @@
+# serializers.py
 from rest_framework import serializers
 from .models import Project, MediaFile
 
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = '__all__'
-        read_only_fields = ['owner', 'project_uuid', 'created', 'updated']
+        fields = ['id', 'title', 'project_json', 'owner']
+        read_only_fields = ['owner']
 
 class MediaFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = MediaFile
-        fields = '__all__'
-        read_only_fields = ['owner', 'uploaded']
+        fields = ['id', 'name', 'file', 'owner']
+        read_only_fields = ['owner']

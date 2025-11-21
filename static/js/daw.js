@@ -1,5 +1,23 @@
 // daw.js
 document.addEventListener("DOMContentLoaded", () => {
+    // Django CSRF helper
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    
+    
     console.log("DAW JS Loaded");
 
     const container = document.getElementById('daw-container');
@@ -384,4 +402,39 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener('resize', () => {
         renderTracks(); // Re-render tracks, clips, and ruler on resize
     });
+    
+    // -----------------------------
+    // Save Project
+    // -----------------------------
+    document.getElementById('save-project').addEventListener('click', () => {
+    
+        const payload = {
+            id: window.PROJECT_DATA.id,
+            title: window.PROJECT_DATA.title || "Untitled Project",
+            project_json: { tracks: window.PROJECT_DATA.tracks }  // <-- this matches the model
+        };
+    
+        fetch(`/api/projects/${window.PROJECT_DATA.id}/`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(resp => {
+            if (!resp.ok) throw new Error(`Failed to save project: ${resp.status}`);
+            return resp.json();
+        })
+        .then(data => {
+            console.log("Project saved:", data);
+            alert("Project saved successfully.");
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Save failed. Check console.");
+        });
+    });
+
+
 });

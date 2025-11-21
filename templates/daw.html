@@ -14,7 +14,7 @@
     /* === CRITICAL FIX: Ensure clips stack vertically === */
     .library-clip { 
         background: #2196F3; 
-        margin: 5px; 
+        margin: 5px;
         padding: 5px; 
         cursor: pointer; 
         
@@ -23,7 +23,7 @@
         
         color: white; 
         border-radius: 4px; 
-        width: 90%; 
+        width: 90%;
     }
     
     .grid-line { position: absolute; top:0; bottom:0; width:1px; background:#ccc; }
@@ -50,30 +50,45 @@
     <button id="save-project">Save</button>
     <button id="export-project">Export MP3/WAV</button>
 
-    <div id="clip-library">
-        <h3>Available Sounds</h3>
-    </div>
+    <div id="daw-bottom-panels" style="display: flex; gap: 10px; margin-top: 20px;">
+        <!-- Available Clips -->
+        <div id="clip-library" style="flex: 1; border: 1px solid #ccc; padding: 10px; background:#f8f8f8;">
+            <h3>Available Sounds</h3>
+        </div>
+
+        <!-- Upload Area -->
+        <div id="clip-upload" style="flex: 1; border: 1px solid #ccc; padding: 10px; background:#f8f8f8;">
+            <h3>Upload Your MP3</h3>
+            <p>Drag and drop MP3 files here to upload.</p>
+        </div>
+
+        <!-- Effects Area -->
+        <div id="clip-effects" style="flex: 1; border: 1px solid #ccc; padding: 10px; background:#f8f8f8;">
+            <h3>Effects</h3>
+            <p>Effects will appear here.</p>
+        </div>
+    </div>
 
     <script>
         // Define the base structure with 4 empty tracks (guaranteed rendering)
         const defaultTracks = [
-            { clips: [] }, 
+            { clips: [] },
             { clips: [] },
             { clips: [] },
             { clips: [] }
         ];
 
         let initialProjectData = {
-            id: {{ project.pk|default:'null' }}, 
+            id: {{ project.pk|default:'null' }},
             tracks: defaultTracks
         };
-        
+
         // project_json is now guaranteed to be a valid JSON string from the backend (views.py)
-        const rawJsonString = '{{ project_json|safe }}'; 
+        const rawJsonString = '{{ project_json|safe }}';
 
         try {
             const parsedData = JSON.parse(rawJsonString);
-            
+
             // Merge the clips from the parsed data onto our guaranteed 4-track structure.
             if (parsedData.tracks && Array.isArray(parsedData.tracks)) {
                 parsedData.tracks.forEach((loadedTrack, index) => {
@@ -82,11 +97,11 @@
                     }
                 });
             }
-            
+
         } catch (e) {
             console.error("Failed to parse project_json. Using default 4-track structure.", e);
         }
-        
+
         window.PROJECT_DATA = initialProjectData;
         console.log("PROJECT_DATA injected:", window.PROJECT_DATA);
     </script>
