@@ -437,4 +437,68 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 
+    // -----------------------------
+    // Upload MP3s
+    // -----------------------------
+    const uploadDropzone = document.getElementById('upload-dropzone');
+    const uploadedClipsList = document.getElementById('uploaded-clips-list');
+    
+    uploadDropzone.addEventListener('dragover', e => {
+        e.preventDefault();
+        uploadDropzone.style.backgroundColor = '#e0f7fa';
+    });
+    
+    uploadDropzone.addEventListener('dragleave', e => {
+        e.preventDefault();
+        uploadDropzone.style.backgroundColor = '#f8f8f8';
+    });
+    
+    uploadDropzone.addEventListener('drop', e => {
+        e.preventDefault();
+        uploadDropzone.style.backgroundColor = '#f8f8f8';
+    
+        const files = Array.from(e.dataTransfer.files);
+        files.forEach(file => {
+            if (file.type !== 'audio/mpeg' && file.type !== 'audio/mp3') {
+                alert('Only MP3 files are supported.');
+                return;
+            }
+    
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const audioUrl = evt.target.result;
+                const clip = {
+                    filename: file.name,
+                    file: audioUrl,
+                    duration: 5 // default; real duration will be read later
+                };
+    
+                // Create draggable element for the uploaded clip
+                const clipEl = document.createElement('div');
+                clipEl.className = 'clip library-clip';
+                clipEl.textContent = clip.filename;
+                clipEl.dataset.clip = JSON.stringify(clip);
+                clipEl.draggable = true;
+    
+                // Drag start
+                clipEl.addEventListener('dragstart', e => {
+                    e.dataTransfer.setData('clip', clipEl.dataset.clip);
+                    e.dataTransfer.setData('fromTrack', 'library');
+                    e.dataTransfer.effectAllowed = 'copy';
+                });
+    
+                // Click to preview
+                clipEl.addEventListener('click', () => {
+                    audioPlayer.pause();
+                    audioPlayer.src = audioUrl;
+                    audioPlayer.play();
+                });
+    
+                uploadedClipsList.appendChild(clipEl);
+            };
+    
+            reader.readAsDataURL(file); // Convert MP3 to base64 URL
+        });
+    });
+
 });
