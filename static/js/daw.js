@@ -15,9 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         return cookieValue;
     }
-    
-    
-    
+
+
+
     console.log("DAW JS Loaded");
 
     const container = document.getElementById('daw-container');
@@ -32,6 +32,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Constants
     const projectData = window.PROJECT_DATA || { id: null, tracks: [] };
+    // Ensure exactly 4 tracks exist
+    if (!projectData.tracks || projectData.tracks.length !== 4) {
+        projectData.tracks = [
+            { clips: [] },
+            { clips: [] },
+            { clips: [] },
+            { clips: [] }
+        ];
+    }
     const MAX_DURATION = 120; // seconds
     const TIMELINE_WIDTH = 1000; // px
     const GRID_INTERVAL = 1; // seconds
@@ -114,33 +123,33 @@ document.addEventListener("DOMContentLoaded", () => {
         clipEl.style.whiteSpace = 'nowrap';
         clipEl.style.overflow = 'hidden';
         clipEl.draggable = true;
-    
+
         // Ensure unique ID
         clip.instanceId = clip.instanceId || Date.now().toString() + Math.random().toFixed(4).substring(2);
         clipEl.dataset.instanceId = clip.instanceId;
         clipEl.dataset.track = timeline.dataset.track;
         clipEl.dataset.clip = JSON.stringify(clip);
-    
+
         // Compute initial width (fallback minimal width)
         let timelineScale = timeline.offsetWidth / MAX_DURATION;
         clipEl.style.left = (clip.startTime * timelineScale) + 'px';
         clipEl.style.width = ((clip.duration || 0.1) * timelineScale) + 'px';
-    
+
         // Load audio metadata to get actual duration
         const audio = new Audio(clip.file);
         audio.addEventListener('loadedmetadata', () => {
             if (!clip.duration || clip.duration === 5) {
                 clip.duration = audio.duration;
-    
+
                 // Update dataset so future renders pick up real duration
                 clipEl.dataset.clip = JSON.stringify(clip);
-    
+
                 // Update visual width
                 const timelineScale = timeline.offsetWidth / MAX_DURATION;
                 clipEl.style.width = clip.duration * timelineScale + 'px';
             }
         });
-    
+
         // -----------------------------
         // Dragstart
         // -----------------------------
@@ -152,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
             e.dataTransfer.setData('offsetX', e.clientX - rect.left);
             e.dataTransfer.effectAllowed = 'move';
         });
-    
+
         // -----------------------------
         // Dragend
         // -----------------------------
@@ -169,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else renderTracks();
             }
         });
-    
+
         // -----------------------------
         // Click for audio/info
         // -----------------------------
@@ -183,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
             clipInfoEnd.textContent = ((clip.startTime || 0) + (clip.duration || 0)).toFixed(2);
             clipInfoLength.textContent = (clip.duration || 0).toFixed(2);
         });
-    
+
         // Append to timeline
         timeline.appendChild(clipEl);
     }
@@ -398,22 +407,22 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(resp => resp.ok ? resp.json() : [])
         .then(clips => { window.AVAILABLE_CLIPS = Array.isArray(clips) ? clips : clips.results || []; renderClipLibrary(); })
         .catch(err => { console.error(err); window.AVAILABLE_CLIPS = []; renderClipLibrary(); });
-        
+
     window.addEventListener('resize', () => {
         renderTracks(); // Re-render tracks, clips, and ruler on resize
     });
-    
+
     // -----------------------------
     // Save Project
     // -----------------------------
     document.getElementById('save-project').addEventListener('click', () => {
-    
+
         const payload = {
             id: window.PROJECT_DATA.id,
             title: window.PROJECT_DATA.title || "Untitled Project",
             project_json: { tracks: window.PROJECT_DATA.tracks }  // <-- this matches the model
         };
-    
+
         fetch(`/api/projects/${window.PROJECT_DATA.id}/`, {
             method: 'PUT',
             headers: {
@@ -437,68 +446,101 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 
+
     // -----------------------------
-    // Upload MP3s
+    // Upload MP3s (CSRF-safe)
     // -----------------------------
     const uploadDropzone = document.getElementById('upload-dropzone');
     const uploadedClipsList = document.getElementById('uploaded-clips-list');
-    
+
+    // Helper to get CSRF token from cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
     uploadDropzone.addEventListener('dragover', e => {
         e.preventDefault();
         uploadDropzone.style.backgroundColor = '#e0f7fa';
     });
-    
+
     uploadDropzone.addEventListener('dragleave', e => {
         e.preventDefault();
         uploadDropzone.style.backgroundColor = '#f8f8f8';
     });
-    
+
     uploadDropzone.addEventListener('drop', e => {
         e.preventDefault();
         uploadDropzone.style.backgroundColor = '#f8f8f8';
-    
+
         const files = Array.from(e.dataTransfer.files);
         files.forEach(file => {
             if (file.type !== 'audio/mpeg' && file.type !== 'audio/mp3') {
                 alert('Only MP3 files are supported.');
                 return;
             }
-    
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const audioUrl = evt.target.result;
-                const clip = {
-                    filename: file.name,
-                    file: audioUrl,
-                    duration: 5 // default; real duration will be read later
-                };
-    
-                // Create draggable element for the uploaded clip
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('filename', file.name);
+            // Include the project ID if needed
+            formData.append('project_id', window.PROJECT_DATA.id);
+
+            fetch('/api/media/upload/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken') // CSRF-safe header
+                },
+                body: formData
+            })
+            .then(resp => {
+                if (!resp.ok) throw new Error(`Upload failed: ${resp.status}`);
+                return resp.json();
+            })
+            .then(data => {
+                console.log('Uploaded file:', data);
+
+                // Create draggable clip element
                 const clipEl = document.createElement('div');
                 clipEl.className = 'clip library-clip';
-                clipEl.textContent = clip.filename;
-                clipEl.dataset.clip = JSON.stringify(clip);
+                clipEl.textContent = data.filename;
+                clipEl.dataset.clip = JSON.stringify({
+                    filename: data.filename,
+                    file: data.file_url, // returned URL from backend
+                    duration: data.duration || 5
+                });
                 clipEl.draggable = true;
-    
-                // Drag start
+
                 clipEl.addEventListener('dragstart', e => {
                     e.dataTransfer.setData('clip', clipEl.dataset.clip);
                     e.dataTransfer.setData('fromTrack', 'library');
                     e.dataTransfer.effectAllowed = 'copy';
                 });
-    
-                // Click to preview
+
                 clipEl.addEventListener('click', () => {
                     audioPlayer.pause();
-                    audioPlayer.src = audioUrl;
+                    audioPlayer.src = data.file_url;
                     audioPlayer.play();
                 });
-    
+
                 uploadedClipsList.appendChild(clipEl);
-            };
-    
-            reader.readAsDataURL(file); // Convert MP3 to base64 URL
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Upload failed. Check console.');
+            });
         });
     });
+
 
 });

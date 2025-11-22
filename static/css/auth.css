@@ -1,0 +1,113 @@
+/* Reset and basic layout */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f4f9;
+    color: #000;
+}
+
+.auth-container {
+    max-width: 400px;
+    margin: 5vh auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Logo Text */
+.logo-text {
+    font-size: 2rem;
+    color: #e53935; /* red */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Error message */
+.error {
+    color: #e53935;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Form elements */
+.login-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.login-form label {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #1565c0; /* blue */
+}
+
+.login-form input {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.login-btn {
+    margin-top: 20px;
+    padding: 12px;
+    font-size: 1rem;
+    background-color: #e53935; /* red */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.login-btn:hover {
+    background-color: #c62828;
+}
+
+/* Footer */
+.auth-footer {
+    margin-top: 25px;
+    font-size: 0.9rem;
+    color: #555;
+    text-align: center;
+}
+
+.site-footer {
+    text-align: center;   /* centers text horizontally */
+    font-size: 0.8em;     /* small but readable */
+    color: #555;          /* subtle gray instead of harsh black */
+    margin-top: 30px;     /* spacing from content above */
+    padding: 10px 0;      /* vertical padding */
+    width: 100%;          /* ensures it spans full width */
+}
+
+/* ------------------------------
+   Responsive (small screens)
+--------------------------------*/
+@media (max-width: 480px) {
+    .auth-container {
+        margin: 3vh 10px;
+        padding: 20px;
+    }
+
+    .logo-text {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+
+    .login-btn {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+    @media (max-width: 480px) {
+    .site-footer {
+        font-size: 0.7em;
+        padding: 5px 0;
+    }
+}
+}

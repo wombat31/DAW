@@ -1,4 +1,4 @@
-import json 
+import json
 from rest_framework import viewsets, permissions
 from .models import Project, MediaFile
 from .serializers import ProjectSerializer, MediaFileSerializer
@@ -25,12 +25,12 @@ from pathlib import Path
 class ProjectViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrTeacherReadOnly]
-    
+
     # NOTE on Querysets:
     # 1. get_queryset is used for list views (GET /api/projects/).
-    # 2. get_object is used for detail views (GET/PATCH/DELETE /api/projects/3/). 
+    # 2. get_object is used for detail views (GET/PATCH/DELETE /api/projects/3/).
     #    By default, get_object uses the result of get_queryset.
-    
+
     # We will define get_queryset for filtering the list view:
     def get_queryset(self):
         """
@@ -45,7 +45,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def get_object(self):
         """
         Returns the queryset for the detail view lookup (PATCH/GET/DELETE /api/projects/3/).
-        This must return Project.objects.all() so DRF can find the object, 
+        This must return Project.objects.all() so DRF can find the object,
         and the permission_classes will enforce ownership.
         """
         queryset = Project.objects.all()
@@ -53,7 +53,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
         filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
         obj = get_object_or_404(queryset, **filter_kwargs)
-        
+
         # Apply permission checking after the object is found (DRF's default behavior)
         self.check_object_permissions(self.request, obj)
         return obj
@@ -145,14 +145,14 @@ class ProjectDAWView(LoginRequiredMixin, TemplateView):
             raise PermissionDenied("You do not have access to this project.")
 
         context['project'] = project
-        
+
         # --- CRITICAL FIX 2: Use json.dumps() for valid JSON ---
         project_data = project.project_json
-        
+
         # If project_json is empty, initialize with 4 tracks
         if not project_data:
             project_data = {"tracks": [{"clips": []} for _ in range(4)]}
-            
+
         # Serialize the data into a valid JSON string with double quotes
         context['project_json'] = json.dumps(project_data)
 
@@ -189,13 +189,86 @@ def export_project(request, pk):
 
 
 def effects_list(request):
-    effects_dir = Path(settings.MEDIA_ROOT) / "effects"
+    # Hardcode path to effects
+    effects_dir = Path(settings.BASE_DIR) / "media" / "effects"  # <-- Correct folder
     clips = []
 
-    for file in effects_dir.glob("*.mp3"):
-        clips.append({
-            "name": file.stem,
-            "file": f"{settings.MEDIA_URL}effects/{file.name}"
-        })
+    if effects_dir.exists():
+        for file in effects_dir.glob("*.mp3"):
+            clips.append({
+                "name": file.stem,
+                "file": f"/media/effects/{file.name}"  # matches MEDIA_URL
+            })
+
+    else:
+        print("Effects directory does not exist:", effects_dir)
 
     return JsonResponse(clips, safe=False)
+
+
+from django.views import View
+from django.contrib import messages
+
+
+# -------------------------
+# Delete Project
+# -------------------------
+class DeleteProjectView(LoginRequiredMixin, View):
+    """
+    Allow a student to delete their own project.
+    Teachers cannot delete projects through this view (can be extended if needed).
+    """
+    def post(self, request, pk, *args, **kwargs):
+        project = get_object_or_404(Project, pk=pk)
+
+        # Only allow deletion if user is the owner and not a teacher
+        if getattr(request.user.profile, 'is_teacher', False) or project.owner != request.user:
+            messages.error(request, "You do not have permission to delete this project.")
+            return redirect('dashboard')
+
+        project.delete()
+        messages.success(request, f"Project '{project.title}' has been deleted.")
+        return redirect('dashboard')
+
+
+# --------------------------
+# Upload File
+# --------------------------
+
+
+from django.views.decorators.csrf import csrf_exempt
+import os
+
+
+@csrf_exempt
+def upload_file(request):
+    """
+    Handle MP3 uploads from the frontend dropzone.
+    """
+    try:
+        if request.method != 'POST':
+            return JsonResponse({'error': 'Invalid request'}, status=400)
+
+        uploaded_file = request.FILES.get('file')
+        if not uploaded_file:
+            return JsonResponse({'error': 'No file uploaded'}, status=400)
+
+        filename = request.POST.get('filename', uploaded_file.name)
+        upload_dir = os.path.join(settings.MEDIA_ROOT, 'uploads')
+        os.makedirs(upload_dir, exist_ok=True)
+        file_path = os.path.join(upload_dir, filename)
+
+        with open(file_path, 'wb+') as f:
+            for chunk in uploaded_file.chunks():
+                f.write(chunk)
+
+        return JsonResponse({
+            'filename': filename,
+            'file_url': f"{settings.MEDIA_URL}uploads/{filename}",
+            'duration': 5
+        })
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'error': str(e)}, status=500)
+

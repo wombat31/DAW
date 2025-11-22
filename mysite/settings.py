@@ -133,13 +133,16 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # default static files settings for PythonAnywhere.
 # see https://help.pythonanywhere.com/pages/DjangoStaticFiles for more info
-MEDIA_ROOT = '/home/podcastmaker/mysite/media'
+MEDIA_ROOT = '/home/podcastmaker/mysite/media/uploads'
 MEDIA_URL = '/media/'
 STATIC_ROOT = '/home/podcastmaker/mysite/static'
 STATIC_URL = '/static/'
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+CSRF_TRUSTED_ORIGINS = [
+    "https://podcastmaker.pythonanywhere.com",
+]
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_SSL_REDIRECT = True

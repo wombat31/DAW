@@ -7,12 +7,14 @@ from django.conf.urls.static import static
 from django.views.generic import RedirectView
 from django.contrib.auth import views as auth_views
 
+
 from dawapp.views import (
     LogoutViewGet,
     HomeView,
     DashboardView,
     ProjectDAWView,
-    effects_list,  # Make sure this view is imported
+    effects_list,
+    DeleteProjectView,# Make sure this view is imported
 )
 
 urlpatterns = [
@@ -30,9 +32,12 @@ urlpatterns = [
     # Dashboard / DAW
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
     path('dashboard/<int:pk>/', ProjectDAWView.as_view(), name='project_daw'),
+    path('dashboard/delete/<int:pk>/', DeleteProjectView.as_view(), name='delete_project'),
 
     # Effects API endpoint
     path('api/effects/', effects_list, name='effects_list'),  # matches JS fetch
+
+
 ]
 
 # Serve media files in DEBUG mode

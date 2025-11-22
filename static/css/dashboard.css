@@ -1,105 +1,226 @@
+/* ---------------------------------- */
+/* Dashboard - PodcastMaker Styling   */
+/* ---------------------------------- */
+
 body {
     font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #000;
     margin: 0;
     padding: 0;
-    background: #f4f4f9;
-    color: #333;
 }
 
-header {
-    background: #1e1e2f;
-    color: #fff;
+h1, h2 {
+    text-align: center;
+    color: #007bff; /* Blue */
+    margin-top: 20px;
+}
+
+h1 {
+    font-size: 2em;
+}
+
+h2 {
+    font-size: 1.5em;
+}
+
+p {
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+a {
+    color: #007bff; /* Blue links */
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.auth-container, .dashboard-container {
+    max-width: 900px;
+    margin: auto;
     padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Dashboard links */
+.dashboard-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.dashboard-actions a {
+    padding: 10px 20px;
+    background-color: #007bff; /* Blue */
+    color: white;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.dashboard-actions a:hover {
+    background-color: #0056b3;
+}
+
+/* Projects list */
+.projects-list {
+    list-style: none;
+    padding: 0;
+}
+
+.projects-list li {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-header h1 {
-    margin: 0;
-}
-
-.role-label {
-    font-size: 0.9em;
-    color: #ffce00;
-}
-
-.logout-btn {
-    color: #fff;
-    text-decoration: none;
-    background: #ff4b4b;
-    padding: 8px 15px;
-    border-radius: 5px;
-    font-weight: bold;
-}
-
-.logout-btn:hover {
-    background: #e63b3b;
-}
-
-main {
-    padding: 20px;
-}
-
-.create-project-section {
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.create-project-btn {
-    background: #4caf50;
-    color: #fff;
-    text-decoration: none;
-    padding: 12px 25px;
-    border-radius: 8px;
-    font-weight: bold;
-    font-size: 1.1em;
-}
-
-.create-project-btn:hover {
-    background: #45a049;
-}
-
-.projects-section h2 {
+    padding: 12px 15px;
     margin-bottom: 10px;
+    background-color: #fff;
+    border-left: 4px solid #ff0000; /* Red accent */
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 20px;
+.projects-list li span {
+    font-weight: bold;
+    color: #000;
 }
 
-.project-card {
-    background: #fff;
-    border-radius: 8px;
-    padding: 15px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    text-align: center;
+.projects-list li div {
+    display: flex;
+    gap: 10px;
 }
 
-.project-card h3 {
-    margin-top: 0;
+/* Buttons */
+button, .delete-btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
-.edit-btn {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 8px 15px;
-    border-radius: 5px;
-    background: #2196f3;
-    color: #fff;
-    text-decoration: none;
+button, .delete-btn {
+    background-color: #ff0000; /* Red */
+    color: white;
+}
+
+button:hover, .delete-btn:hover {
+    background-color: #cc0000;
+}
+
+/* DAW/Open button */
+.projects-list a {
+    padding: 6px 10px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
     font-weight: bold;
 }
 
-.edit-btn:hover {
-    background: #1976d2;
+.projects-list a:hover {
+    background-color: #0056b3;
 }
 
-.no-projects {
+/* Footer */
+.site-footer {
     text-align: center;
-    font-style: italic;
-    margin-top: 20px;
+    font-size: 0.8em;
     color: #555;
+    margin-top: 30px;
+    padding: 10px 0;
+    width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .dashboard-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .projects-list li {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .projects-list li div {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 5px;
+        margin-top: 5px;
+    }
+}
+
+/* Responsive for mobile */
+@media (max-width: 480px) {
+    .site-footer {
+        font-size: 0.7em;
+        padding: 5px 0;
+    }
+}
+
+
+/* Ensure form fields and buttons are stacked and centered */
+.create-project-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.create-project-form button {
+    width: 200px;
+    max-width: 80%;
+    text-align: center;
+}
+
+.dashboard-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.dashboard-actions a {
+    padding: 10px 20px;
+    text-decoration: none;
+    font-weight: bold;
+    background-color: #ff0000;
+    color: white;
+    border-radius: 4px;
+    transition: background 0.2s;
+    display: inline-block;      /* ensures width applies correctly */
+    text-align: center;         /* center text inside the button */
+}
+
+/* Hover effect */
+.dashboard-actions a:hover {
+    background-color: #cc0000;
+}
+
+/* ---------- PHONE FIX ---------- */
+@media (max-width: 480px) {
+    .create-project-form,
+    .dashboard-actions {
+        width: 100%;             /* make container full width */
+        flex-direction: column;  /* stack buttons/links vertically */
+        align-items: center;     /* center-align everything */
+    }
+
+    .create-project-form button,
+    .dashboard-actions a {
+        width: 90%;              /* almost full width */
+        max-width: none;         /* remove previous max-width */
+    }
+
+    .dashboard-actions {
+        margin-top: 15px;        /* add some spacing from form */
+    }
 }

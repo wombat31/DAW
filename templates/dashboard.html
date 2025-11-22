@@ -6,27 +6,40 @@
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 </head>
 <body>
-    <h1>Dashboard</h1>
-    <p>
-        Welcome, {{ user.username }}
-        {% if user.profile.is_teacher %} (Teacher){% endif %}
-    </p>
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>PodcastMaker</h1>
+        <p>Welcome, {{ user.username }} {% if user.profile.is_teacher %}(Teacher){% endif %}</p>
+    </div>
 
-    <a href="{% url 'create_project' %}">Create New Project</a> |
-    <a href="{% url 'logout' %}">Logout</a>
-
-    <hr>
+    <div class="dashboard-actions">
+        <a href="{% url 'create_project' %}">Create New Project</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
 
     <h2>Your Projects</h2>
-    <ul>
+    <ul class="projects-list">
         {% for project in projects %}
-            <li>
-                {{ project.title }}
+        <li>
+            <span>{{ project.title }}</span>
+            <div>
                 <a href="{% url 'project_daw' project.pk %}">Open DAW</a>
-            </li>
+                {% if not user.profile.is_teacher %}
+                <form method="post" action="{% url 'delete_project' project.pk %}" class="delete-form">
+                    {% csrf_token %}
+                    <button type="submit" class="delete-btn">Delete</button>
+                </form>
+                {% endif %}
+            </div>
+        </li>
         {% empty %}
-            <li>No projects yet. <a href="{% url 'create_project' %}">Create one</a></li>
+        <li>No projects yet. <a href="{% url 'create_project' %}">Create one</a></li>
         {% endfor %}
     </ul>
+
+    <footer class="site-footer">
+        &copy; Archie and the Wombat 2025
+    </footer>
+</div>
 </body>
 </html>
