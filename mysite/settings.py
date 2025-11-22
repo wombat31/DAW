@@ -133,8 +133,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # default static files settings for PythonAnywhere.
 # see https://help.pythonanywhere.com/pages/DjangoStaticFiles for more info
-MEDIA_ROOT = '/home/podcastmaker/mysite/media/uploads'
+MEDIA_ROOT = '/home/podcastmaker/mysite/media'
 MEDIA_URL = '/media/'
+EFFECTS_ROOT = '/home/podcastmaker/mysite/media/effects'
+EFFECTS_URL = '/effects-static/' # A unique URL prefix for these files
+
 STATIC_ROOT = '/home/podcastmaker/mysite/static'
 STATIC_URL = '/static/'
 

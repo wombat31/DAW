@@ -135,8 +135,11 @@ class ProjectDAWView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         project_id = self.kwargs['pk']
+        print(f"DEBUG: ProjectDAWView called with pk={project_id}")
+
         # The permission check for view access is here:
         project = get_object_or_404(Project, pk=project_id)
+        print(f"DEBUG: Loaded project: {project} (owner={project.owner})")
 
         user = self.request.user
         if not getattr(user.profile, 'is_teacher', False) and project.owner != user:
@@ -156,12 +159,14 @@ class ProjectDAWView(LoginRequiredMixin, TemplateView):
 
         # Serialize the data into a valid JSON string with double quotes
         context['project_json'] = json.dumps(project_data)
+        print(f"DEBUG: Context keys: {context.keys()}")
 
         return context
 
 # -------------------------
 # Create New Project
 # -------------------------
+# dawapp/views.py
 class CreateProjectView(LoginRequiredMixin, CreateView):
     model = Project
     fields = ['title']
@@ -169,6 +174,11 @@ class CreateProjectView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
+
+        # Ensure title is not empty
+        if not form.instance.title.strip():
+            form.instance.title = "New Project"
+
         # Initialize 4 empty tracks
         form.instance.project_json = {"tracks": [{"clips": []} for _ in range(4)]}
         return super().form_valid(form)
@@ -176,14 +186,50 @@ class CreateProjectView(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         return reverse_lazy('project_daw', kwargs={'pk': self.object.pk})
 
+
 # -------------------------
 # Export / Mixdown
 # -------------------------
+# dawapp/views.py
+
+# dawapp/views.py
+from .models import Project
+
+# dawapp/views.py (Updated export_project function)
+
 def export_project(request, pk):
     project = get_object_or_404(Project, pk=pk)
-    mp3_path = mixdown_project(project)
-    return FileResponse(open(mp3_path, 'rb'), as_attachment=True, filename=f"{project.title}.mp3")
 
+    # 1. Prepare data and resolve local paths
+    project_data_with_paths = project.project_json.copy()
+
+    for track in project_data_with_paths.get('tracks', []):
+        for clip in track.get('clips', []):
+            # Resolve the public URL (clip['file']) to a local filesystem path
+            local_path = resolve_clip_file_path(clip)
+            # CRITICAL: Inject the local path for the mixdown utility to use
+            clip['local_path'] = local_path
+
+    # 2. Create a temporary project object to pass the modified JSON
+    temp_project = TempProject(project_data_with_paths)
+
+    # 3. Call the mixdown utility
+    try:
+        # mixdown_project now receives the temporary object with 'local_path' defined
+        mp3_io = mixdown_project(temp_project)
+
+        # 4. Return the final file response
+        return FileResponse(
+            mp3_io,
+            as_attachment=True,
+            filename=f"{project.title}.mp3",
+            content_type="audio/mpeg"
+        )
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        from django.http import HttpResponse
+        return HttpResponse(f"Export failed: {str(e)}. Check server logs for file path errors.", status=500)
 # ------------------------
 # List available sound clips
 # ------------------------
@@ -243,11 +289,7 @@ def upload_file(request):
     Limited to 1 upload per student.
     """
     print("=== UPLOAD DEBUG ===")
-    print(f"Method: {request.method}")
-    print(f"User: {request.user}")
-    print(f"Authenticated: {request.user.is_authenticated}")
-    print(f"FILES: {request.FILES}")
-    print(f"POST: {request.POST}")
+    # ... (logging statements truncated for brevity) ...
 
     if request.method != 'POST':
         return JsonResponse({'error': 'Invalid request method'}, status=400)
@@ -272,12 +314,28 @@ def upload_file(request):
     print(f"Filename: {filename}")
 
     try:
+        # 🛑 FIX: The manual os.makedirs is removed.
+        # We rely entirely on the MediaFile model's FileField to save the file.
+        
+        # It's highly recommended that your MediaFile model's FileField uses 
+        # a custom function for 'upload_to' to ensure files are placed in a user-specific folder, e.g.:
+        # file = models.FileField(upload_to=user_directory_path) 
+        
+        # Create the MediaFile
         media_file = MediaFile.objects.create(
             owner=request.user,
             file=uploaded_file,
             filename=filename
         )
         print(f"Created MediaFile: {media_file.id}")
+
+        # --- DEBUG CHECK: confirm file exists (requires imports) ---
+        import os
+        file_path = media_file.file.path
+        if os.path.exists(file_path):
+            print(f"DEBUG: File successfully saved at {file_path}")
+        else:
+            print(f"DEBUG WARNING: File NOT found at {file_path}")
 
         return JsonResponse({
             'id': media_file.id,
@@ -289,6 +347,7 @@ def upload_file(request):
         import traceback
         traceback.print_exc()
         return JsonResponse({'error': str(e)}, status=500)
+
 # --------------------------
 # Get User's Uploaded Files (ADD this new view)
 # --------------------------
@@ -346,3 +405,78 @@ def delete_upload(request, pk):
     media_file.file.delete(save=False)
     media_file.delete()
     return JsonResponse({'success': True})
+
+
+# ---------------------------
+# Resolve file path for clips
+# ---------------------------
+
+# dawapp/views.py (or utility file)
+
+# Assuming this is available in your views.py or imported from a utility file
+
+
+from .models import Project, MediaFile # Assuming MediaFile is the model for user uploads
+
+import os
+
+
+# --- Start of the required helper functions ---
+
+# Define a temporary class to wrap the resolved JSON for mixdown_project
+class TempProject:
+    def __init__(self, json_data):
+        self.project_json = json_data
+
+# dawapp/views.py (Inside resolve_clip_file_path)
+
+
+from .models import MediaFile # Assuming this is your model for user uploads
+
+
+
+from .models import MediaFile 
+
+
+# Define the custom effects root (Absolute path to the directory containing your built-in effects MP3s)
+EFFECTS_ROOT = '/home/podcastmaker/mysite/media/effects' 
+
+def resolve_clip_file_path(clip_data):
+    file_url = clip_data.get('file', '')
+    
+    # --- Case 1: Built-in Effects (Must be checked first) ---
+    EFFECTS_URL_PREFIX = settings.MEDIA_URL + 'effects/' # '/media/effects/'
+
+    if file_url.startswith(EFFECTS_URL_PREFIX): 
+        
+        # 1. Strip the '/media/effects/' prefix to get the filename
+        relative_path = file_url.replace(EFFECTS_URL_PREFIX, '', 1)
+        
+        # 2. Join the ABSOLUTE server path (EFFECTS_ROOT) with the filename
+        local_path = os.path.join(EFFECTS_ROOT, relative_path)
+        
+        # 3. CRITICAL: Verify the file exists at this path
+        if os.path.exists(local_path):
+             return local_path
+        else:
+             print(f"ERROR: Effect file NOT FOUND at: {local_path}")
+             return None
+            
+    # --- Case 2: User Uploaded Files (Handle if the user adds a file later) ---
+    if file_url.startswith(settings.MEDIA_URL):
+        try:
+            # Gets the relative path (e.g., 'user_6/filename.mp3')
+            relative_path = file_url.replace(settings.MEDIA_URL, '', 1) 
+            
+            # This relies on your file paths being clean now (user_6/...)
+            media_file = MediaFile.objects.get(file=relative_path) 
+            
+            # Returns the absolute local path 
+            return media_file.file.path
+            
+        except MediaFile.DoesNotExist:
+            print(f"ERROR: MediaFile not found in database for URL: {file_url}")
+            return None
+            
+    return None
+# --- End of helper functions ---

@@ -1,6 +1,9 @@
 // daw.js
 document.addEventListener("DOMContentLoaded", () => {
+
+    // -----------------------------
     // Django CSRF helper
+    // -----------------------------
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -16,31 +19,29 @@ document.addEventListener("DOMContentLoaded", () => {
         return cookieValue;
     }
 
-
-
     console.log("DAW JS Loaded");
 
     const container = document.getElementById('daw-container');
     const clipLibrary = document.getElementById('clip-library');
     const controlsContainer = document.getElementById('controls');
 
-    // Clip info panel elements
     const clipInfoName = document.getElementById('clip-name');
     const clipInfoStart = document.getElementById('clip-start');
     const clipInfoEnd = document.getElementById('clip-end');
     const clipInfoLength = document.getElementById('clip-length');
 
+    // -----------------------------
     // Constants
-    const projectData = window.PROJECT_DATA || { id: null, tracks: [] };
-    // Ensure exactly 4 tracks exist
-    if (!projectData.tracks || projectData.tracks.length !== 4) {
-        projectData.tracks = [
-            { clips: [] },
-            { clips: [] },
-            { clips: [] },
-            { clips: [] }
-        ];
-    }
+    // -----------------------------
+    const windowData = window.PROJECT_DATA;
+    const projectData = {
+        id: windowData.id,
+        title: windowData.title || "Untitled Project",
+        tracks: windowData.project_json?.tracks?.length === 4
+            ? windowData.project_json.tracks
+            : [{ clips: [] }, { clips: [] }, { clips: [] }, { clips: [] }]
+    };
+
     const MAX_DURATION = 120; // seconds
     const TIMELINE_WIDTH = 1000; // px
     const GRID_INTERVAL = 1; // seconds
@@ -73,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // -----------------------------
-    // Render timeline ruler
+    // Timeline ruler
     // -----------------------------
     function renderTimelineRuler() {
         let ruler = document.getElementById('timeline-ruler');
@@ -87,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
             container.parentNode.insertBefore(ruler, container);
         }
 
-        ruler.style.width = container.offsetWidth + 'px'; // responsive
+        ruler.style.width = container.offsetWidth + 'px';
         ruler.innerHTML = '';
 
         for (let t = 0; t <= MAX_DURATION; t += 5) {
@@ -105,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // -----------------------------
-    // Create Clip Element (persistent duration)
+    // Clip element
     // -----------------------------
     function createClipElement(clip, timeline) {
         const clipEl = document.createElement('div');
@@ -124,35 +125,24 @@ document.addEventListener("DOMContentLoaded", () => {
         clipEl.style.overflow = 'hidden';
         clipEl.draggable = true;
 
-        // Ensure unique ID
         clip.instanceId = clip.instanceId || Date.now().toString() + Math.random().toFixed(4).substring(2);
         clipEl.dataset.instanceId = clip.instanceId;
         clipEl.dataset.track = timeline.dataset.track;
         clipEl.dataset.clip = JSON.stringify(clip);
 
-        // Compute initial width (fallback minimal width)
         let timelineScale = timeline.offsetWidth / MAX_DURATION;
-        clipEl.style.left = (clip.startTime * timelineScale) + 'px';
+        clipEl.style.left = (clip.startTime || 0) * timelineScale + 'px';
         clipEl.style.width = ((clip.duration || 0.1) * timelineScale) + 'px';
 
-        // Load audio metadata to get actual duration
         const audio = new Audio(clip.file);
         audio.addEventListener('loadedmetadata', () => {
-            if (!clip.duration || clip.duration === 5) {
+            if (!clip.duration) {
                 clip.duration = audio.duration;
-
-                // Update dataset so future renders pick up real duration
                 clipEl.dataset.clip = JSON.stringify(clip);
-
-                // Update visual width
-                const timelineScale = timeline.offsetWidth / MAX_DURATION;
                 clipEl.style.width = clip.duration * timelineScale + 'px';
             }
         });
 
-        // -----------------------------
-        // Dragstart
-        // -----------------------------
         clipEl.addEventListener('dragstart', e => {
             const rect = clipEl.getBoundingClientRect();
             e.dataTransfer.setData('clip', clipEl.dataset.clip);
@@ -162,9 +152,6 @@ document.addEventListener("DOMContentLoaded", () => {
             e.dataTransfer.effectAllowed = 'move';
         });
 
-        // -----------------------------
-        // Dragend
-        // -----------------------------
         clipEl.addEventListener('dragend', e => {
             const elemUnder = document.elementFromPoint(e.clientX, e.clientY);
             const isOverTimeline = elemUnder && elemUnder.closest('.timeline');
@@ -179,9 +166,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        // -----------------------------
-        // Click for audio/info
-        // -----------------------------
         clipEl.addEventListener('click', () => {
             audioPlayer.pause();
             audioPlayer.src = clip.file;
@@ -193,13 +177,11 @@ document.addEventListener("DOMContentLoaded", () => {
             clipInfoLength.textContent = (clip.duration || 0).toFixed(2);
         });
 
-        // Append to timeline
         timeline.appendChild(clipEl);
     }
 
-
     // -----------------------------
-    // Render Tracks
+    // Render tracks
     // -----------------------------
     function renderTracks() {
         renderTimelineRuler();
@@ -212,15 +194,12 @@ document.addEventListener("DOMContentLoaded", () => {
             trackEl.innerHTML = `
                 <h3>Track ${index + 1}</h3>
                 <div class="timeline" data-track="${index}" style="position: relative; width: 100%; height:60px; background:#eee; border:1px solid #ccc;"></div>
-
             `;
             container.appendChild(trackEl);
             const timeline = trackEl.querySelector('.timeline');
 
-            // Drag over
             timeline.addEventListener('dragover', e => e.preventDefault());
 
-            // Drop
             timeline.addEventListener('drop', e => {
                 e.preventDefault();
                 const clipJSON = e.dataTransfer.getData('clip');
@@ -240,17 +219,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 clip.startTime = Math.round((dropX / TIMELINE_WIDTH * MAX_DURATION) / GRID_INTERVAL) * GRID_INTERVAL;
 
                 if (fromTrack === targetTrackIndex.toString()) {
-                    // Move within same track
                     const existingClip = projectData.tracks[targetTrackIndex].clips.find(c => c.instanceId === instanceId);
                     if (existingClip) existingClip.startTime = clip.startTime;
                 } else {
-                    // Remove from old track
                     if (fromTrack !== 'library' && fromTrack !== "") {
                         projectData.tracks[fromTrack].clips = projectData.tracks[fromTrack].clips.filter(c => c.instanceId !== instanceId);
                     }
-                    // Assign new ID if from library
                     if (fromTrack === 'library') clip.instanceId = Date.now().toString() + Math.random().toFixed(4).substring(2);
-                    // Add to target
                     if (!projectData.tracks[targetTrackIndex].clips.some(c => c.instanceId === clip.instanceId)) {
                         projectData.tracks[targetTrackIndex].clips.push(clip);
                     }
@@ -259,7 +234,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 renderTracks();
             });
 
-            // Render clips
             (track.clips || []).forEach(clip => createClipElement(clip, timeline));
         });
 
@@ -267,7 +241,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // -----------------------------
-    // Render Clip Library
+    // Render clip library & user uploads
     // -----------------------------
     function renderClipLibrary() {
         clipLibrary.innerHTML = '<h3>Available Sounds</h3>';
@@ -298,7 +272,118 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    function loadUserUploads() {
+        fetch('/api/media/uploads/')
+            .then(r => r.ok ? r.json() : [])
+            .then(uploads => {
+                const uploadedClipsList = document.getElementById('uploaded-clips-list');
+                const uploadDropzone = document.getElementById('upload-dropzone');
+                uploadedClipsList.innerHTML = '';
+
+                if (!uploads.length) {
+                    uploadDropzone.style.display = 'flex';
+                    uploadDropzone.style.border = '2px dashed #999';
+                    uploadDropzone.style.background = '#f8f8f8';
+                    uploadDropzone.style.pointerEvents = 'auto';
+                    uploadDropzone.innerHTML = 'Drag and drop an MP3 file here (limit: 1)';
+                    return;
+                }
+
+                uploadDropzone.style.display = 'flex';
+                uploadDropzone.style.border = '2px solid #4CAF50';
+                uploadDropzone.style.background = '#e8f5e9';
+                uploadDropzone.style.pointerEvents = 'none';
+                uploadDropzone.innerHTML = '<span style="color:#2e7d32;">✓ Upload limit reached</span>';
+
+                uploads.forEach(file => {
+                    const wrapper = document.createElement('div');
+                    wrapper.style.cssText = 'display:flex;align-items:center;gap:5px;margin-bottom:5px;';
+
+                    const clipEl = document.createElement('div');
+                    clipEl.className = 'clip library-clip';
+                    clipEl.style.cssText = 'flex:1;margin:0;';
+                    clipEl.textContent = file.filename;
+                    clipEl.draggable = true;
+                    clipEl.dataset.clip = JSON.stringify({ filename: file.filename, file: file.file_url, duration: 5 });
+
+                    clipEl.addEventListener('dragstart', e => {
+                        e.dataTransfer.setData('clip', clipEl.dataset.clip);
+                        e.dataTransfer.setData('fromTrack', 'library');
+                        e.dataTransfer.effectAllowed = 'copy';
+                    });
+
+                    clipEl.addEventListener('click', () => {
+                        audioPlayer.pause();
+                        audioPlayer.src = file.file_url;
+                        audioPlayer.play();
+                    });
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'Replace';
+                    deleteBtn.style.cssText = 'background:#e74c3c;color:white;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;';
+                    deleteBtn.addEventListener('click', () => {
+                        if (confirm('Delete this upload and remove it from all tracks?')) {
+                            const fileUrl = file.file_url;
+                            projectData.tracks.forEach(track => {
+                                track.clips = track.clips.filter(clip => clip.file !== fileUrl);
+                            });
+                            renderTracks();
+
+                            fetch('/api/media/delete/' + file.id + '/', {
+                                method: 'POST',
+                                headers: {'X-CSRFToken': getCookie('csrftoken')}
+                            })
+                            .then(r => r.json())
+                            .then(data => {
+                                if (data.success) {
+                                    loadUserUploads();
+                                } else {
+                                    alert(data.error || 'Delete failed');
+                                }
+                            })
+                            .catch(err => console.error(err));
+                        }
+                    });
+
+                    wrapper.appendChild(clipEl);
+                    wrapper.appendChild(deleteBtn);
+                    uploadedClipsList.appendChild(wrapper);
+                });
+            })
+            .catch(err => console.error('Failed to load uploads:', err));
+    }
+
     // -----------------------------
+    // Upload dropzone
+    // -----------------------------
+    const uploadDropzone = document.getElementById('upload-dropzone');
+    uploadDropzone.addEventListener('dragover', e => { e.preventDefault(); uploadDropzone.style.backgroundColor = '#e0f7fa'; });
+    uploadDropzone.addEventListener('dragleave', e => { e.preventDefault(); uploadDropzone.style.backgroundColor = '#f8f8f8'; });
+    uploadDropzone.addEventListener('drop', e => {
+        e.preventDefault();
+        uploadDropzone.style.backgroundColor = '#f8f8f8';
+        const files = Array.from(e.dataTransfer.files);
+        files.forEach(file => {
+            if (!['audio/mpeg', 'audio/mp3'].includes(file.type)) { alert('Only MP3 files supported.'); return; }
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('filename', file.name);
+            formData.append('project_id', projectData.id);
+            fetch('/api/media/upload/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                body: formData
+            })
+            .then(resp => resp.ok ? resp.json() : Promise.reject(resp))
+            .then(data => {
+                console.log('Uploaded file:', data);
+                loadUserUploads();
+            })
+            .catch(err => { console.error(err); alert('Upload failed'); });
+        });
+    });
+
+     // -----------------------------
     // Playback Helpers
     // -----------------------------
     function getAllClips() {
@@ -400,6 +485,49 @@ document.addEventListener("DOMContentLoaded", () => {
     controlsContainer.querySelector('#stop-btn').addEventListener('click', stopPlayback);
 
     // -----------------------------
+    // Save Project
+    // -----------------------------
+    const saveButton = document.getElementById('save-project');
+    if (saveButton && !saveButton.dataset.listenerAttached) {
+        saveButton.addEventListener('click', () => {
+            const payload = {
+                id: projectData.id,
+                title: projectData.title || "Untitled Project",
+                project_json: { tracks: projectData.tracks }
+            };
+            fetch(`/api/projects/${projectData.id}/`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                body: JSON.stringify(payload)
+            })
+            .then(resp => resp.ok ? resp.json() : Promise.reject(resp))
+            .then(data => {
+                console.log("Project saved:", data);
+                alert("Project saved successfully.");
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Save failed");
+            });
+        });
+        saveButton.dataset.listenerAttached = "true"; // mark as attached
+    }
+
+
+    // -----------------------------
+    // Export Project
+    // -----------------------------
+    document.getElementById('export-project').addEventListener('click', () => {
+        const exportUrl = `/api/export/${projectData.id}/`;
+        const a = document.createElement('a');
+        a.href = exportUrl;
+        a.download = (projectData.title || 'Untitled Project') + ".mp3";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    });
+
+    // -----------------------------
     // INIT
     // -----------------------------
     renderTracks();
@@ -410,211 +538,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loadUserUploads();
 
-    window.addEventListener('resize', () => {
-        renderTracks(); // Re-render tracks, clips, and ruler on resize
-        loadUserUploads();
-    });
-
-    // -----------------------------
-    // Save Project
-    // -----------------------------
-    document.getElementById('save-project').addEventListener('click', () => {
-
-        const payload = {
-            id: window.PROJECT_DATA.id,
-            title: window.PROJECT_DATA.title || "Untitled Project",
-            project_json: { tracks: window.PROJECT_DATA.tracks }  // <-- this matches the model
-        };
-
-        fetch(`/api/projects/${window.PROJECT_DATA.id}/`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: JSON.stringify(payload)
-        })
-        .then(resp => {
-            if (!resp.ok) throw new Error(`Failed to save project: ${resp.status}`);
-            return resp.json();
-        })
-        .then(data => {
-            console.log("Project saved:", data);
-            alert("Project saved successfully.");
-        })
-        .catch(err => {
-            console.error(err);
-            alert("Save failed. Check console.");
-        });
-    });
-
-
-
-    // -----------------------------
-    // Upload MP3s (CSRF-safe)
-    // -----------------------------
-    const uploadDropzone = document.getElementById('upload-dropzone');
-    const uploadedClipsList = document.getElementById('uploaded-clips-list');
-
-    // Helper to get CSRF token from cookie
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let cookie of cookies) {
-                cookie = cookie.trim();
-                if (cookie.startsWith(name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
-    uploadDropzone.addEventListener('dragover', e => {
-        e.preventDefault();
-        uploadDropzone.style.backgroundColor = '#e0f7fa';
-    });
-
-    uploadDropzone.addEventListener('dragleave', e => {
-        e.preventDefault();
-        uploadDropzone.style.backgroundColor = '#f8f8f8';
-    });
-
-    uploadDropzone.addEventListener('drop', e => {
-        e.preventDefault();
-        uploadDropzone.style.backgroundColor = '#f8f8f8';
-
-        const files = Array.from(e.dataTransfer.files);
-        files.forEach(file => {
-            if (file.type !== 'audio/mpeg' && file.type !== 'audio/mp3') {
-                alert('Only MP3 files are supported.');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('filename', file.name);
-            // Include the project ID if needed
-            formData.append('project_id', window.PROJECT_DATA.id);
-
-            fetch('/api/media/upload/', {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCookie('csrftoken') // CSRF-safe header
-                },
-                body: formData
-            })
-            .then(resp => {
-                if (!resp.ok) throw new Error(`Upload failed: ${resp.status}`);
-                return resp.json();
-            })
-            .then(data => {
-                console.log('Uploaded file:', data);
-                loadUserUploads();
-            })
-            .catch(err => {
-                console.error(err);
-                alert('Upload failed. Check console.');
-            });
-        });
-    });
-   
-    // Load user's saved uploads on page load
-    
-    function loadUserUploads() {
-        //console.log("=== loadUserUploads called ===");
-        fetch('/api/media/uploads/')
-            .then(r => {
-                //console.log("Response status:", r.status);
-                return r.ok ? r.json() : [];
-            })
-            .then(uploads => {
-                //console.log("Uploads received:", uploads);
-                const uploadedClipsList = document.getElementById('uploaded-clips-list');
-                const uploadDropzone = document.getElementById('upload-dropzone');
-                uploadedClipsList.innerHTML = '';
-                
-                if (!uploads.length) {
-                    uploadDropzone.style.display = 'flex';
-                    uploadDropzone.style.border = '2px dashed #999';
-                    uploadDropzone.style.background = '#f8f8f8';
-                    uploadDropzone.style.pointerEvents = 'auto';
-                    uploadDropzone.innerHTML = 'Drag and drop an MP3 file here (limit: 1)';
-                    return;
-                }
-                
-                // Has upload - disable dropzone visually
-                uploadDropzone.style.display = 'flex';
-                uploadDropzone.style.border = '2px solid #4CAF50';
-                uploadDropzone.style.background = '#e8f5e9';
-                uploadDropzone.style.pointerEvents = 'none';
-                uploadDropzone.innerHTML = '<span style="color:#2e7d32;">✓ Upload limit reached</span>';
-                
-                // Show uploaded file with Replace button
-                uploads.forEach(file => {
-                    const wrapper = document.createElement('div');
-                    wrapper.style.cssText = 'display:flex;align-items:center;gap:5px;margin-bottom:5px;';
-    
-                    const clipEl = document.createElement('div');
-                    clipEl.className = 'clip library-clip';
-                    clipEl.style.cssText = 'flex:1;margin:0;';
-                    clipEl.textContent = file.filename;
-                    clipEl.draggable = true;
-                    clipEl.dataset.clip = JSON.stringify({
-                        filename: file.filename,
-                        file: file.file_url,
-                        duration: 5
-                    });
-    
-                    clipEl.addEventListener('dragstart', e => {
-                        e.dataTransfer.setData('clip', clipEl.dataset.clip);
-                        e.dataTransfer.setData('fromTrack', 'library');
-                        e.dataTransfer.effectAllowed = 'copy';
-                    });
-    
-                    clipEl.addEventListener('click', () => {
-                        audioPlayer.pause();
-                        audioPlayer.src = file.file_url;
-                        audioPlayer.play();
-                    });
-    
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.textContent = 'Replace';
-                    deleteBtn.style.cssText = 'background:#e74c3c;color:white;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;';
-                    deleteBtn.addEventListener('click', () => {
-                        if (confirm('Delete this upload and remove it from all tracks?')) {
-                            // Remove from all tracks first
-                            const fileUrl = file.file_url;
-                            projectData.tracks.forEach(track => {
-                                track.clips = track.clips.filter(clip => clip.file !== fileUrl);
-                            });
-                            renderTracks();
-                            
-                            // Then delete from server
-                            fetch('/api/media/delete/' + file.id + '/', {
-                                method: 'POST',
-                                headers: {'X-CSRFToken': getCookie('csrftoken')}
-                            })
-                            .then(r => r.json())
-                            .then(data => {
-                                if (data.success) {
-                                    loadUserUploads();
-                                } else {
-                                    alert(data.error || 'Delete failed');
-                                }
-                            })
-                            .catch(err => console.error(err));
-                        }
-                    });
-    
-                    wrapper.appendChild(clipEl);
-                    wrapper.appendChild(deleteBtn);
-                    uploadedClipsList.appendChild(wrapper);
-                });
-            })
-            .catch(err => console.error('Failed to load uploads:', err));
-    }
-
+    window.addEventListener('resize', () => { renderTracks(); loadUserUploads(); });
 });

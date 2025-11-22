@@ -5,8 +5,13 @@ from django.dispatch import receiver
 import uuid
 
 def user_upload_path(instance, filename):
-    """Upload to: media/uploads/user_<id>/<filename>"""
-    return f'uploads/user_{instance.owner.id}/{filename}'
+    """
+    FIXED: Upload to: media/uploads/user_<id>/<filename>
+    We only return the relative path from the upload_to root.
+    """
+    # OLD: return f'uploads/user_{instance.owner.id}/{filename}'
+    # NEW: Remove the 'uploads/' prefix to avoid the double nesting.
+    return f'user_{instance.owner.id}/{filename}'
 
 class Project(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)

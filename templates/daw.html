@@ -75,7 +75,14 @@
     <div id="daw-container"></div>
     <div class="utility-bar">
         <button id="save-project">💾 Save</button>
-        <button id="export-project">⬇ Export MP3/WAV</button>
+        <!-- Export button with data attributes -->
+        <button id="export-project"
+                data-project-id="{{ project.id }}"
+                data-project-title="{{ project.title|escapejs }}">
+            ⬇ Export MP3/WAV
+        </button>
+
+
     </div>
     <div id="daw-bottom-panels" style="display: flex; gap: 10px; margin-top: 20px;">
         <!-- Available Clips -->
@@ -139,6 +146,17 @@
         window.PROJECT_DATA = initialProjectData;
         console.log("PROJECT_DATA injected:", window.PROJECT_DATA);
     </script>
-    <script src="{% static 'js/daw.js' %}"></script>
+
+    <script>
+    window.PROJECT_DATA = {
+        id: {{ project.id }},
+        title: "{{ project.title|escapejs|default:'Untitled Project' }}",
+        project_json: {{ project_json|safe }}
+    };
+    </script>
+
+<script src="{% static 'js/daw.js' %}"></script>
+
+
 </body>
 </html>
