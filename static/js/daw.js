@@ -408,6 +408,8 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(clips => { window.AVAILABLE_CLIPS = Array.isArray(clips) ? clips : clips.results || []; renderClipLibrary(); })
         .catch(err => { console.error(err); window.AVAILABLE_CLIPS = []; renderClipLibrary(); });
 
+    loadUserUploads();
+
     window.addEventListener('resize', () => {
         renderTracks(); // Re-render tracks, clips, and ruler on resize
         loadUserUploads();
@@ -510,31 +512,7 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .then(data => {
                 console.log('Uploaded file:', data);
-
-                // Create draggable clip element
-                const clipEl = document.createElement('div');
-                clipEl.className = 'clip library-clip';
-                clipEl.textContent = data.filename;
-                clipEl.dataset.clip = JSON.stringify({
-                    filename: data.filename,
-                    file: data.file_url, // returned URL from backend
-                    duration: data.duration || 5
-                });
-                clipEl.draggable = true;
-
-                clipEl.addEventListener('dragstart', e => {
-                    e.dataTransfer.setData('clip', clipEl.dataset.clip);
-                    e.dataTransfer.setData('fromTrack', 'library');
-                    e.dataTransfer.effectAllowed = 'copy';
-                });
-
-                clipEl.addEventListener('click', () => {
-                    audioPlayer.pause();
-                    audioPlayer.src = data.file_url;
-                    audioPlayer.play();
-                });
-
-                uploadedClipsList.appendChild(clipEl);
+                loadUserUploads();
             })
             .catch(err => {
                 console.error(err);
@@ -542,19 +520,39 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     });
-   // Load user's saved uploads on page load
+   
+    // Load user's saved uploads on page load
+    
     function loadUserUploads() {
+        //console.log("=== loadUserUploads called ===");
         fetch('/api/media/uploads/')
-            .then(r => r.ok ? r.json() : [])
+            .then(r => {
+                //console.log("Response status:", r.status);
+                return r.ok ? r.json() : [];
+            })
             .then(uploads => {
+                //console.log("Uploads received:", uploads);
                 const uploadedClipsList = document.getElementById('uploaded-clips-list');
+                const uploadDropzone = document.getElementById('upload-dropzone');
                 uploadedClipsList.innerHTML = '';
                 
                 if (!uploads.length) {
-                    uploadedClipsList.innerHTML = '<p style="color:#999;font-size:12px;">No uploads yet. Drag an MP3 above.</p>';
+                    uploadDropzone.style.display = 'flex';
+                    uploadDropzone.style.border = '2px dashed #999';
+                    uploadDropzone.style.background = '#f8f8f8';
+                    uploadDropzone.style.pointerEvents = 'auto';
+                    uploadDropzone.innerHTML = 'Drag and drop an MP3 file here (limit: 1)';
                     return;
                 }
                 
+                // Has upload - disable dropzone visually
+                uploadDropzone.style.display = 'flex';
+                uploadDropzone.style.border = '2px solid #4CAF50';
+                uploadDropzone.style.background = '#e8f5e9';
+                uploadDropzone.style.pointerEvents = 'none';
+                uploadDropzone.innerHTML = '<span style="color:#2e7d32;">✓ Upload limit reached</span>';
+                
+                // Show uploaded file with Replace button
                 uploads.forEach(file => {
                     const wrapper = document.createElement('div');
                     wrapper.style.cssText = 'display:flex;align-items:center;gap:5px;margin-bottom:5px;';
@@ -586,7 +584,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     deleteBtn.textContent = 'Replace';
                     deleteBtn.style.cssText = 'background:#e74c3c;color:white;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;';
                     deleteBtn.addEventListener('click', () => {
-                        if (confirm('Delete this upload so you can upload a new one?')) {
+                        if (confirm('Delete this upload and remove it from all tracks?')) {
+                            // Remove from all tracks first
+                            const fileUrl = file.file_url;
+                            projectData.tracks.forEach(track => {
+                                track.clips = track.clips.filter(clip => clip.file !== fileUrl);
+                            });
+                            renderTracks();
+                            
+                            // Then delete from server
                             fetch('/api/media/delete/' + file.id + '/', {
                                 method: 'POST',
                                 headers: {'X-CSRFToken': getCookie('csrftoken')}
