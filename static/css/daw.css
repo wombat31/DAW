@@ -113,3 +113,143 @@
     background-color: #f0f0f0;
     border: 1px solid #ccc;
 }
+
+/* === Modern Header === */
+.daw-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1f1f1f;
+    color: #fff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.project-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.user-info {
+    opacity: 0.8;
+    font-size: 14px;
+}
+
+.dashboard-link {
+    color: #fff;
+    background: #3b82f6;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+    transition: background 0.2s;
+    font-size: 14px;
+}
+
+.dashboard-link:hover {
+    background: #2563eb;
+}
+
+/* === DAW Transport Buttons (with icons + animations) === */
+#controls {
+    display: flex;
+    gap: 12px;
+    margin: 15px 0 25px 0;
+    padding: 12px;
+    background: #1b1b1b;
+    border-radius: 8px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+}
+
+#controls button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    background: #2c2c2c;
+    color: #fff;
+    border: 1px solid #444;
+    padding: 10px 18px;
+    border-radius: 6px;
+
+    font-size: 14px;
+    letter-spacing: 0.6px;
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.12s ease,
+        box-shadow 0.2s ease;
+}
+
+/* Icon text */
+#controls button span {
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+/* Hover = glow */
+#controls button:hover {
+    background: #474747;
+    box-shadow: 0 0 6px rgba(255,255,255,0.2);
+}
+
+/* Active/Pressed */
+#controls button:active {
+    background: #666;
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 0 3px rgba(255,255,255,0.3);
+}
+
+/* Icon sizing when using unicode symbols */
+#controls button::first-letter {
+    font-size: 16px;
+}
+
+.utility-bar {
+    background: #1f1f1f;
+    padding: 10px;
+    display: inline-flex;
+    gap: 10px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.utility-bar button {
+    background: #444;
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.utility-bar button:hover {
+    background: #666;
+}
+/* === Footer (Matches DAW Header Style) === */
+.site-footer {
+    margin-top: 40px;
+    background: #1f1f1f;
+    color: #fff;
+    text-align: center;
+    padding: 15px 20px;
+    border-radius: 8px;
+
+    /* Same shadow as header */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+
+    font-size: 14px;
+    opacity: 0.85;
+    letter-spacing: 0.5px;
+}
+
+/* Slight hover glow (optional, matches interactive style) */
+.site-footer:hover {
+    opacity: 1;
+    box-shadow: 0 4px 14px rgba(255,255,255,0.15);
+    transition: 0.25s ease;
+}

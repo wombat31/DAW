@@ -28,28 +28,55 @@
     
     .grid-line { position: absolute; top:0; bottom:0; width:1px; background:#ccc; }
     #playhead { position:absolute; width:2px; background:red; top:0; bottom:0; z-index:1000; }
-    #controls { margin: 10px 0; }
+   
     </style>
 </head>
 <body>
-    <h1>{{ project.title }}</h1>
-    <p>Logged in as: {{ user.username }}</p>
-    <a href="{% url 'dashboard' %}">Back to Dashboard</a>
-    <hr>
+    <header class="daw-header">
+        <div class="header-left">
+            <h1 class="project-title">{{ project.title }}</h1>
+            <span class="user-info">Logged in as: {{ user.username }}</span>
+        </div>
+
+        <div class="header-right">
+            <a class="dashboard-link" href="{% url 'dashboard' %}">⮌ Back to Dashboard</a>
+        </div>
+    </header>
+
 
     <div id="controls">
-        <button id="play-btn">Play</button>
-        <button id="pause-btn">Pause</button>
-        <button id="stop-btn">Stop</button>
-        <button id="rewind-btn">Rewind</button>
-        <button id="forward-btn">Fast Forward</button>
-    </div>
+        <button id="play-btn">
+            ▶
+            <span>Play</span>
+        </button>
+
+        <button id="pause-btn">
+            ⏸
+            <span>Pause</span>
+        </button>
+
+        <button id="stop-btn">
+            ⏹
+            <span>Stop</span>
+        </button>
+
+        <button id="rewind-btn">
+            ⏪
+            <span>Rewind</span>
+        </button>
+
+        <button id="forward-btn">
+            ⏩
+            <span>Fast Forward</span>
+        </button>
+    </div>
+
 
     <div id="daw-container"></div>
-
-    <button id="save-project">Save</button>
-    <button id="export-project">Export MP3/WAV</button>
-
+    <div class="utility-bar">
+        <button id="save-project">💾 Save</button>
+        <button id="export-project">⬇ Export MP3/WAV</button>
+    </div>
     <div id="daw-bottom-panels" style="display: flex; gap: 10px; margin-top: 20px;">
         <!-- Available Clips -->
         <div id="clip-library" style="flex: 1; border: 1px solid #ccc; padding: 10px; background:#f8f8f8;">
@@ -72,6 +99,9 @@
             <p>Effects will appear here.</p>
         </div>
     </div>
+    <footer class="site-footer">
+        © Archie and the Wombat 2025
+    </footer>
 
     <script>
         // Define the base structure with 4 empty tracks (guaranteed rendering)
