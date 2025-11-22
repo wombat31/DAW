@@ -5,8 +5,8 @@ from django.dispatch import receiver
 import uuid
 
 def user_upload_path(instance, filename):
-    # Upload path: media/projects/<user_id>/<project_uuid>/<filename>
-    return f'projects/{instance.owner.id}/{instance.project_uuid}/{filename}'
+    """Upload to: media/uploads/user_<id>/<filename>"""
+    return f'uploads/user_{instance.owner.id}/{filename}'
 
 class Project(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)

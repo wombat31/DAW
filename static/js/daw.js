@@ -410,6 +410,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.addEventListener('resize', () => {
         renderTracks(); // Re-render tracks, clips, and ruler on resize
+        loadUserUploads();
     });
 
     // -----------------------------
@@ -541,6 +542,73 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     });
-
+   // Load user's saved uploads on page load
+    function loadUserUploads() {
+        fetch('/api/media/uploads/')
+            .then(r => r.ok ? r.json() : [])
+            .then(uploads => {
+                const uploadedClipsList = document.getElementById('uploaded-clips-list');
+                uploadedClipsList.innerHTML = '';
+                
+                if (!uploads.length) {
+                    uploadedClipsList.innerHTML = '<p style="color:#999;font-size:12px;">No uploads yet. Drag an MP3 above.</p>';
+                    return;
+                }
+                
+                uploads.forEach(file => {
+                    const wrapper = document.createElement('div');
+                    wrapper.style.cssText = 'display:flex;align-items:center;gap:5px;margin-bottom:5px;';
+    
+                    const clipEl = document.createElement('div');
+                    clipEl.className = 'clip library-clip';
+                    clipEl.style.cssText = 'flex:1;margin:0;';
+                    clipEl.textContent = file.filename;
+                    clipEl.draggable = true;
+                    clipEl.dataset.clip = JSON.stringify({
+                        filename: file.filename,
+                        file: file.file_url,
+                        duration: 5
+                    });
+    
+                    clipEl.addEventListener('dragstart', e => {
+                        e.dataTransfer.setData('clip', clipEl.dataset.clip);
+                        e.dataTransfer.setData('fromTrack', 'library');
+                        e.dataTransfer.effectAllowed = 'copy';
+                    });
+    
+                    clipEl.addEventListener('click', () => {
+                        audioPlayer.pause();
+                        audioPlayer.src = file.file_url;
+                        audioPlayer.play();
+                    });
+    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'Replace';
+                    deleteBtn.style.cssText = 'background:#e74c3c;color:white;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;';
+                    deleteBtn.addEventListener('click', () => {
+                        if (confirm('Delete this upload so you can upload a new one?')) {
+                            fetch('/api/media/delete/' + file.id + '/', {
+                                method: 'POST',
+                                headers: {'X-CSRFToken': getCookie('csrftoken')}
+                            })
+                            .then(r => r.json())
+                            .then(data => {
+                                if (data.success) {
+                                    loadUserUploads();
+                                } else {
+                                    alert(data.error || 'Delete failed');
+                                }
+                            })
+                            .catch(err => console.error(err));
+                        }
+                    });
+    
+                    wrapper.appendChild(clipEl);
+                    wrapper.appendChild(deleteBtn);
+                    uploadedClipsList.appendChild(wrapper);
+                });
+            })
+            .catch(err => console.error('Failed to load uploads:', err));
+    }
 
 });

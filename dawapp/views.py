@@ -13,11 +13,12 @@ from .audio_utils import mixdown_project
 from django.http import FileResponse
 from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
-
+from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
 from django.conf import settings
 from pathlib import Path
+
 
 # -------------------------
 # DRF ViewSets
@@ -231,44 +232,117 @@ class DeleteProjectView(LoginRequiredMixin, View):
         return redirect('dashboard')
 
 
-# --------------------------
-# Upload File
-# --------------------------
-
-
-from django.views.decorators.csrf import csrf_exempt
-import os
-
-
+###------------------------
+# File upload function
+### ------------------------
+@login_required
 @csrf_exempt
 def upload_file(request):
     """
-    Handle MP3 uploads from the frontend dropzone.
+    Handle MP3 uploads - saves to MediaFile model with user ownership.
+    Limited to 1 upload per student.
     """
+    print("=== UPLOAD DEBUG ===")
+    print(f"Method: {request.method}")
+    print(f"User: {request.user}")
+    print(f"Authenticated: {request.user.is_authenticated}")
+    print(f"FILES: {request.FILES}")
+    print(f"POST: {request.POST}")
+
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Not authenticated'}, status=401)
+
+    uploaded_file = request.FILES.get('file')
+    if not uploaded_file:
+        print("ERROR: No file in request.FILES")
+        return JsonResponse({'error': 'No file uploaded'}, status=400)
+
+    # Check if student already has an upload (limit 1)
+    is_teacher = getattr(getattr(request.user, 'profile', None), 'is_teacher', False)
+    if not is_teacher:
+        existing = MediaFile.objects.filter(owner=request.user).count()
+        print(f"Existing uploads: {existing}")
+        if existing >= 1:
+            return JsonResponse({'error': 'Upload limit reached. Delete your existing file first.'}, status=400)
+
+    filename = request.POST.get('filename', uploaded_file.name)
+    print(f"Filename: {filename}")
+
     try:
-        if request.method != 'POST':
-            return JsonResponse({'error': 'Invalid request'}, status=400)
-
-        uploaded_file = request.FILES.get('file')
-        if not uploaded_file:
-            return JsonResponse({'error': 'No file uploaded'}, status=400)
-
-        filename = request.POST.get('filename', uploaded_file.name)
-        upload_dir = os.path.join(settings.MEDIA_ROOT, 'uploads')
-        os.makedirs(upload_dir, exist_ok=True)
-        file_path = os.path.join(upload_dir, filename)
-
-        with open(file_path, 'wb+') as f:
-            for chunk in uploaded_file.chunks():
-                f.write(chunk)
+        media_file = MediaFile.objects.create(
+            owner=request.user,
+            file=uploaded_file,
+            filename=filename
+        )
+        print(f"Created MediaFile: {media_file.id}")
 
         return JsonResponse({
-            'filename': filename,
-            'file_url': f"{settings.MEDIA_URL}uploads/{filename}",
-            'duration': 5
+            'id': media_file.id,
+            'filename': media_file.filename,
+            'file_url': media_file.file.url,
         })
+
     except Exception as e:
         import traceback
         traceback.print_exc()
         return JsonResponse({'error': str(e)}, status=500)
+# --------------------------
+# Get User's Uploaded Files (ADD this new view)
+# --------------------------
+@login_required
+def user_uploads(request):
+    """
+    Return list of uploaded files for current user.
+    Teachers see all uploads, students see only their own.
+    """
+    print("=== USER UPLOADS DEBUG ===")
+    print(f"User: {request.user}")
 
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Not authenticated'}, status=401)
+
+    user = request.user
+    is_teacher = getattr(getattr(user, 'profile', None), 'is_teacher', False)
+
+    if is_teacher:
+        files = MediaFile.objects.all().select_related('owner')
+    else:
+        files = MediaFile.objects.filter(owner=user)
+
+    print(f"Found {files.count()} files")
+
+    data = [{
+        'id': f.id,
+        'filename': f.filename,
+        'file_url': f.file.url,
+        'owner': f.owner.username,
+    } for f in files]
+
+    return JsonResponse(data, safe=False)
+
+# --------------------------
+# Delete a current user upload
+# --------------------------
+@csrf_exempt
+def delete_upload(request, pk):
+    """Delete an uploaded file. Only owner can delete."""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid method'}, status=400)
+
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Not authenticated'}, status=401)
+
+    try:
+        media_file = MediaFile.objects.get(pk=pk)
+    except MediaFile.DoesNotExist:
+        return JsonResponse({'error': 'File not found'}, status=404)
+
+    if media_file.owner != request.user:
+        return JsonResponse({'error': 'Permission denied'}, status=403)
+
+    media_file.file.delete(save=False)
+    media_file.delete()
+    return JsonResponse({'success': True})
