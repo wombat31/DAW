@@ -83,6 +83,14 @@
     display: block;           /* ensures width 100% */
 }
 
+#clip-library .library-clip {
+    width: 100%;
+    box-sizing: border-box;   /* include padding in width */
+    display: block;
+    margin-bottom: 8px;
+}
+
+
 /* Timeline ruler */
 #timeline-ruler {
     height: 20px;
