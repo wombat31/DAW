@@ -124,19 +124,19 @@ document.addEventListener("DOMContentLoaded", () => {
         clipEl.style.whiteSpace = 'nowrap';
         clipEl.style.overflow = 'hidden';
         clipEl.draggable = true;
-    
+
         // Ensure unique ID
         clip.instanceId = clip.instanceId || Date.now().toString() + Math.random().toFixed(4).substring(2);
         clipEl.dataset.instanceId = clip.instanceId;
         clipEl.dataset.track = timeline.dataset.track;
         clipEl.dataset.clip = JSON.stringify(clip);
-    
+
         // Compute timeline scale dynamically
         const timelineScale = timeline.offsetWidth / MAX_DURATION;
         const clipStart = clip.startTime ?? clip.start_time ?? 0;
         clipEl.style.left = clipStart * timelineScale + 'px';
         clipEl.style.width = ((clip.duration ?? 0.1) * timelineScale) + 'px';
-    
+
         // Load audio metadata to get actual duration
         const audio = new Audio(clip.file);
         audio.addEventListener('loadedmetadata', () => {
@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 clipEl.style.width = clip.duration * timelineScale + 'px';
             }
         });
-    
+
         // Drag & Drop
         clipEl.addEventListener('dragstart', e => {
             const rect = clipEl.getBoundingClientRect();
@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
             e.dataTransfer.setData('offsetX', e.clientX - rect.left);
             e.dataTransfer.effectAllowed = 'move';
         });
-    
+
         clipEl.addEventListener('dragend', e => {
             const elemUnder = document.elementFromPoint(e.clientX, e.clientY);
             const isOverTimeline = elemUnder && elemUnder.closest('.timeline');
@@ -170,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else renderTracks();
             }
         });
-    
+
         // Click for audio/info
         clipEl.addEventListener('click', () => {
             audioPlayer.pause();
@@ -182,7 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
             clipInfoEnd.textContent = ((clip.startTime || 0) + (clip.duration || 0)).toFixed(2);
             clipInfoLength.textContent = (clip.duration || 0).toFixed(2);
         });
-    
+
         // Append to timeline
         timeline.appendChild(clipEl);
     }
@@ -193,62 +193,72 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderTracks() {
         renderTimelineRuler();
         container.innerHTML = '';
-    
+
         // Ensure exactly 4 tracks
         while (projectData.tracks.length < 4) {
             projectData.tracks.push({ clips: [], volume: 100 });
         }
-    
+
         projectData.tracks.forEach((track, index) => {
             const trackEl = document.createElement('div');
             trackEl.className = 'track';
             trackEl.dataset.track = index;
-    
-            // Track header with volume slider and label
+
+            // Track header with Volume label + slider + numeric display
             trackEl.innerHTML = `
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:5px;">
                     <h3 style="margin:0;">Track ${index + 1}</h3>
                     <div style="display:flex; align-items:center; gap:5px;">
+                        <span style="font-weight:500;">Volume:</span>
                         <input type="range" min="0" max="100" value="${track.volume || 100}" data-track="${index}" style="width:100px;">
                         <span class="volume-label" id="volume-label-${index}">${track.volume || 100}</span>
                     </div>
                 </div>
                 <div class="timeline" data-track="${index}" style="position: relative; width: 100%; height:60px; background:#eee; border:1px solid #ccc;"></div>
             `;
-    
+
             container.appendChild(trackEl);
             const timeline = trackEl.querySelector('.timeline');
-    
-            // Volume slider handling
+
+            // Volume slider handling with live playback
             const volumeSlider = trackEl.querySelector('input[type="range"]');
             const volumeLabel = trackEl.querySelector(`#volume-label-${index}`);
             volumeSlider.addEventListener('input', e => {
                 const tIndex = parseInt(e.target.dataset.track);
-                projectData.tracks[tIndex].volume = parseInt(e.target.value);
-                volumeLabel.textContent = e.target.value;
+                const newVolume = parseInt(e.target.value);
+
+                // Update project data
+                projectData.tracks[tIndex].volume = newVolume;
+                volumeLabel.textContent = newVolume;
+
+                // Update volume for all currently playing clips on this track
+                scheduledClips.forEach(s => {
+                    if (s.audio && s.trackIndex === tIndex) {
+                        s.audio.volume = newVolume / 100;
+                    }
+                });
             });
-    
+
             // Drag & drop for clips
             timeline.addEventListener('dragover', e => e.preventDefault());
-    
             timeline.addEventListener('drop', e => {
                 e.preventDefault();
                 const clipJSON = e.dataTransfer.getData('clip');
                 if (!clipJSON) return;
-    
+
                 const clip = JSON.parse(clipJSON);
                 clip.duration = clip.duration || 5;
                 const offsetX = parseFloat(e.dataTransfer.getData('offsetX') || 0);
                 const fromTrack = e.dataTransfer.getData('fromTrack');
                 const instanceId = e.dataTransfer.getData('instanceId');
                 const targetTrackIndex = parseInt(timeline.dataset.track);
-    
+
                 const rect = timeline.getBoundingClientRect();
                 let dropX = e.clientX - rect.left - offsetX;
                 dropX = Math.max(0, dropX);
-    
+
                 clip.startTime = Math.round((dropX / timeline.offsetWidth * MAX_DURATION) / GRID_INTERVAL) * GRID_INTERVAL;
-    
+
                 if (fromTrack === targetTrackIndex.toString()) {
                     const existingClip = projectData.tracks[targetTrackIndex].clips.find(c => c.instanceId === instanceId);
                     if (existingClip) existingClip.startTime = clip.startTime;
@@ -261,18 +271,19 @@ document.addEventListener("DOMContentLoaded", () => {
                         projectData.tracks[targetTrackIndex].clips.push(clip);
                     }
                 }
-    
+
                 renderTracks();
             });
-    
+
             // Render clips for this track
-            (track.clips || []).forEach(clip => createClipElement(clip, timeline));
+            (track.clips || []).forEach(clip => {
+                clip.trackIndex = index; // store track index for live volume control
+                createClipElement(clip, timeline);
+            });
         });
-    
+
         updatePlayheadHeight();
     }
-
-
 
     // -----------------------------
     // Render clip library & user uploads
@@ -431,20 +442,35 @@ document.addEventListener("DOMContentLoaded", () => {
     function playClip(clip, offset = 0) {
         const trackSettings = projectData.tracks[clip.trackIndex] || {};
         const trackVolume = (trackSettings.volume ?? 100) / 100; // 0–1
-    
+
         const audio = new Audio(clip.file);
         audio.volume = trackVolume;
         audio.currentTime = offset;
         audio.play();
-    
-        scheduledClips.push({ instanceId: clip.instanceId, audio, startTime: clip.startTime, duration: clip.duration });
+
+        // Include trackIndex for live volume updates
+        scheduledClips.push({
+            instanceId: clip.instanceId,
+            audio,
+            startTime: clip.startTime,
+            duration: clip.duration,
+            trackIndex: clip.trackIndex
+        });
     }
+
+
 
 
     function stopAllClipAudio() {
         scheduledClips.forEach(obj => { try { obj.audio.pause(); obj.audio.currentTime = 0; } catch {} });
         scheduledClips = [];
     }
+
+    function updatePlayheadPosition() {
+        const left = (currentTime / MAX_DURATION) * container.offsetWidth;
+        playhead.style.left = (container.offsetLeft + left) + "px";
+    }
+
 
     // -----------------------------
     // Playback Controls
@@ -453,17 +479,17 @@ document.addEventListener("DOMContentLoaded", () => {
     function rewindPlayback() {
         const allClips = getAllClips();
         const minStartTime = allClips.length ? Math.min(...allClips.map(c => c.startTime)) : 0;
-    
+
         // Step back 5 seconds
         currentTime = Math.max(minStartTime, currentTime - 5);
-    
+
         // Snap to grid
         currentTime = Math.round(currentTime / GRID_INTERVAL) * GRID_INTERVAL;
-    
+
         // Update playhead position relative to container width
         const left = (currentTime / MAX_DURATION) * container.offsetWidth;
         playhead.style.left = (container.offsetLeft + left) + 'px';
-    
+
         // Stop any currently playing clips
         stopAllClipAudio();
     }
@@ -475,17 +501,17 @@ document.addEventListener("DOMContentLoaded", () => {
         const maxEndTime = allClips.length
             ? Math.max(...allClips.map(c => c.startTime + c.duration))
             : MAX_DURATION;
-    
+
         // Step forward 5 seconds
         currentTime = Math.min(maxEndTime, currentTime + 5);
-    
+
         // Snap to grid
         currentTime = Math.round(currentTime / GRID_INTERVAL) * GRID_INTERVAL;
-    
+
         // Update playhead position relative to container width
         const left = (currentTime / MAX_DURATION) * container.offsetWidth;
         playhead.style.left = (container.offsetLeft + left) + 'px';
-    
+
         // Stop any currently playing clips
         stopAllClipAudio();
     }
@@ -500,20 +526,20 @@ document.addEventListener("DOMContentLoaded", () => {
     function playLoop(timestamp) {
         if (!isPlaying) return;
         if (!lastUpdateTime) lastUpdateTime = timestamp;
-    
+
         const delta = (timestamp - lastUpdateTime) / 1000; // seconds since last frame
         lastUpdateTime = timestamp;
-    
+
         currentTime += delta;
         if (currentTime >= MAX_DURATION) {
             stopPlayback();
             return;
         }
-    
+
         // Update playhead based on container width
         const left = (currentTime / MAX_DURATION) * container.offsetWidth;
         playhead.style.left = (container.offsetLeft + left) + "px";
-    
+
         // Schedule clips
         getAllClips().forEach(clip => {
             const alreadyPlaying = scheduledClips.some(c => c.instanceId === clip.instanceId);
@@ -521,7 +547,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 playClip(clip, currentTime - clip.startTime);
             }
         });
-    
+
         playheadRAF = requestAnimationFrame(playLoop);
     }
 
@@ -589,8 +615,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loadUserUploads();
 
-    window.addEventListener('resize', () => { renderTracks(); loadUserUploads(); });
-    
+    window.addEventListener('resize', () => {
+        renderTracks();
+        loadUserUploads();
+        updatePlayheadPosition(); // <-- reposition playhead proportionally
+    });
+
+
     // ---------------------------------------
     // Resize playback controls when small
     // ---------------------------------------
@@ -604,10 +635,10 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-    
+
     window.addEventListener('resize', updateToolbarButtons);
     updateToolbarButtons(); // initial call
 
-    
-    
+
+
 });

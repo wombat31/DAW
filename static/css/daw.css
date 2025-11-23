@@ -232,27 +232,32 @@
 }
 
 .utility-bar {
-    background: #1f1f1f;
-    padding: 10px;
-    display: inline-flex;
-    gap: 10px;
-    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #1b1b1b;
+    padding: 12px 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
     margin-bottom: 20px;
+
+    /* Make it match the width of the playback controls */
+    width: 100%;
+    max-width: 1000px; /* optional, same as timeline width if desired */
+    box-sizing: border-box;
 }
 
-.utility-bar button {
-    background: #444;
-    color: #fff;
-    border: none;
-    padding: 8px 14px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.2s;
+.utility-text {
+    color: #ccc;
+    font-size: 14px;
+    font-weight: 500;
 }
 
-.utility-bar button:hover {
-    background: #666;
+.utility-buttons {
+    display: flex;
+    gap: 10px;
 }
+
 /* === Footer (Matches DAW Header Style) === */
 .site-footer {
     margin-top: 40px;

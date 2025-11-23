@@ -74,16 +74,17 @@
 
     <div id="daw-container"></div>
     <div class="utility-bar">
-        <button id="save-project">💾 Save</button>
-        <!-- Export button with data attributes -->
-        <button id="export-project"
-                data-project-id="{{ project.id }}"
-                data-project-title="{{ project.title|escapejs }}">
-            ⬇ Export MP3/WAV
-        </button>
-
-
+        <span class="utility-text">Save before export</span>
+        <div class="utility-buttons">
+            <button id="save-project">💾 Save</button>
+            <button id="export-project"
+                    data-project-id="{{ project.id }}"
+                    data-project-title="{{ project.title|escapejs }}">
+                ⬇ Export MP3/WAV
+            </button>
+        </div>
     </div>
+
     <div id="daw-bottom-panels" style="display: flex; gap: 10px; margin-top: 20px;">
         <!-- Available Clips -->
         <div id="clip-library" style="flex: 1; border: 1px solid #ccc; padding: 10px; background:#f8f8f8;">
