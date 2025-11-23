@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // -----------------------------
     // Clip element
     // -----------------------------
-    function createClipElement(clip, timeline) {
+   function createClipElement(clip, timeline) {
         const clipEl = document.createElement('div');
         clipEl.className = 'clip timeline-clip';
         clipEl.textContent = clip.name || clip.filename || "Unnamed";
@@ -124,25 +124,36 @@ document.addEventListener("DOMContentLoaded", () => {
         clipEl.style.whiteSpace = 'nowrap';
         clipEl.style.overflow = 'hidden';
         clipEl.draggable = true;
-
+    
+        // Ensure unique ID
         clip.instanceId = clip.instanceId || Date.now().toString() + Math.random().toFixed(4).substring(2);
         clipEl.dataset.instanceId = clip.instanceId;
         clipEl.dataset.track = timeline.dataset.track;
         clipEl.dataset.clip = JSON.stringify(clip);
-
-        let timelineScale = timeline.offsetWidth / MAX_DURATION;
+    
+        // Compute timeline scale dynamically
+        const timelineScale = timeline.offsetWidth / MAX_DURATION;
         clipEl.style.left = (clip.startTime || 0) * timelineScale + 'px';
         clipEl.style.width = ((clip.duration || 0.1) * timelineScale) + 'px';
-
+    
+        // Load audio metadata to get actual duration
         const audio = new Audio(clip.file);
         audio.addEventListener('loadedmetadata', () => {
-            if (!clip.duration) {
+            if (!clip.duration || clip.duration === 5) {
                 clip.duration = audio.duration;
+    
+                // Update dataset for future renders
                 clipEl.dataset.clip = JSON.stringify(clip);
+    
+                // Update visual width dynamically
+                const timelineScale = timeline.offsetWidth / MAX_DURATION;
                 clipEl.style.width = clip.duration * timelineScale + 'px';
             }
         });
-
+    
+        // -----------------------------
+        // Drag & Drop
+        // -----------------------------
         clipEl.addEventListener('dragstart', e => {
             const rect = clipEl.getBoundingClientRect();
             e.dataTransfer.setData('clip', clipEl.dataset.clip);
@@ -151,7 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
             e.dataTransfer.setData('offsetX', e.clientX - rect.left);
             e.dataTransfer.effectAllowed = 'move';
         });
-
+    
         clipEl.addEventListener('dragend', e => {
             const elemUnder = document.elementFromPoint(e.clientX, e.clientY);
             const isOverTimeline = elemUnder && elemUnder.closest('.timeline');
@@ -165,7 +176,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else renderTracks();
             }
         });
-
+    
+        // -----------------------------
+        // Click for audio/info
+        // -----------------------------
         clipEl.addEventListener('click', () => {
             audioPlayer.pause();
             audioPlayer.src = clip.file;
@@ -176,7 +190,8 @@ document.addEventListener("DOMContentLoaded", () => {
             clipInfoEnd.textContent = ((clip.startTime || 0) + (clip.duration || 0)).toFixed(2);
             clipInfoLength.textContent = (clip.duration || 0).toFixed(2);
         });
-
+    
+        // Append to timeline
         timeline.appendChild(clipEl);
     }
 
@@ -216,7 +231,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 let dropX = e.clientX - rect.left - offsetX;
                 dropX = Math.max(0, dropX);
 
-                clip.startTime = Math.round((dropX / TIMELINE_WIDTH * MAX_DURATION) / GRID_INTERVAL) * GRID_INTERVAL;
+                clip.startTime = Math.round((dropX / timeline.offsetWidth * MAX_DURATION) / GRID_INTERVAL) * GRID_INTERVAL;
+
 
                 if (fromTrack === targetTrackIndex.toString()) {
                     const existingClip = projectData.tracks[targetTrackIndex].clips.find(c => c.instanceId === instanceId);
@@ -413,40 +429,44 @@ document.addEventListener("DOMContentLoaded", () => {
     function rewindPlayback() {
         const allClips = getAllClips();
         const minStartTime = allClips.length ? Math.min(...allClips.map(c => c.startTime)) : 0;
-
+    
         // Step back 5 seconds
         currentTime = Math.max(minStartTime, currentTime - 5);
-
+    
         // Snap to grid
         currentTime = Math.round(currentTime / GRID_INTERVAL) * GRID_INTERVAL;
-
-        // Update playhead position
-        const left = (currentTime / MAX_DURATION) * TIMELINE_WIDTH;
+    
+        // Update playhead position relative to container width
+        const left = (currentTime / MAX_DURATION) * container.offsetWidth;
         playhead.style.left = (container.offsetLeft + left) + 'px';
-
-        // Stop all currently playing clips
+    
+        // Stop any currently playing clips
         stopAllClipAudio();
     }
+
+
 
     function fastForwardPlayback() {
         const allClips = getAllClips();
         const maxEndTime = allClips.length
             ? Math.max(...allClips.map(c => c.startTime + c.duration))
             : MAX_DURATION;
-
+    
         // Step forward 5 seconds
         currentTime = Math.min(maxEndTime, currentTime + 5);
-
+    
         // Snap to grid
         currentTime = Math.round(currentTime / GRID_INTERVAL) * GRID_INTERVAL;
-
-        // Update playhead position
-        const left = (currentTime / MAX_DURATION) * TIMELINE_WIDTH;
+    
+        // Update playhead position relative to container width
+        const left = (currentTime / MAX_DURATION) * container.offsetWidth;
         playhead.style.left = (container.offsetLeft + left) + 'px';
-
-        // Stop all currently playing clips
+    
+        // Stop any currently playing clips
         stopAllClipAudio();
     }
+
+
 
     // Attach buttons
     controlsContainer.querySelector('#rewind-btn').addEventListener('click', rewindPlayback);
@@ -456,24 +476,31 @@ document.addEventListener("DOMContentLoaded", () => {
     function playLoop(timestamp) {
         if (!isPlaying) return;
         if (!lastUpdateTime) lastUpdateTime = timestamp;
-        const delta = (timestamp - lastUpdateTime) / 1000;
+    
+        const delta = (timestamp - lastUpdateTime) / 1000; // seconds since last frame
         lastUpdateTime = timestamp;
-
+    
         currentTime += delta;
-        if (currentTime >= MAX_DURATION) { stopPlayback(); return; }
-
-        const left = (currentTime / MAX_DURATION) * TIMELINE_WIDTH;
+        if (currentTime >= MAX_DURATION) {
+            stopPlayback();
+            return;
+        }
+    
+        // Update playhead based on container width
+        const left = (currentTime / MAX_DURATION) * container.offsetWidth;
         playhead.style.left = (container.offsetLeft + left) + "px";
-
+    
+        // Schedule clips
         getAllClips().forEach(clip => {
             const alreadyPlaying = scheduledClips.some(c => c.instanceId === clip.instanceId);
             if (!alreadyPlaying && currentTime >= clip.startTime && currentTime < clip.startTime + clip.duration) {
                 playClip(clip, currentTime - clip.startTime);
             }
         });
-
+    
         playheadRAF = requestAnimationFrame(playLoop);
     }
+
 
     function startPlayback() { if (isPlaying) return; isPlaying = true; lastUpdateTime = 0; stopAllClipAudio(); playheadRAF = requestAnimationFrame(playLoop); }
     function pausePlayback() { isPlaying = false; cancelAnimationFrame(playheadRAF); scheduledClips.forEach(s => s.audio.pause()); }
@@ -539,4 +566,24 @@ document.addEventListener("DOMContentLoaded", () => {
     loadUserUploads();
 
     window.addEventListener('resize', () => { renderTracks(); loadUserUploads(); });
+    
+    // ---------------------------------------
+    // Resize playback controls when small
+    // ---------------------------------------
+    function updateToolbarButtons() {
+        const buttons = document.querySelectorAll('#controls button');
+        buttons.forEach(btn => {
+            if (btn.offsetWidth < 60) { // threshold for hiding text
+                btn.dataset.small = "true";
+            } else {
+                btn.dataset.small = "false";
+            }
+        });
+    }
+    
+    window.addEventListener('resize', updateToolbarButtons);
+    updateToolbarButtons(); // initial call
+
+    
+    
 });

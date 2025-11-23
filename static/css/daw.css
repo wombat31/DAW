@@ -37,11 +37,12 @@
 .timeline {
     position: relative;
     height: 60px;
+    width: 100%; /* responsive */
     background: linear-gradient(to right, #eee 1px, transparent 1px);
-    background-size: 8.333px 100%; /* 120px / 120s = 10px per second; adjust TIMELINE_WIDTH */
     border: 1px solid #ccc;
     overflow: hidden;
 }
+
 
 /* Clips */
 .clip {
@@ -153,6 +154,7 @@
 }
 
 /* === DAW Transport Buttons (with icons + animations) === */
+/* === DAW Transport Buttons (with icons + animations) === */
 #controls {
     display: flex;
     gap: 12px;
@@ -161,11 +163,15 @@
     background: #1b1b1b;
     border-radius: 8px;
     box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+
+    /* NEW: make buttons span equally */
+    flex-wrap: wrap;
 }
 
 #controls button {
     display: flex;
     align-items: center;
+    justify-content: center; /* center icon/text */
     gap: 6px;
 
     background: #2c2c2c;
@@ -182,12 +188,21 @@
         background 0.2s ease,
         transform 0.12s ease,
         box-shadow 0.2s ease;
+
+    flex: 1 1 0; /* NEW: buttons grow/shrink equally */
+    min-width: 50px; /* threshold for hiding text */
 }
 
 /* Icon text */
-#controls button span {
+#controls button span.text {
     font-size: 13px;
     opacity: 0.9;
+    transition: opacity 0.2s ease, font-size 0.2s ease;
+}
+
+/* Hide text on small buttons */
+#controls button[data-small="true"] span.text {
+    display: none;
 }
 
 /* Hover = glow */
