@@ -4,107 +4,59 @@ from io import BytesIO
 
 def mixdown_project(project):
     """
-    Mixes down a DAW project into a single MP3 file, respecting:
-      - clip start times on timeline
-      - track positions
-      - clip volume
-      - clip trimming
-    The final output is trimmed to the end of the last clip on the timeline.
-    Returns a BytesIO object containing the MP3.
+    Mix all tracks into a single AudioSegment, respecting each track's volume and clip start times.
+    Exports only up to the end of the last clip.
     """
+    output = AudioSegment.silent(duration=0)
+    last_clip_end = 0  # Track the end of the last clip in ms
+
+    # Ensure we always have 4 tracks
     tracks = project.project_json.get('tracks', [])
+    while len(tracks) < 4:
+        tracks.append({'clips': [], 'volume': 100})
 
-    # -----------------------------
-    # 1️⃣ Determine total project length
-    # -----------------------------
-    max_end_ms = 0
-    for track_idx, track in enumerate(tracks):
-        track_position_ms = track.get('position', 0)
-        for clip_idx, clip in enumerate(track.get('clips', [])):
+    for track_index, track in enumerate(tracks):
+        track_volume = track.get('volume', 100)  # 0–100
+        track_gain_db = 20 * (track_volume / 100.0) - 20  # Convert to dB
+
+        for clip in track.get('clips', []):
             local_path = clip.get('local_path')
             if not local_path:
-                continue
-            try:
-                clip_audio = AudioSegment.from_file(local_path)
-            except Exception as e:
-                print(f"[ERROR] Failed to load clip '{clip.get('filename')}': {e}")
+                print(f"Skipping clip {clip.get('filename')}: No valid local path.")
                 continue
 
-            # Determine clip start time
-            clip_start_s = clip.get('startTime') if clip.get('startTime') is not None else clip.get('start_time', 0)
-            clip_start_ms = track_position_ms + int(clip_start_s * 1000)
-
-            # Optional trimming
-            start_trim_ms = int(clip.get('startTrim', 0))
-            end_trim_ms = int(clip.get('endTrim', len(clip_audio)))
-            clip_duration_ms = end_trim_ms - start_trim_ms
-
-            clip_end_ms = clip_start_ms + clip_duration_ms
-            max_end_ms = max(max_end_ms, clip_end_ms)
-
-    print(f"[INFO] Total project length: {max_end_ms}ms")
-
-    # -----------------------------
-    # 2️⃣ Initialize master output to exact length
-    # -----------------------------
-    output = AudioSegment.silent(duration=max_end_ms)
-
-    # -----------------------------
-    # 3️⃣ Overlay each clip
-    # -----------------------------
-    for track_idx, track in enumerate(tracks):
-        track_position_ms = track.get('position', 0)
-        for clip_idx, clip in enumerate(track.get('clips', [])):
-            local_path = clip.get('local_path')
-            if not local_path:
-                print(f"[SKIP] Clip '{clip.get('filename')}' has no local path.")
-                continue
             try:
                 clip_audio = AudioSegment.from_file(local_path)
 
-                # Optional trimming
-                start_trim_ms = int(clip.get('startTrim', 0))
-                end_trim_ms = int(clip.get('endTrim', len(clip_audio)))
-                trimmed_audio = clip_audio[start_trim_ms:end_trim_ms]
+                # Clip start in ms
+                start_ms = clip.get('start_time', 0)
 
-                # Volume adjustment (0-100 scale)
-                clip_volume = clip.get('volume', 100)
-                gain_db = 20 * (clip_volume / 100.0) - 20
-                adjusted_audio = trimmed_audio.apply_gain(gain_db)
+                # Apply track volume
+                adjusted_audio = clip_audio.apply_gain(track_gain_db)
 
-                # Clip absolute start time on timeline
-                clip_start_s = clip.get('startTime') if clip.get('startTime') is not None else clip.get('start_time', 0)
-                clip_start_ms = track_position_ms + int(clip_start_s * 1000)
+                # Update the end time of this clip
+                clip_end_time_ms = start_ms + len(adjusted_audio)
+                if clip_end_time_ms > last_clip_end:
+                    last_clip_end = clip_end_time_ms
 
-                # Overlay onto master track
-                output = output.overlay(adjusted_audio, position=clip_start_ms)
+                # Extend output if necessary
+                if clip_end_time_ms > len(output):
+                    output = output + AudioSegment.silent(duration=clip_end_time_ms - len(output))
 
-                print(f"[OVERLAY] Track {track_idx} Clip {clip_idx} '{clip.get('filename')}' at {clip_start_ms}ms, duration {len(adjusted_audio)}ms")
+                # Overlay clip at start_ms
+                output = output.overlay(adjusted_audio, position=start_ms)
 
             except Exception as e:
-                print(f"[ERROR] Failed to overlay clip '{clip.get('filename')}': {e}")
+                print(f"Failed to load clip {local_path}: {e}")
                 continue
 
-    # -----------------------------
-    # 4️⃣ Export to MP3
-    # -----------------------------
+    # Trim output to the last clip's end
+    output = output[:last_clip_end]
+
+    # Export to MP3
     mp3_io = BytesIO()
-    try:
-        output.export(
-            mp3_io,
-            format="mp3",
-            parameters=["-acodec", "libmp3lame", "-b:a", "128k"]
-        )
-        mp3_io.seek(0, 2)  # move pointer to end
-        file_size = mp3_io.tell()
-        mp3_io.seek(0)
-        print(f"[EXPORT] Final MP3 size: {file_size} bytes")
+    output.export(mp3_io, format="mp3", parameters=["-acodec", "libmp3lame", "-b:a", "128k"])
+    mp3_io.seek(0)
 
-        if file_size == 0:
-            print("[WARNING] Export resulted in 0-byte file. Check clip paths and FFmpeg installation.")
-
-    except Exception as e:
-        print(f"[ERROR] Failed to export MP3: {e}")
-        raise e
-
+    print(f"DEBUG MIXDOWN: Exported audio size: {mp3_io.getbuffer().nbytes} bytes. Duration: {len(output)} ms.")
     return mp3_io

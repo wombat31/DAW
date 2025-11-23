@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // -----------------------------
     // Clip element
     // -----------------------------
-   function createClipElement(clip, timeline) {
+    function createClipElement(clip, timeline) {
         const clipEl = document.createElement('div');
         clipEl.className = 'clip timeline-clip';
         clipEl.textContent = clip.name || clip.filename || "Unnamed";
@@ -133,27 +133,21 @@ document.addEventListener("DOMContentLoaded", () => {
     
         // Compute timeline scale dynamically
         const timelineScale = timeline.offsetWidth / MAX_DURATION;
-        clipEl.style.left = (clip.startTime || 0) * timelineScale + 'px';
-        clipEl.style.width = ((clip.duration || 0.1) * timelineScale) + 'px';
+        const clipStart = clip.startTime ?? clip.start_time ?? 0;
+        clipEl.style.left = clipStart * timelineScale + 'px';
+        clipEl.style.width = ((clip.duration ?? 0.1) * timelineScale) + 'px';
     
         // Load audio metadata to get actual duration
         const audio = new Audio(clip.file);
         audio.addEventListener('loadedmetadata', () => {
             if (!clip.duration || clip.duration === 5) {
                 clip.duration = audio.duration;
-    
-                // Update dataset for future renders
                 clipEl.dataset.clip = JSON.stringify(clip);
-    
-                // Update visual width dynamically
-                const timelineScale = timeline.offsetWidth / MAX_DURATION;
                 clipEl.style.width = clip.duration * timelineScale + 'px';
             }
         });
     
-        // -----------------------------
         // Drag & Drop
-        // -----------------------------
         clipEl.addEventListener('dragstart', e => {
             const rect = clipEl.getBoundingClientRect();
             e.dataTransfer.setData('clip', clipEl.dataset.clip);
@@ -177,9 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     
-        // -----------------------------
         // Click for audio/info
-        // -----------------------------
         clipEl.addEventListener('click', () => {
             audioPlayer.pause();
             audioPlayer.src = clip.file;
@@ -201,39 +193,62 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderTracks() {
         renderTimelineRuler();
         container.innerHTML = '';
-
+    
+        // Ensure exactly 4 tracks
+        while (projectData.tracks.length < 4) {
+            projectData.tracks.push({ clips: [], volume: 100 });
+        }
+    
         projectData.tracks.forEach((track, index) => {
             const trackEl = document.createElement('div');
             trackEl.className = 'track';
             trackEl.dataset.track = index;
+    
+            // Track header with volume slider and label
             trackEl.innerHTML = `
-                <h3>Track ${index + 1}</h3>
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:5px;">
+                    <h3 style="margin:0;">Track ${index + 1}</h3>
+                    <div style="display:flex; align-items:center; gap:5px;">
+                        <input type="range" min="0" max="100" value="${track.volume || 100}" data-track="${index}" style="width:100px;">
+                        <span class="volume-label" id="volume-label-${index}">${track.volume || 100}</span>
+                    </div>
+                </div>
                 <div class="timeline" data-track="${index}" style="position: relative; width: 100%; height:60px; background:#eee; border:1px solid #ccc;"></div>
             `;
+    
             container.appendChild(trackEl);
             const timeline = trackEl.querySelector('.timeline');
-
+    
+            // Volume slider handling
+            const volumeSlider = trackEl.querySelector('input[type="range"]');
+            const volumeLabel = trackEl.querySelector(`#volume-label-${index}`);
+            volumeSlider.addEventListener('input', e => {
+                const tIndex = parseInt(e.target.dataset.track);
+                projectData.tracks[tIndex].volume = parseInt(e.target.value);
+                volumeLabel.textContent = e.target.value;
+            });
+    
+            // Drag & drop for clips
             timeline.addEventListener('dragover', e => e.preventDefault());
-
+    
             timeline.addEventListener('drop', e => {
                 e.preventDefault();
                 const clipJSON = e.dataTransfer.getData('clip');
                 if (!clipJSON) return;
-
+    
                 const clip = JSON.parse(clipJSON);
                 clip.duration = clip.duration || 5;
                 const offsetX = parseFloat(e.dataTransfer.getData('offsetX') || 0);
                 const fromTrack = e.dataTransfer.getData('fromTrack');
                 const instanceId = e.dataTransfer.getData('instanceId');
                 const targetTrackIndex = parseInt(timeline.dataset.track);
-
+    
                 const rect = timeline.getBoundingClientRect();
                 let dropX = e.clientX - rect.left - offsetX;
                 dropX = Math.max(0, dropX);
-
+    
                 clip.startTime = Math.round((dropX / timeline.offsetWidth * MAX_DURATION) / GRID_INTERVAL) * GRID_INTERVAL;
-
-
+    
                 if (fromTrack === targetTrackIndex.toString()) {
                     const existingClip = projectData.tracks[targetTrackIndex].clips.find(c => c.instanceId === instanceId);
                     if (existingClip) existingClip.startTime = clip.startTime;
@@ -246,15 +261,18 @@ document.addEventListener("DOMContentLoaded", () => {
                         projectData.tracks[targetTrackIndex].clips.push(clip);
                     }
                 }
-
+    
                 renderTracks();
             });
-
+    
+            // Render clips for this track
             (track.clips || []).forEach(clip => createClipElement(clip, timeline));
         });
-
+    
         updatePlayheadHeight();
     }
+
+
 
     // -----------------------------
     // Render clip library & user uploads
@@ -411,11 +429,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function playClip(clip, offset = 0) {
+        const trackSettings = projectData.tracks[clip.trackIndex] || {};
+        const trackVolume = (trackSettings.volume ?? 100) / 100; // 0–1
+    
         const audio = new Audio(clip.file);
+        audio.volume = trackVolume;
         audio.currentTime = offset;
         audio.play();
+    
         scheduledClips.push({ instanceId: clip.instanceId, audio, startTime: clip.startTime, duration: clip.duration });
     }
+
 
     function stopAllClipAudio() {
         scheduledClips.forEach(obj => { try { obj.audio.pause(); obj.audio.currentTime = 0; } catch {} });
