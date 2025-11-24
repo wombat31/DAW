@@ -567,14 +567,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const saveButton = document.getElementById('save-project');
     if (saveButton && !saveButton.dataset.listenerAttached) {
         saveButton.addEventListener('click', () => {
+            // Update clip start times and track volume before saving
+            projectData.tracks.forEach(track => {
+                track.clips.forEach(clip => {
+                    clip.start_time = clip.startTime; // ensures backend gets start in seconds
+                });
+            });
+
             const payload = {
                 id: projectData.id,
                 title: projectData.title || "Untitled Project",
                 project_json: { tracks: projectData.tracks }
             };
+
             fetch(`/api/projects/${projectData.id}/`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
                 body: JSON.stringify(payload)
             })
             .then(resp => resp.ok ? resp.json() : Promise.reject(resp))
@@ -587,8 +598,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 alert("Save failed");
             });
         });
-        saveButton.dataset.listenerAttached = "true"; // mark as attached
+        saveButton.dataset.listenerAttached = "true";
     }
+
 
 
     // -----------------------------
@@ -638,6 +650,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.addEventListener('resize', updateToolbarButtons);
     updateToolbarButtons(); // initial call
+
+    function resizeUtilityBar() {
+        const panels = document.getElementById('daw-bottom-panels');
+        const utility = document.querySelector('.utility-bar');
+        if (panels && utility) {
+            utility.style.width = panels.offsetWidth + 'px';
+        }
+    }
+
+    window.addEventListener('resize', resizeUtilityBar);
+    resizeUtilityBar(); // initial call
 
 
 

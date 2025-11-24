@@ -230,7 +230,6 @@
 #controls button::first-letter {
     font-size: 16px;
 }
-
 .utility-bar {
     display: flex;
     align-items: center;
@@ -241,9 +240,9 @@
     box-shadow: 0 4px 14px rgba(0,0,0,0.35);
     margin-bottom: 20px;
 
-    /* Make it match the width of the playback controls */
+    /* Make it fully responsive like playback controls */
     width: 100%;
-    max-width: 1000px; /* optional, same as timeline width if desired */
+    max-width: 100%;  /* allow full width of parent/window */
     box-sizing: border-box;
 }
 
@@ -251,12 +250,15 @@
     color: #ccc;
     font-size: 14px;
     font-weight: 500;
+    flex: 1;           /* take up available space */
 }
 
 .utility-buttons {
     display: flex;
     gap: 10px;
+    flex-shrink: 0;    /* prevent buttons from shrinking */
 }
+
 
 /* === Footer (Matches DAW Header Style) === */
 .site-footer {

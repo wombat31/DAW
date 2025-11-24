@@ -112,6 +112,8 @@ class LogoutViewGet(DjangoLogoutView):
 # -------------------------
 # Dashboard
 # -------------------------
+from collections import defaultdict
+
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = "dashboard.html"
 
@@ -121,9 +123,17 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context['is_teacher'] = getattr(getattr(user, 'profile', None), 'is_teacher', False)
 
         if context['is_teacher']:
-            context['projects'] = Project.objects.all()
+            # Group projects by student
+            projects = Project.objects.select_related('owner').all()
+            student_projects = defaultdict(list)
+            for project in projects:
+                student_projects[project.owner].append(project)
+
+            # Convert to a sorted list of tuples for easier template iteration
+            context['student_projects'] = sorted(student_projects.items(), key=lambda x: x[0].username)
         else:
             context['projects'] = Project.objects.filter(owner=user)
+
         return context
 
 # -------------------------
@@ -316,11 +326,11 @@ def upload_file(request):
     try:
         # 🛑 FIX: The manual os.makedirs is removed.
         # We rely entirely on the MediaFile model's FileField to save the file.
-        
-        # It's highly recommended that your MediaFile model's FileField uses 
+
+        # It's highly recommended that your MediaFile model's FileField uses
         # a custom function for 'upload_to' to ensure files are placed in a user-specific folder, e.g.:
-        # file = models.FileField(upload_to=user_directory_path) 
-        
+        # file = models.FileField(upload_to=user_directory_path)
+
         # Create the MediaFile
         media_file = MediaFile.objects.create(
             owner=request.user,
@@ -435,48 +445,48 @@ from .models import MediaFile # Assuming this is your model for user uploads
 
 
 
-from .models import MediaFile 
+from .models import MediaFile
 
 
 # Define the custom effects root (Absolute path to the directory containing your built-in effects MP3s)
-EFFECTS_ROOT = '/home/podcastmaker/mysite/media/effects' 
+EFFECTS_ROOT = '/home/podcastmaker/mysite/media/effects'
 
 def resolve_clip_file_path(clip_data):
     file_url = clip_data.get('file', '')
-    
+
     # --- Case 1: Built-in Effects (Must be checked first) ---
     EFFECTS_URL_PREFIX = settings.MEDIA_URL + 'effects/' # '/media/effects/'
 
-    if file_url.startswith(EFFECTS_URL_PREFIX): 
-        
+    if file_url.startswith(EFFECTS_URL_PREFIX):
+
         # 1. Strip the '/media/effects/' prefix to get the filename
         relative_path = file_url.replace(EFFECTS_URL_PREFIX, '', 1)
-        
+
         # 2. Join the ABSOLUTE server path (EFFECTS_ROOT) with the filename
         local_path = os.path.join(EFFECTS_ROOT, relative_path)
-        
+
         # 3. CRITICAL: Verify the file exists at this path
         if os.path.exists(local_path):
              return local_path
         else:
              print(f"ERROR: Effect file NOT FOUND at: {local_path}")
              return None
-            
+
     # --- Case 2: User Uploaded Files (Handle if the user adds a file later) ---
     if file_url.startswith(settings.MEDIA_URL):
         try:
             # Gets the relative path (e.g., 'user_6/filename.mp3')
-            relative_path = file_url.replace(settings.MEDIA_URL, '', 1) 
-            
+            relative_path = file_url.replace(settings.MEDIA_URL, '', 1)
+
             # This relies on your file paths being clean now (user_6/...)
-            media_file = MediaFile.objects.get(file=relative_path) 
-            
-            # Returns the absolute local path 
+            media_file = MediaFile.objects.get(file=relative_path)
+
+            # Returns the absolute local path
             return media_file.file.path
-            
+
         except MediaFile.DoesNotExist:
             print(f"ERROR: MediaFile not found in database for URL: {file_url}")
             return None
-            
+
     return None
 # --- End of helper functions ---
