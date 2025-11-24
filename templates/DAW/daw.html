@@ -101,11 +101,45 @@
             <div id="uploaded-clips-list" style="margin-top:10px;"></div>
         </div>
 
+
         <!-- Effects Area -->
         <div id="clip-effects" style="flex: 1; border: 1px solid #ccc; padding: 10px; background:#f8f8f8;">
             <h3>Effects</h3>
-            <p>Effects will appear here.</p>
+
+            <div id="selected-clip-info">
+                <strong>Clip:</strong> <span id="effect-clip-name">None</span>
+            </div>
+
+            <!-- Fade In -->
+            <div class="effect-control">
+                <label for="fade-in">Fade In:</label>
+                <input type="range" id="fade-in" min="0" max="5" step="0.1" value="0"> seconds
+            </div>
+
+            <!-- Fade Out -->
+            <div class="effect-control">
+                <label for="fade-out">Fade Out:</label>
+                <input type="range" id="fade-out" min="0" max="5" step="0.1" value="0"> seconds
+            </div>
+
+            <!-- Echo toggle -->
+            <div class="effect-control">
+                <label for="echo">
+                    <input type="checkbox" id="echo"> Echo
+                </label>
+            </div>
+
+            <!-- 1910s Radio toggle -->
+            <div class="effect-control">
+                <label for="radio1910">
+                    <input type="checkbox" id="radio1910"> 1910s Radio
+                </label>
+            </div>
+
+            <!-- Manual preview button -->
+            <button id="preview-clip">▶ Preview</button>
         </div>
+
     </div>
     <footer class="site-footer">
         © Archie and the Wombat 2025

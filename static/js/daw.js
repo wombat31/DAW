@@ -125,19 +125,27 @@ document.addEventListener("DOMContentLoaded", () => {
         clipEl.style.overflow = 'hidden';
         clipEl.draggable = true;
 
-        // Ensure unique ID
+        // ---------------- Unique ID ----------------
         clip.instanceId = clip.instanceId || Date.now().toString() + Math.random().toFixed(4).substring(2);
         clipEl.dataset.instanceId = clip.instanceId;
         clipEl.dataset.track = timeline.dataset.track;
         clipEl.dataset.clip = JSON.stringify(clip);
 
-        // Compute timeline scale dynamically
+        // ---------------- Initialize effects ----------------
+        clip.effects = clip.effects || {
+            fadeIn: 0,       // seconds
+            fadeOut: 0,      // seconds
+            echo: false,
+            radio1910: false
+        };
+
+        // ---------------- Timeline positioning ----------------
         const timelineScale = timeline.offsetWidth / MAX_DURATION;
         const clipStart = clip.startTime ?? clip.start_time ?? 0;
         clipEl.style.left = clipStart * timelineScale + 'px';
         clipEl.style.width = ((clip.duration ?? 0.1) * timelineScale) + 'px';
 
-        // Load audio metadata to get actual duration
+        // Load audio metadata for accurate duration
         const audio = new Audio(clip.file);
         audio.addEventListener('loadedmetadata', () => {
             if (!clip.duration || clip.duration === 5) {
@@ -147,8 +155,12 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        // Drag & Drop
+        // ---------------- Drag / Click management ----------------
+        let isDragging = false;
+
+        // ---------- Desktop drag ----------
         clipEl.addEventListener('dragstart', e => {
+            isDragging = true;
             const rect = clipEl.getBoundingClientRect();
             e.dataTransfer.setData('clip', clipEl.dataset.clip);
             e.dataTransfer.setData('fromTrack', timeline.dataset.track);
@@ -158,6 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         clipEl.addEventListener('dragend', e => {
+            setTimeout(() => { isDragging = false; }, 0);
             const elemUnder = document.elementFromPoint(e.clientX, e.clientY);
             const isOverTimeline = elemUnder && elemUnder.closest('.timeline');
             const trackIndex = parseInt(clipEl.dataset.track);
@@ -171,22 +184,302 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        // Click for audio/info
+        // ---------- Click to select (no auto-play) ----------
         clipEl.addEventListener('click', () => {
+            if (isDragging) return; // prevent click while dragging
+
+            // Update clip info panel
+            if (clipInfoName) clipInfoName.textContent = clip.filename;
+            if (clipInfoStart) clipInfoStart.textContent = (clip.startTime || 0).toFixed(2);
+            if (clipInfoEnd) clipInfoEnd.textContent = ((clip.startTime || 0) + (clip.duration || 0)).toFixed(2);
+            if (clipInfoLength) clipInfoLength.textContent = (clip.duration || 0).toFixed(2);
+
+            // Show effects in panel
+            if (window.showClipEffectsPanel) window.showClipEffectsPanel(clip);
+
+            // Store selected clip globally for preview button
+            window.selectedClip = clip;
+        });
+
+        // Preview button in effects panel
+        const previewBtn = document.getElementById('preview-clip');
+        previewBtn.addEventListener('click', () => {
+            if (!window.selectedClip) return;
+
+            const clip = window.selectedClip;
             audioPlayer.pause();
             audioPlayer.src = clip.file;
             audioPlayer.currentTime = clip.startTime || 0;
             audioPlayer.play();
-            clipInfoName.textContent = clip.filename;
-            clipInfoStart.textContent = (clip.startTime || 0).toFixed(2);
-            clipInfoEnd.textContent = ((clip.startTime || 0) + (clip.duration || 0)).toFixed(2);
-            clipInfoLength.textContent = (clip.duration || 0).toFixed(2);
         });
 
-        // Append to timeline
+
+        // ---------- Mobile touch drag ----------
+        clipEl.addEventListener('touchstart', e => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = clipEl.getBoundingClientRect();
+            clipEl.dataset.touchOffsetX = touch.clientX - rect.left;
+        });
+
+        clipEl.addEventListener('touchmove', e => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const timelineRect = timeline.getBoundingClientRect();
+            let newLeft = touch.clientX - timelineRect.left - parseFloat(clipEl.dataset.touchOffsetX);
+            newLeft = Math.max(0, Math.min(newLeft, timeline.offsetWidth - clipEl.offsetWidth));
+            clipEl.style.left = newLeft + 'px';
+        });
+
+        clipEl.addEventListener('touchend', e => {
+            const timelineWidth = timeline.offsetWidth;
+            const newStartTime = (parseFloat(clipEl.style.left) / timelineWidth) * MAX_DURATION;
+            clip.startTime = Math.round(newStartTime / GRID_INTERVAL) * GRID_INTERVAL;
+            renderTracks(); // snap clip and refresh UI
+        });
+
+        // ---------------- Append ----------------
         timeline.appendChild(clipEl);
+        return clipEl;
     }
 
+
+    // Web Audio Preview (single instance for panel)
+    let audioCtx = null;
+    let previewAudio = null;
+    let previewSource = null;
+    let effectNodes = {
+        gainNode: null,
+        echoNode: null,
+        radioNode: null
+    };
+
+    window.showClipEffectsPanel = function(clip) {
+        const panel = document.getElementById('clip-effects');
+        if (!panel) return;
+
+        // Highlight selected clip
+        document.querySelectorAll('.timeline-clip, .library-clip').forEach(c => c.classList.remove('selected-clip'));
+        const trackClipEl = document.querySelector(`[data-instance-id="${clip.instanceId}"]`);
+        if (trackClipEl) trackClipEl.classList.add('selected-clip');
+
+        // Clear previous content
+        panel.innerHTML = `<h3>Effects for "${clip.filename || 'Unnamed'}"</h3>`;
+
+        // Ensure clip.effects exists
+        clip.effects = clip.effects || { fadeIn: 0, fadeOut: 0, echo: false, radio1910: false };
+
+        // ----- Fade In Slider -----
+        const fadeInLabel = document.createElement('label');
+        fadeInLabel.textContent = `Fade In (sec): ${clip.effects.fadeIn}`;
+        const fadeInSlider = document.createElement('input');
+        fadeInSlider.type = 'range';
+        fadeInSlider.min = 0;
+        fadeInSlider.max = 5;
+        fadeInSlider.step = 0.1;
+        fadeInSlider.value = clip.effects.fadeIn;
+        fadeInSlider.addEventListener('input', e => {
+            clip.effects.fadeIn = parseFloat(e.target.value);
+            fadeInLabel.textContent = `Fade In (sec): ${clip.effects.fadeIn}`;
+        });
+        panel.appendChild(fadeInLabel);
+        panel.appendChild(fadeInSlider);
+
+        // ----- Fade Out Slider -----
+        const fadeOutLabel = document.createElement('label');
+        fadeOutLabel.textContent = `Fade Out (sec): ${clip.effects.fadeOut}`;
+        const fadeOutSlider = document.createElement('input');
+        fadeOutSlider.type = 'range';
+        fadeOutSlider.min = 0;
+        fadeOutSlider.max = 5;
+        fadeOutSlider.step = 0.1;
+        fadeOutSlider.value = clip.effects.fadeOut;
+        fadeOutSlider.addEventListener('input', e => {
+            clip.effects.fadeOut = parseFloat(e.target.value);
+            fadeOutLabel.textContent = `Fade Out (sec): ${clip.effects.fadeOut}`;
+        });
+        panel.appendChild(fadeOutLabel);
+        panel.appendChild(fadeOutSlider);
+
+        // ----- Echo Toggle -----
+        const echoLabel = document.createElement('label');
+        const echoCheckbox = document.createElement('input');
+        echoCheckbox.type = 'checkbox';
+        echoCheckbox.checked = clip.effects.echo;
+        echoCheckbox.addEventListener('change', e => {
+            clip.effects.echo = e.target.checked;
+            if (previewAudio && previewSource) {
+                if (clip.effects.echo) enableEcho(previewSource);
+                else disableEcho();
+            }
+        });
+        echoLabel.appendChild(echoCheckbox);
+        echoLabel.appendChild(document.createTextNode(' Echo (live)'));
+        panel.appendChild(echoLabel);
+
+        // ----- 1910s Radio Toggle -----
+        const radioLabel = document.createElement('label');
+        const radioCheckbox = document.createElement('input');
+        radioCheckbox.type = 'checkbox';
+        radioCheckbox.checked = clip.effects.radio1910;
+        radioCheckbox.addEventListener('change', e => {
+            clip.effects.radio1910 = e.target.checked;
+            if (previewAudio && previewSource) {
+                if (clip.effects.radio1910) enableRadio(previewSource);
+                else disableRadio();
+            }
+        });
+        radioLabel.appendChild(radioCheckbox);
+        radioLabel.appendChild(document.createTextNode(' 1910s Radio (live)'));
+        panel.appendChild(radioLabel);
+
+        // ----- Preview Button -----
+        const previewBtn = document.createElement('button');
+        previewBtn.textContent = '▶ Preview';
+        previewBtn.style.width = '100%';
+        previewBtn.addEventListener('click', () => {
+            if (previewAudio) {
+                previewAudio.pause();
+                previewAudio.currentTime = 0;
+            }
+
+            previewAudio = new Audio(clip.file);
+            previewAudio.crossOrigin = "anonymous";
+
+            // Create MediaElementSource and store globally for live toggling
+            previewSource = applyLiveEffects(previewAudio, clip.effects);
+
+            previewAudio.play();
+        });
+        panel.appendChild(previewBtn);
+    };
+
+
+    // Apply live effects to the preview audio
+    function applyLiveEffects(audio, effects) {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Disconnect previous chain if exists
+        if (previewSource) previewSource.disconnect();
+        Object.values(effectNodes).forEach(node => { if (node) node.disconnect(); });
+        effectNodes = { gainNode: null, echoNode: null, radioNode: null };
+
+        previewSource = audioCtx.createMediaElementSource(audio);
+
+        // Gain node for fade in/out
+        const gainNode = audioCtx.createGain();
+        previewSource.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        effectNodes.gainNode = gainNode;
+
+        // Schedule fades when metadata is loaded
+        if (audio.readyState >= 1) {
+            scheduleFade(audio, gainNode, effects);
+        } else {
+            audio.addEventListener('loadedmetadata', () => scheduleFade(audio, gainNode, effects), { once: true });
+        }
+
+        // Echo
+        if (effects.echo) enableEcho(gainNode);
+
+        // 1910s Radio effect
+        if (effects.radio1910) enableRadio(gainNode);
+
+        return previewSource;
+    }
+
+    // Schedule fade in/out
+    function scheduleFade(audio, gainNode, effects) {
+        if (!audioCtx) return;
+        const now = audioCtx.currentTime;
+
+        const duration = audio.duration || 5;
+
+        // ----- Fade In -----
+        gainNode.gain.setValueAtTime(0, now); // always start at 0
+        if (effects.fadeIn && effects.fadeIn > 0) {
+            gainNode.gain.linearRampToValueAtTime(1, now + effects.fadeIn);
+        } else {
+            gainNode.gain.setValueAtTime(1, now);
+        }
+
+        // ----- Fade Out -----
+        if (effects.fadeOut && effects.fadeOut > 0) {
+            const fadeOutStart = now + duration - effects.fadeOut;
+            if (fadeOutStart > now) {
+                gainNode.gain.setValueAtTime(1, fadeOutStart);
+                gainNode.gain.linearRampToValueAtTime(0, fadeOutStart + effects.fadeOut);
+            } else {
+                // if fadeOut longer than duration, just ramp from 1 → 0 over full duration
+                gainNode.gain.setValueAtTime(1, now);
+                gainNode.gain.linearRampToValueAtTime(0, now + duration);
+            }
+        }
+    }
+
+
+    // Enable echo
+    function enableEcho(inputNode) {
+        if (effectNodes.echoNode) effectNodes.echoNode.disconnect();
+
+        const delay = audioCtx.createDelay();
+        delay.delayTime.value = 0.2; // slightly shorter delay
+
+        const feedback = audioCtx.createGain();
+        feedback.gain.value = 0.3; // less saturation
+
+        inputNode.connect(delay);
+        delay.connect(feedback);
+        feedback.connect(delay);
+        delay.connect(audioCtx.destination);
+
+
+        inputNode.connect(delay);
+        delay.connect(feedback);
+        feedback.connect(delay);
+        delay.connect(audioCtx.destination);
+
+        effectNodes.echoNode = delay;
+    }
+
+    // Disable echo
+    function disableEcho() {
+        if (effectNodes.echoNode) { effectNodes.echoNode.disconnect(); effectNodes.echoNode = null; }
+    }
+
+    // Enable 1910s Radio
+    function enableRadio(inputNode) {
+        if (effectNodes.radioNode) effectNodes.radioNode.disconnect();
+
+        // Create a more aggressive 1910s radio filter
+        const highPass = audioCtx.createBiquadFilter();
+        highPass.type = 'highpass';
+        highPass.frequency.value = 400; // remove more bass
+
+        const lowPass = audioCtx.createBiquadFilter();
+        lowPass.type = 'lowpass';
+        lowPass.frequency.value = 2500; // remove more highs
+
+        const bandPass = audioCtx.createBiquadFilter();
+        bandPass.type = 'bandpass';
+        bandPass.frequency.value = 1200; // center a bit higher
+        bandPass.Q.value = 4;             // narrower bandwidth for that old-timey effect
+
+        // Connect the chain: input -> highPass -> lowPass -> bandPass -> destination
+        inputNode.connect(highPass);
+        highPass.connect(lowPass);
+        lowPass.connect(bandPass);
+        bandPass.connect(audioCtx.destination);
+
+        effectNodes.radioNode = bandPass;
+    }
+
+
+
+    // Disable radio
+    function disableRadio() {
+        if (effectNodes.radioNode) { effectNodes.radioNode.disconnect(); effectNodes.radioNode = null; }
+    }
     // -----------------------------
     // Render tracks
     // -----------------------------
@@ -661,6 +954,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.addEventListener('resize', resizeUtilityBar);
     resizeUtilityBar(); // initial call
+
+    // -----------------------------------------
+    // Web Audio Preview Setup
+    // -----------------------------------------
+
 
 
 

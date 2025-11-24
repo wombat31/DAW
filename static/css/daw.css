@@ -283,3 +283,83 @@
     box-shadow: 0 4px 14px rgba(255,255,255,0.15);
     transition: 0.25s ease;
 }
+
+/* Effects Panel */
+#clip-effects {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+    background: #f0f0f0;         /* light background for black text */
+    color: #000;                  /* black text */
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    flex: 1;                      /* allow it to scale with container */
+}
+
+#clip-effects h3 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #ff9800;               /* highlight title remains orange */
+}
+
+#clip-effects label {
+    font-weight: 500;
+    flex: 1;
+}
+
+#clip-effects input[type="range"] {
+    flex: 2;
+    margin-left: 10px;
+}
+
+#clip-effects input[type="checkbox"] {
+    margin-right: 5px;
+    accent-color: #ff9800;        /* modern toggle color */
+}
+
+.effect-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+#preview-clip {
+    width: 100%;                  /* span entire container */
+    padding: 12px 0;
+    border: none;
+    border-radius: 6px;
+    background-color: #4caf50;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.2s, transform 0.12s, box-shadow 0.2s;
+}
+
+#preview-clip:hover {
+    background-color: #45a049;
+    box-shadow: 0 0 6px rgba(0,0,0,0.15);
+}
+
+#preview-clip:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 0 3px rgba(0,0,0,0.1);
+}
+
+#selected-clip-info {
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+/* Selected clip highlighting */
+.selected-clip {
+    outline: 2px solid #ff9800;
+    box-shadow: 0 0 6px #ff9800;
+}
+
