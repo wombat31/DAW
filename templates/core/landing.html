@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Archie and the Wombat</title>
+    <link rel="stylesheet" href="{% static 'css/core.css' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/favicon/favicon.png' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="navbar-left">
+        <span class="brand">Archie and the Wombat</span>
+    </div>
+    <div class="navbar-right">
+        <input type="text" placeholder="Search..." class="search-box">
+        <span class="search-icon">&#128269;</span>
+    </div>
+</nav>
+
+<!-- Intro / Tagline -->
+<section class="intro">
+    <p>
+        Teaching computing and digital design through engaging immersive projects, puzzles and games.
+    </p>
+</section>
+
+<!-- Main Containers -->
+<section class="main-containers">
+    <div class="container">
+        <h2>For Students</h2>
+        <ul>
+            <li><a href="{% url 'dashboard' %}">Podcast Maker</a></li>
+            <!-- Add more student apps here -->
+        </ul>
+    </div>
+
+    <div class="container">
+        <h2>For Educators</h2>
+        <ul>
+            <li>To be advised</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <h2>For Fun</h2>
+        <ul>
+            <li>To be advised</li>
+        </ul>
+    </div>
+</section>
+
+<!-- Login Notice -->
+<section class="notice">
+    <p>Some resources may require a login for now as storage is limited on the server.</p>
+</section>
+
+<!-- Ad container -->
+<section class="ad-container">
+    <!-- Adsense will be inserted here -->
+</section>
+
+<!-- Contact -->
+<section class="contact">
+    <p>Contact:</p>
+    <ul class="contact-list">
+        <li>Email: <a href="mailto:info@archieandthewombat.com">info@archieandthewombat.com</a></li>
+        <li>Tailored Tutor Packages: <a href="mailto:tutor@archieandthewombat.com">tutor@archieandthewombat.com</a></li>
+    </ul>
+</section>
+
+<!-- Footer -->
+<footer>
+    &copy; Archie and the Wombat 2025
+</footer>
+
+</body>
+</html>

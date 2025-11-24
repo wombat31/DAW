@@ -6,6 +6,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
 from django.contrib.auth import views as auth_views
+from core.views import LandingView
 
 
 from dawapp.views import (
@@ -18,7 +19,7 @@ from dawapp.views import (
 )
 
 urlpatterns = [
-    path('', RedirectView.as_view(url='/home/', permanent=False)),  # redirect root to /home/
+    path('', LandingView.as_view(), name='landing'),  # Landing page at root
     path('home/', HomeView.as_view(), name='home'),
     path('admin/', admin.site.urls),
 
@@ -36,6 +37,10 @@ urlpatterns = [
 
     # Effects API endpoint
     path('api/effects/', effects_list, name='effects_list'),  # matches JS fetch
+
+    path('favicon.ico', RedirectView.as_view(url=settings.STATIC_URL + 'images/favicon/favicon.png')),
+
+
 
 
 ]

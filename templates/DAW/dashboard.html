@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - Podcast Maker</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body>
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>PodcastMaker</h1>
+        <p>Welcome, {{ user.username }} {% if user.profile.is_teacher %}(Teacher){% endif %}</p>
+    </div>
+
+    <div class="dashboard-actions">
+        {% if not user.profile.is_teacher %}
+            <a href="{% url 'create_project' %}">Create New Project</a>
+        {% endif %}
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+
+    {% if is_teacher %}
+        <h2>Student Projects</h2>
+        {% for student, projects in student_projects %}
+            <div class="student-section">
+                <h3>{{ student.username }}</h3>
+                <ul class="projects-list">
+                    {% for project in projects %}
+                        <li>
+                            {{ project.title }}
+                            <a href="{% url 'project_daw' project.pk %}">Open DAW</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    {% else %}
+        <h2>Your Projects</h2>
+        <ul class="projects-list">
+            {% for project in projects %}
+                <li>
+                    {{ project.title }}
+                    <a href="{% url 'project_daw' project.pk %}">Open DAW</a>
+                    <form method="post" action="{% url 'delete_project' project.pk %}" class="delete-form">
+                        {% csrf_token %}
+                        <button type="submit" class="delete-btn">Delete</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+
+
+    <footer class="site-footer">
+        &copy; Archie and the Wombat 2025
+    </footer>
+</div>
+</body>
+</html>

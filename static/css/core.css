@@ -1,0 +1,289 @@
+/* --------------------------
+   Quicksand Font
+-------------------------- */
+@font-face {
+    font-family: 'Quicksand';
+    src: url('/static/fonts/quicksand/Quicksand-Medium_974b1d3f5271eba8616bc84e7c15a532.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+
+
+/* --------------------------
+   Global Styles
+-------------------------- */
+body, html, ul, h1, h2, h3, p {
+
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Quicksand', "Comic Sans MS", Arial, sans-serif;
+    background-color: #ffffff;
+    color: #000000;
+    line-height: 1.5;
+}
+
+/* --------------------------
+   Navbar
+-------------------------- */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #e60000; /* red */
+    color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.navbar .brand {
+    font-weight: bold;
+    font-size: 1.8rem;
+}
+
+.navbar .search-box {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    font-size: 1rem;
+}
+
+.navbar .search-icon {
+    margin-left: 5px;
+    font-size: 1.2rem;
+}
+
+/* --------------------------
+   Intro Section
+-------------------------- */
+.intro {
+    padding: 40px 20px;
+    text-align: center;
+    font-size: 1.2rem;
+    background-color: #f5f5f5;
+    color: #333;
+    border-bottom: 2px solid #4a90e2;
+}
+
+/* --------------------------
+   Main Containers
+-------------------------- */
+.main-containers {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 40px auto;
+    gap: 20px;
+    padding: 0 20px;
+}
+
+.container {
+    background-color: #ffffff;
+    border: 2px solid #4a90e2; /* blue */
+    border-radius: 10px;
+    padding: 20px;
+    flex: 1 1 250px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+}
+
+.container h2 {
+    color: #e60000; /* red */
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+.container ul {
+    list-style: none;
+}
+
+.container ul li {
+    margin-bottom: 10px;
+}
+
+.container ul li a {
+    color: #4a90e2; /* blue links */
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.container ul li a:hover {
+    text-decoration: underline;
+}
+
+/* Remove bullets for contact list */
+.contact-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.contact-list li {
+    margin-bottom: 10px; /* optional spacing between items */
+}
+
+/* --------------------------
+   Notice Section
+-------------------------- */
+.notice {
+    text-align: center;
+    font-style: italic;
+    margin: 20px;
+}
+
+/* --------------------------
+   Ad Container
+-------------------------- */
+.ad-container {
+    text-align: center;
+    margin: 30px 0;
+    padding: 20px;
+    border: 1px dashed #ccc;
+}
+
+/* --------------------------
+   Contact Section
+-------------------------- */
+.contact {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.contact a {
+    color: #e60000;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.contact a:hover {
+    text-decoration: underline;
+}
+
+/* --------------------------
+   Footer
+-------------------------- */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #000000;
+    color: #ffffff;
+    font-size: 0.9rem;
+}
+
+/* --------------------------
+   Responsive Design
+-------------------------- */
+@media (max-width: 1024px) {
+    .main-containers {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+/* --------------------------
+   Landscape Mobile / Small Tablets: 768px and below
+-------------------------- */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .navbar-right {
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .intro {
+        font-size: 1rem;
+        padding: 30px 15px;
+        text-align: center;
+    }
+
+    /* Stack main containers full width */
+    .main-containers {
+        flex-direction: column;
+        gap: 20px;
+        width: 100%;
+        padding: 0 15px;
+        box-sizing: border-box;
+    }
+
+    .container {
+        flex: none;
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 15px;
+        box-sizing: border-box;
+    }
+
+    .container h2 {
+        font-size: 1.3rem;
+    }
+
+    .container ul li a {
+        font-size: 1rem;
+    }
+
+    .contact, .notice {
+        font-size: 0.9rem;
+        padding: 0 15px;
+    }
+}
+
+
+/* --------------------------
+   Small Mobile: 480px and below
+-------------------------- */
+@media (max-width: 480px) {
+    .navbar .brand {
+        font-size: 1.3rem;
+    }
+
+    .intro {
+        font-size: 0.9rem;
+        padding: 20px 10px;
+    }
+
+    /* Stack the main containers */
+    .main-containers {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;          /* space between containers */
+        padding: 0 10px;    /* side padding */
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .container {
+        flex: none;         /* no flex shrinking */
+        width: 100%;        /* full width */
+        max-width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 15px; /* extra space between stacked containers */
+    }
+
+    .container h2 {
+        font-size: 1.2rem;
+    }
+
+    .container ul li a {
+        font-size: 0.95rem;
+    }
+
+    .contact, .notice {
+        font-size: 0.85rem;
+        padding: 0 10px;
+    }
+}
+

@@ -115,7 +115,7 @@ class LogoutViewGet(DjangoLogoutView):
 from collections import defaultdict
 
 class DashboardView(LoginRequiredMixin, TemplateView):
-    template_name = "dashboard.html"
+    template_name = "DAW/dashboard.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -140,7 +140,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 # DAW / Project View
 # -------------------------
 class ProjectDAWView(LoginRequiredMixin, TemplateView):
-    template_name = "daw.html"
+    template_name = "DAW/daw.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -180,7 +180,7 @@ class ProjectDAWView(LoginRequiredMixin, TemplateView):
 class CreateProjectView(LoginRequiredMixin, CreateView):
     model = Project
     fields = ['title']
-    template_name = "create_project.html"
+    template_name = "DAW/create_project.html"
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
