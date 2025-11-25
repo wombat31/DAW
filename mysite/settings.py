@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "dawapp",
     'django.contrib.humanize',
+    'audio_recorder',
 ]
 
 MIDDLEWARE = [

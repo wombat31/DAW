@@ -8,13 +8,10 @@
     font-style: normal;
 }
 
-
-
 /* --------------------------
    Global Styles
 -------------------------- */
 body, html, ul, h1, h2, h3, p {
-
     margin: 0;
     padding: 0;
 }
@@ -34,7 +31,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 15px 30px;
-    background-color: #e60000; /* red */
+    background-color: #e60000;
     color: #ffffff;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
@@ -73,20 +70,21 @@ body {
 -------------------------- */
 .main-containers {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     flex-wrap: wrap;
     max-width: 1200px;
     margin: 40px auto;
     gap: 20px;
     padding: 0 20px;
+    box-sizing: border-box;
 }
 
 .container {
     background-color: #ffffff;
-    border: 2px solid #4a90e2; /* blue */
+    border: 2px solid #4a90e2;
     border-radius: 10px;
     padding: 20px;
-    flex: 1 1 250px;
+    flex: 1 1 clamp(250px, 30%, 400px);
     text-align: center;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -98,7 +96,7 @@ body {
 }
 
 .container h2 {
-    color: #e60000; /* red */
+    color: #e60000;
     margin-bottom: 15px;
     font-size: 1.5rem;
 }
@@ -112,7 +110,7 @@ body {
 }
 
 .container ul li a {
-    color: #4a90e2; /* blue links */
+    color: #4a90e2;
     text-decoration: none;
     font-weight: bold;
 }
@@ -121,7 +119,7 @@ body {
     text-decoration: underline;
 }
 
-/* Remove bullets for contact list */
+/* Remove bullets */
 .contact-list {
     list-style: none;
     padding: 0;
@@ -129,7 +127,7 @@ body {
 }
 
 .contact-list li {
-    margin-bottom: 10px; /* optional spacing between items */
+    margin-bottom: 10px;
 }
 
 /* --------------------------
@@ -183,16 +181,38 @@ footer {
 /* --------------------------
    Responsive Design
 -------------------------- */
-@media (max-width: 1024px) {
+
+/* Full screen (desktop >=1201px) */
+@media (min-width: 1201px) {
     .main-containers {
-        flex-direction: column;
-        align-items: center;
+        flex-wrap: nowrap;
+    }
+
+    .container {
+        flex: 0 1 32%;
+        max-width: 32%;
     }
 }
 
-/* --------------------------
-   Landscape Mobile / Small Tablets: 768px and below
--------------------------- */
+/* Mid-size screens */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .main-containers {
+        flex-direction: row;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        max-width: 1200px;
+        margin: 40px auto;
+        gap: 20px;
+        padding: 0 20px;
+        box-sizing: border-box;
+    }
+
+    .container {
+        flex: 1 1 clamp(250px, 30%, 400px);
+    }
+}
+
+/* Landscape Mobile / Small Tablets */
 @media (max-width: 768px) {
     .navbar {
         flex-direction: column;
@@ -210,7 +230,6 @@ footer {
         text-align: center;
     }
 
-    /* Stack main containers full width */
     .main-containers {
         flex-direction: column;
         gap: 20px;
@@ -239,12 +258,25 @@ footer {
         font-size: 0.9rem;
         padding: 0 15px;
     }
+
+    /* --------------------------
+       NEW: MOBILE WAVEFORM FIX
+       Prevent edge dragging → back gesture
+    -------------------------- */
+    #waveform {
+        padding-left: 20px;
+        padding-right: 20px;
+        box-sizing: content-box !important;
+        width: calc(100% - 40px) !important;
+    }
+
+    #startHandle,
+    #endHandle {
+        touch-action: none; /* prevent browser gesture conflicts */
+    }
 }
 
-
-/* --------------------------
-   Small Mobile: 480px and below
--------------------------- */
+/* Small Mobile */
 @media (max-width: 480px) {
     .navbar .brand {
         font-size: 1.3rem;
@@ -255,22 +287,21 @@ footer {
         padding: 20px 10px;
     }
 
-    /* Stack the main containers */
     .main-containers {
         display: flex;
         flex-direction: column;
-        gap: 20px;          /* space between containers */
-        padding: 0 10px;    /* side padding */
+        gap: 20px;
+        padding: 0 10px;
         width: 100%;
         box-sizing: border-box;
     }
 
     .container {
-        flex: none;         /* no flex shrinking */
-        width: 100%;        /* full width */
+        flex: none;
+        width: 100%;
         max-width: 100%;
         box-sizing: border-box;
-        margin-bottom: 15px; /* extra space between stacked containers */
+        margin-bottom: 15px;
     }
 
     .container h2 {
@@ -285,5 +316,11 @@ footer {
         font-size: 0.85rem;
         padding: 0 10px;
     }
-}
 
+    /* Stronger protection for very small screens */
+    #waveform {
+        padding-left: 25px;
+        padding-right: 25px;
+        width: calc(100% - 50px) !important;
+    }
+}

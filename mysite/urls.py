@@ -40,6 +40,8 @@ urlpatterns = [
 
     path('favicon.ico', RedirectView.as_view(url=settings.STATIC_URL + 'images/favicon/favicon.png')),
 
+    #Audio recorder
+    path('audio/', include('audio_recorder.urls')),
 
 
 
