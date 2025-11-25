@@ -116,8 +116,9 @@ stopBtn.onclick = async () => {
     renderWaveform();
     updateHandlesPositions();
 
-    // Set preview source and load it explicitly for iOS
-    preview.src = URL.createObjectURL(recordedBlob);
+    // Convert to proper WAV format for iOS/Safari compatibility
+    const wavBlob = audioBufferToWavBlob(audioBuffer);
+    preview.src = URL.createObjectURL(wavBlob);
     preview.load(); // Force Safari to load the audio
 
     startBtn.disabled = false;
