@@ -9,7 +9,7 @@
 
 {% block content %}
 <div class="recorder-container">
-    <h1>Audio Recorder</h1>
+    <h1>Audio Recorder <span class="max-time">(max 2 minutes)</span></h1>
 
     <!-- Recording buttons above waveform -->
     <div class="utility-bar" id="recordingControls">
@@ -17,6 +17,9 @@
         <button id="stopBtn" disabled>Stop Recording</button>
         <button id="startOverBtn" disabled>Start Over</button>
     </div>
+
+    <!-- Recording Timer -->
+    <div id="recordingTimer" style="display: none;">00:00</div>
 
     <!-- Waveform -->
     <div class="waveform-wrapper">

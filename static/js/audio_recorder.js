@@ -21,9 +21,29 @@ const ctx = waveformCanvas.getContext('2d');
 
 let audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
+// Resume AudioContext on user interaction (iOS/Safari requirement)
+document.addEventListener('click', () => {
+    if (audioContext.state === 'suspended') {
+        audioContext.resume();
+    }
+}, { once: false });
+
+document.addEventListener('touchstart', () => {
+    if (audioContext.state === 'suspended') {
+        audioContext.resume();
+    }
+}, { once: false });
+
 // Track current clip positions
 let clipStart = 0;
 let clipEnd = 0;
+
+//Timer variables
+let recordingStartTime = 0;
+let recordingInterval = null;
+const MAX_RECORDING_TIME = 120; // 2 minutes in seconds
+
+const recordingTimer = document.getElementById('recordingTimer');
 
 // ---------------------------
 // Recording
@@ -36,6 +56,23 @@ startBtn.onclick = async () => {
     mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
     mediaRecorder.start();
 
+    // Start timer
+    recordingStartTime = Date.now();
+    recordingTimer.style.display = 'block';
+    recordingTimer.textContent = '00:00';
+
+    recordingInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+        const minutes = Math.floor(elapsed / 60);
+        const seconds = elapsed % 60;
+        recordingTimer.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+        // Auto-stop at 2 minutes
+        if (elapsed >= MAX_RECORDING_TIME) {
+            stopBtn.click();
+        }
+    }, 100); // Update every 100ms for smooth display
+
     startBtn.disabled = true;
     stopBtn.disabled = false;
     startOverBtn.disabled = false;
@@ -43,6 +80,10 @@ startBtn.onclick = async () => {
 
 stopBtn.onclick = async () => {
     stopBtn.disabled = true;
+
+    // Stop and hide timer
+    clearInterval(recordingInterval);
+    recordingTimer.style.display = 'none';
 
     recordedBlob = await new Promise(resolve => {
         mediaRecorder.onstop = () => {
@@ -52,6 +93,11 @@ stopBtn.onclick = async () => {
         };
         mediaRecorder.stop();
     });
+
+    // Resume AudioContext if suspended (iOS requirement)
+    if (audioContext.state === 'suspended') {
+        await audioContext.resume();
+    }
 
     // Decode audio for waveform
     const arrayBuffer = await recordedBlob.arrayBuffer();
@@ -70,14 +116,20 @@ stopBtn.onclick = async () => {
     renderWaveform();
     updateHandlesPositions();
 
+    // Set preview source and load it explicitly for iOS
     preview.src = URL.createObjectURL(recordedBlob);
+    preview.load(); // Force Safari to load the audio
+
     startBtn.disabled = false;
 };
-
 // ---------------------------
 // Start Over
 // ---------------------------
 startOverBtn.onclick = () => {
+    // Clear timer if still running
+    clearInterval(recordingInterval);
+    recordingTimer.style.display = 'none';
+
     audioBuffer = null;
     previousBuffer = null;
     recordedBlob = null;
@@ -85,14 +137,21 @@ startOverBtn.onclick = () => {
     clipStart = 0;
     clipEnd = 0;
 
-    preview.src = '';
+    // Properly reset audio preview for iOS/Safari
+    preview.pause();
+    preview.removeAttribute('src');
+    preview.load(); // Force Safari to reset the audio element
+
     applyClipBtn.disabled = true;
     undoBtn.disabled = true;
     downloadBtn.disabled = true;
 
     ctx.clearRect(0, 0, waveformCanvas.width, waveformCanvas.height);
-};
 
+    // Hide handles when no audio
+    startHandle.style.left = '0px';
+    endHandle.style.left = '0px';
+};
 // ---------------------------
 // Apply Clip
 // ---------------------------
@@ -151,7 +210,7 @@ undoBtn.onclick = () => {
 };
 
 // ---------------------------
-// Download MP3 (dummy: sends WAV)
+// Download MP3 (iOS & Android compatible)
 // ---------------------------
 downloadBtn.onclick = async () => {
     if (!audioBuffer) return;
@@ -167,11 +226,44 @@ downloadBtn.onclick = async () => {
 
     if (response.ok) {
         const mp3Blob = await response.blob();
+
+        // Detect if user is on mobile device
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+        // Use Web Share API ONLY for mobile devices
+        if (isMobile && navigator.share && navigator.canShare) {
+            try {
+                const file = new File([mp3Blob], 'recording.mp3', { type: 'audio/mpeg' });
+
+                // Check if files can be shared
+                if (navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Audio Recording',
+                        text: 'My audio recording'
+                    });
+                    return; // Successfully shared
+                }
+            } catch (err) {
+                // User cancelled or share not supported, fall through to download
+                if (err.name !== 'AbortError') {
+                    console.log('Share failed:', err);
+                }
+            }
+        }
+
+        // Desktop or fallback: Traditional download
         const url = URL.createObjectURL(mp3Blob);
         const a = document.createElement('a');
         a.href = url;
         a.download = 'recording.mp3';
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
+
+        setTimeout(() => {
+            URL.revokeObjectURL(url);
+        }, 100);
     } else {
         alert('Error converting audio.');
     }
@@ -208,9 +300,17 @@ function renderWaveform() {
 // Drag Handles
 // ---------------------------
 function updateHandlesPositions() {
-    const width = waveformCanvas.width;
-    startHandle.style.left = (clipStart / audioBuffer.duration * width) + 'px';
-    endHandle.style.left = (clipEnd / audioBuffer.duration * width) + 'px';
+    if (!audioBuffer) return;
+
+    const rect = waveformCanvas.getBoundingClientRect();
+    const width = rect.width; // Use actual rendered width, not canvas.width
+
+    const startPos = (clipStart / audioBuffer.duration) * width;
+    const endPos = (clipEnd / audioBuffer.duration) * width;
+
+    // Clamp positions to stay within bounds
+    startHandle.style.left = Math.max(0, Math.min(startPos, width)) + 'px';
+    endHandle.style.left = Math.max(0, Math.min(endPos, width)) + 'px';
 }
 
 let draggingHandle = null;
@@ -245,9 +345,7 @@ document.addEventListener('mousemove', e => {
 // ---------- Mobile touch drag ----------
 [startHandle, endHandle].forEach(handle => {
     handle.addEventListener('touchstart', e => {
-        const touch = e.touches[0];
-        const rect = waveformCanvas.getBoundingClientRect();
-        handle.dataset.touchOffsetX = touch.clientX - rect.left;
+        e.preventDefault();
         draggingHandle = handle;
     });
 });
@@ -258,11 +356,11 @@ document.addEventListener('touchmove', e => {
 
     const touch = e.touches[0];
     const rect = waveformCanvas.getBoundingClientRect();
-    let pos = touch.clientX - rect.left - parseFloat(draggingHandle.dataset.touchOffsetX || 0);
+    let pos = touch.clientX - rect.left;
 
     // Clamp position inside canvas
-    pos = Math.max(0, Math.min(pos, waveformCanvas.width));
-    const time = (pos / waveformCanvas.width) * audioBuffer.duration;
+    pos = Math.max(0, Math.min(pos, rect.width));
+    const time = (pos / rect.width) * audioBuffer.duration;
 
     if (draggingHandle === startHandle) {
         clipStart = Math.min(time, clipEnd);
@@ -297,7 +395,7 @@ function audioBufferToWavBlob(buffer) {
     view.setUint32(offset, length - 8, true); offset += 4;
     writeString(view, offset, 'WAVE'); offset += 4;
     writeString(view, offset, 'fmt '); offset += 4;
-    view.setUint32(offset, 16, true); offset += 4; 
+    view.setUint32(offset, 16, true); offset += 4;
     view.setUint16(offset, 1, true); offset += 2;
     view.setUint16(offset, numChannels, true); offset += 2;
     view.setUint32(offset, sampleRate, true); offset += 4;
@@ -318,3 +416,13 @@ function audioBufferToWavBlob(buffer) {
 
     return new Blob([view], { type: 'audio/wav' });
 }
+
+// ---------------------------
+// Handle Window Resize
+// ---------------------------
+window.addEventListener('resize', () => {
+    if (audioBuffer) {
+        renderWaveform();
+        updateHandlesPositions();
+    }
+});
