@@ -1,0 +1,22 @@
+{% extends "learning/learning_base.html" %}
+{% block title %}{{ course_name }}{% endblock %}
+{% block module_name %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>{{ course_name }}</h1>
+    <p>Welcome! Select a module below to start learning.</p>
+</div>
+
+<div class="content-grid">
+    {% for module in modules %}
+    <div class="content-container {% if module.topics.0.is_free %}container-free{% else %}container-paid{% endif %}">
+        <h2>{{ module.name }}</h2>
+        <p>{{ module.description }}</p>
+        <a href="{% url 'cam_igcse:module_detail' module.slug %}" class="cta-button {% if module.topics.0.is_free %}cta-button-free{% else %}cta-button-paid{% endif %}">
+            View Module
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,417 @@
+/* --------------------------
+   educator_dashboard.css: Professional Stylesheet for Paid Content
+-------------------------- */
+
+/* Define variables for the professional scheme */
+:root {
+    --pro-blue: #3A8DFF;
+    --pro-text: #2C3E50;
+    --pro-light-bg: #F9FBFD;
+
+    --brand-red: #E60000;
+    --brand-blue: #4a90e2;
+}
+
+/* Global Styles */
+body {
+    background-color: var(--pro-light-bg);
+    color: var(--pro-text);
+}
+
+/* Ensure padding NEVER forces overflow */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* --------------------------
+   Main Wrapper
+-------------------------- */
+#igcse-main-dashboard {
+    width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+
+    /* Prevent any accidental horizontal expansion */
+    overflow-x: hidden;
+}
+
+/* --------------------------
+   Dashboard Header
+-------------------------- */
+.dashboard-header {
+    background-color: #ffffff;
+    padding: 30px;
+    border-bottom: 3px solid var(--pro-blue);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 40px;
+}
+.dashboard-header h1 {
+    color: var(--pro-text);
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+.dashboard-header p {
+    color: #6c757d;
+    font-size: 1.1rem;
+}
+
+/* --------------------------
+   1. Module Index Bar
+-------------------------- */
+.module-index-bar {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 40px;
+    padding: 0;
+    overflow-x: auto;
+}
+.index-tile {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    text-align: center;
+    padding: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+}
+.index-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+.tile-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 3px;
+}
+.tile-title {
+    font-size: 0.75rem;
+    line-height: 1.2;
+}
+.tile-free {
+    background-color: var(--brand-red);
+    color: white;
+    border: 1px solid var(--brand-red);
+    cursor: pointer;
+}
+.tile-free:hover {
+    background-color: #CC0000;
+}
+.tile-paid-locked {
+    background-color: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+    border: 1px solid #ced4da;
+    opacity: 0.8;
+}
+
+/* --------------------------
+   2. Main Content Areas
+-------------------------- */
+.content-grid {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+}
+
+.content-container {
+    flex: 1;
+    background-color: #ffffff;
+    border-radius: 8px;
+
+    /* This is safe now because of box-sizing */
+    padding: 40px;
+
+
+    text-align: center;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+
+}
+
+.content-container h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+    border-bottom: 2px solid;
+    padding-bottom: 8px;
+}
+
+.content-container ul {
+    list-style: none;
+    padding: 0;
+}
+
+.content-container li {
+    padding: 10px 0;
+    border-bottom: 1px dashed #eee;
+    font-size: 1.1rem;
+}
+
+.container-free h2 {
+    color: var(--brand-red);
+    border-bottom-color: var(--brand-red);
+}
+
+.container-paid h2 {
+    color: var(--pro-blue);
+    border-bottom-color: var(--pro-blue);
+}
+
+.lock-icon {
+    font-size: 1.1rem;
+    margin-right: 10px;
+    color: var(--pro-blue);
+}
+
+.free-icon {
+    font-size: 1.1rem;
+    margin-right: 10px;
+    color: #28a745; /* A standard, professional green */
+}
+
+/* --------------------------
+   CTA Buttons
+-------------------------- */
+.cta-button {
+    display: inline-block;
+    padding: 12px 25px;
+    border-radius: 50px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    margin-top: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.cta-button-free {
+    background-color: var(--brand-red);
+    color: white;
+}
+.cta-button-free:hover {
+    background-color: #CC0000;
+}
+.cta-button-paid {
+    background-color: var(--pro-blue);
+    color: white;
+    box-shadow: 0 4px 8px rgba(58, 141, 255, 0.3);
+}
+.cta-button-paid:hover {
+    background-color: #347adb;
+}
+
+/* --------------------------
+   Back Link
+-------------------------- */
+.link-back-container {
+    width: 100%;
+    text-align: center !important;
+    margin-top: 40px;
+    padding: 20px 0;
+}
+
+/* --------------------------
+   Responsive Design
+-------------------------- */
+@media (max-width: 1200px) {
+    .module-index-bar {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 768px) {
+
+    /* mobile-safe wrapper padding */
+    #igcse-main-dashboard {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+
+    /* keep tile bar scrollable */
+    .module-index-bar {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+
+    /* stack containers */
+    .content-grid {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    /* prevent overflow + safe padding */
+    .content-container {
+        width: 100%;
+        padding: 25px;
+    }
+}
+
+/* --------------------------
+   4. Coming Soon Banner
+-------------------------- */
+.container-paid {
+    /* Important for positioning the absolute banner correctly */
+    position: relative;
+    overflow: hidden; /* Ensures banner doesn't spill out */
+}
+
+.coming-soon-banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white overlay */
+    backdrop-filter: blur(2px); /* Slightly blurs the content underneath */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 10; /* Ensures the banner is always on top */
+    border-radius: 8px; /* Matches the container's border radius */
+    padding: 20px;
+}
+
+.banner-text {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #E60000; /* Use your brand red for visibility */
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.banner-subtext {
+    font-size: 1.1rem;
+    color: #6c757d;
+}
+
+/* --------------------------
+   5. Professional Navbar (Forced Reset Layout)
+-------------------------- */
+.module-navbar {
+    /* Ensure the navbar itself is compact */
+    height: 40px !important; /* Fixed, small height */
+    min-height: 40px !important;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    margin-bottom: 15px;
+    padding: 0 !important;
+}
+
+/* Main Content Layout - FORCED FLEXBOX */
+.module-navbar-content {
+    /* 🚨 This is the key fix: force display flex and prevent wrap */
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 0 1rem !important; /* Zero vertical padding */
+    height: 100% !important; /* Use full height of the fixed navbar */
+    width: 100% !important;
+}
+
+/* Hide the control checkbox */
+.menu-toggle {
+    display: none !important;
+}
+
+/* Back Link (Brand) Styling */
+.nav-brand {
+    display: flex !important;
+    align-items: center !important;
+    font-weight: 600;
+    color: var(--pro-blue);
+    font-size: 0.9rem !important;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+/* Burger icon Label */
+.burger-label {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-around !important;
+    width: 24px !important;
+    height: 20px !important;
+    cursor: pointer;
+}
+.burger-label div {
+    width: 24px !important;
+    height: 2px !important;
+    background-color: var(--pro-text);
+    transition: all 0.3s ease;
+    transform-origin: left;
+}
+
+/* Desktop Nav Links (The Default State for .nav-links) */
+.nav-links {
+    display: none !important; /* Hide on mobile by default */
+    list-style: none;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+.nav-links li {
+    /* We must also force the links to be inline */
+    display: inline-block !important;
+    margin-left: 0.75rem;
+}
+.nav-links a {
+    padding: 0.3rem 0.6rem !important;
+    border-radius: 4px;
+    text-decoration: none;
+    color: var(--pro-text);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+.nav-links a.active {
+    background-color: var(--pro-blue) !important;
+    color: #fff !important;
+}
+
+
+/* --------------------------
+   Pure CSS Toggle Logic
+-------------------------- */
+/* Mobile: Show the menu when the hidden checkbox is checked */
+.menu-toggle:checked ~ .module-navbar-content + .nav-links,
+.menu-toggle:checked ~ .nav-links {
+    display: flex !important; /* Forces the menu to show */
+    flex-direction: column !important;
+}
+/* Burger Animation logic remains unchanged */
+
+
+/* --------------------------
+   Responsive adjustments: DESKTOP ONLY
+-------------------------- */
+@media (min-width: 768px) {
+    /* Force display: flex on desktop */
+    .nav-links {
+        position: static !important;
+        display: flex !important;
+        align-items: center !important;
+        background-color: transparent !important;
+        box-shadow: none !important;
+    }
+
+    /* Hide the burger menu label */
+    .burger-label {
+        display: none !important;
+    }
+}

@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}IGCSE Computer Science Dashboard{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/educator_dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div id="igcse-main-dashboard"> 
+    <header class="dashboard-header text-center">
+        <h1>IGCSE Computer Science Educator Dashboard</h1>
+        <p>Comprehensive, professionally structured resources for IGCSE Computer Science.</p>
+    </header>
+
+    <!-- ---------------- Top Index Tiles ---------------- -->
+    <div class="module-index-bar">
+        <!-- Free Modules -->
+        <a href="{% url 'cam_igcse:module_detail' 'module-1-data-representation' %}" class="index-tile tile-free">
+            <span class="tile-number">1</span>
+            <span class="tile-title">Data Rep.</span>
+        </a>
+        <a href="{% url 'cam_igcse:module_detail' 'module-2-data-transmission' %}" class="index-tile tile-free">
+            <span class="tile-number">2</span>
+            <span class="tile-title">Data Trans.</span>
+        </a>
+        <!-- Paid/Locked Modules -->
+        <div class="index-tile tile-paid-locked">
+            <span class="tile-number">3</span>
+            <span class="tile-title">Hardware</span>
+        </div>
+        <div class="index-tile tile-paid-locked">
+            <span class="tile-number">4</span>
+            <span class="tile-title">Software</span>
+        </div>
+        <div class="index-tile tile-paid-locked">
+            <span class="tile-number">5</span>
+            <span class="tile-title">The Internet</span>
+        </div>
+        <div class="index-tile tile-paid-locked">
+            <span class="tile-number">6</span>
+            <span class="tile-title">Emerging Tech</span>
+        </div>
+        <div class="index-tile tile-paid-locked">
+            <span class="tile-number">7</span>
+            <span class="tile-title">Algorithm Design</span>
+        </div>
+        <div class="index-tile tile-paid-locked">
+            <span class="tile-number">8</span>
+            <span class="tile-title">Programming</span>
+        </div>
+        <div class="index-tile tile-paid-locked">
+            <span class="tile-number">9</span>
+            <span class="tile-title">Databases</span>
+        </div>
+        <div class="index-tile tile-paid-locked">
+            <span class="tile-number">10</span>
+            <span class="tile-title">Boolean Logic</span>
+        </div>
+    </div>
+
+    <!-- ---------------- Free Access Materials List ---------------- -->
+    <div class="content-grid">
+        <div class="content-container container-free">
+            <h2>Free Access Materials</h2>
+            <ul>
+                <li>
+                    <span class="free-icon">✅</span>
+                    <a href="{% url 'cam_igcse:module_detail' 'module-1-data-representation' %}">
+                        Module 1: Data Representation
+                    </a>
+                </li>
+                <li>
+                    <span class="free-icon">✅</span>
+                    <a href="{% url 'cam_igcse:module_detail' 'module-2-data-transmission' %}">
+                        Module 2: Data Transmission
+                    </a>
+                </li>
+            </ul>
+
+            {% comment %}Dynamic first free module for CTA button{% endcomment %}
+            {% with 'module-1-data-representation' as first_free_module_slug %}
+            <a href="{% url 'cam_igcse:module_detail' first_free_module_slug %}" class="cta-button cta-button-free mt-5">
+                Browse Free Modules
+            </a>
+            {% endwith %}
+        </div>
+
+        <!-- ---------------- Paid Materials ---------------- -->
+        <div class="content-container container-paid">
+            <div class="coming-soon-banner">
+                <span class="banner-text">🛠️ Under Construction 🛠️</span>
+                <span class="banner-subtext">Premium Materials Coming Soon!</span>
+            </div>
+            <h2>Premium Materials (Subscriber Only)</h2>
+            <ul>
+                <li><span class="lock-icon">🔒</span> Modules 3-10 Content Sets</li>
+                <li><span class="lock-icon">🔒</span> Exclusive Exam Technique Guides</li>
+                <li><span class="lock-icon">🔒</span> Editable Lesson Slides & Activities</li>
+                <li><span class="lock-icon">🔒</span> Secure Past Paper Solutions</li>
+            </ul>
+            <button class="cta-button cta-button-paid mt-5" disabled>
+               Unlock All Content (Coming Soon)
+            </button>
+        </div>
+    </div>
+
+    <!-- ---------------- Back Link ---------------- -->
+    <div class="link-back-container"> 
+        <a href="{% url 'landing' %}" class="text-gray-600 hover:text-gray-800 text-lg font-medium inline-flex items-center">
+            ← Back to Main Site
+        </a>
+    </div>
+
+</div>
+{% endblock content %}

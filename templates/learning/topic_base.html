@@ -1,0 +1,41 @@
+{% extends "learning/learning_base.html" %}
+{% block title %}{{ topic.title }} | {{ module.name }}{% endblock %}
+{% block module_name %}{{ module.name }} → {{ topic.title }}{% endblock %}
+
+{% block content %}
+<div class="module-header">
+    <h1>{{ topic.title }}</h1>
+    <p>{{ topic.short_description }}</p>
+</div>
+
+<div class="content-grid">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h3>Topics</h3>
+        <ul>
+            {% for t in module.topics.all %}
+                <li><a href="{% url 'topic_detail' module.slug t.slug %}" {% if t == topic %}class="active"{% endif %}>{{ t.title }}</a></li>
+            {% endfor %}
+        </ul>
+        {% if topic.downloads.exists %}
+        <h3>Downloads</h3>
+        <ul>
+            {% for file in topic.downloads.all %}
+                <li><a href="{{ file.url }}">{{ file.name }}</a></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </aside>
+
+    <!-- Main Content -->
+    <div class="content-container">
+        {% block lesson_objectives %}{% endblock %}
+        {% block syllabus %}{% endblock %}
+        {% block spark_question %}{% endblock %}
+        {% block teacher_presentation %}{% endblock %}
+        {% block student_activities %}{% endblock %}
+        {% block reflection %}{% endblock %}
+        {% block personalisation %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

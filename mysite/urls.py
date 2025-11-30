@@ -43,6 +43,12 @@ urlpatterns = [
     #Audio recorder
     path('audio/', include('audio_recorder.urls')),
 
+    #Pixelmaker
+    path('pixelmaker/',include('pixelmaker.urls')),
+
+    #Cambridge IGCSE APP
+    path('igcse/', include('cam_igcse.urls')),
+
 
 
 ]

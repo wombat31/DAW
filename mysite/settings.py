@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     "dawapp",
     'django.contrib.humanize',
     'audio_recorder',
+    'django_tailwind_cli',
+    'cam_igcse',
 ]
 
 MIDDLEWARE = [
@@ -126,6 +128,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATICFILES_DIRS = [BASE_DIR / 'static' / 'src']  # Tailwind source files
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

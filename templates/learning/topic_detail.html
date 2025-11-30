@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ topic.title }}</h1>
+<h2>Objectives</h2>
+<ul>
+{% for obj in topic.objectives %}
+    <li>{{ obj }}</li>
+{% endfor %}
+</ul>
+
+<h2>Presentation</h2>
+{{ topic.presentation|safe }}
+
+<h2>Collaborative Tasks</h2>
+{{ topic.collaborative_tasks|safe }}
+
+<h2>Solo Tasks</h2>
+{{ topic.solo_tasks|safe }}
+
+<h2>Reflection</h2>
+{{ topic.reflection|safe }}
+
+<h2>Personalisation</h2>
+<h3>Secure</h3>
+{{ topic.personalisation.secure|safe }}
+<h3>Foundation</h3>
+{{ topic.personalisation.foundation|safe }}
+<h3>Support</h3>
+{{ topic.personalisation.support|safe }}
+
+{% if topic.downloads %}
+<h2>Downloads</h2>
+<ul>
+{% for file in topic.downloads %}
+    <li><a href="{{ file.url }}">{{ file.name }}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+
+<a href="{% url 'cam_igcse:module_detail' module.slug %}">← Back to Module</a>
+{% endblock %}

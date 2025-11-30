@@ -1,0 +1,39 @@
+/* Custom styles for the pixelated cursor effect on the canvas */
+#editorCanvas {
+    image-rendering: pixelated;
+    cursor: crosshair;
+    touch-action: none; /* Prevent browser scrolling/panning on touch */
+}
+
+/* Tool-specific Cursors */
+#editorCanvas[data-tool="eraser"] { cursor: cell; }
+#editorCanvas[data-tool="brush"] { cursor: pointer; }
+#editorCanvas[data-tool="bucket"] { cursor: crosshair; } 
+#editorCanvas[data-tool="rectangle"] { cursor: nwse-resize; } 
+#editorCanvas[data-tool="circle_tool"] { cursor: nwse-resize; } 
+
+/* Style for the color swatches */
+.color-swatch {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: transform 0.1s, border-color 0.1s;
+}
+.color-swatch:hover {
+    transform: scale(1.1);
+}
+.color-swatch.active {
+    border-color: #f97316; /* Orange 500 */
+    box-shadow: 0 0 0 2px #fb923c, 0 0 8px rgba(0, 0, 0, 0.4);
+}
+.tool-btn.active-tool {
+    background-color: #10b981; /* Emerald 500 */
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.shape-btn.active-shape {
+    background-color: #a855f7; /* Purple 500 */
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}

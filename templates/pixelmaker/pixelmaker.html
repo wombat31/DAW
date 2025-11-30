@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Pixel Art Designer{% endblock title %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+    <link rel="stylesheet" href="{% static 'css/pixelmaker.css' %}">
+{% endblock extra_head %}
+
+{% block content %}
+<div class="bg-gray-100 min-h-screen flex items-center justify-center p-4 font-sans antialiased">
+
+<div id="app" class="w-full max-w-5xl bg-white p-6 rounded-xl shadow-2xl">
+<h1 class="text-3xl font-extrabold text-gray-800 mb-6 text-center">Pixelmaker</h1>
+<div class="text-center mb-4">
+    <a href="{% url 'landing' %}" class="inline-block text-blue-600 hover:text-blue-800 font-semibold">← Back to Home</a>
+</div>
+
+<div id="settings-panel" class="mb-6 p-4 bg-blue-50 rounded-lg shadow-inner">
+<h2 class="text-xl font-semibold text-blue-700 mb-3">1. Choose Your Canvas Size:</h2>
+<div id="size-buttons" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+<button class="size-btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition" data-size="16">16x16</button>
+<button class="size-btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition" data-size="32">32x32</button>
+<button class="size-btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition" data-size="64">64x64</button>
+<button class="size-btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition" data-size="128">128x128</button>
+<button id="custom-size-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition">Custom</button>
+</div>
+<div id="custom-input" class="mt-3 hidden space-x-2">
+<input type="number" id="custom-size" placeholder="e.g., 48" min="8" max="256" value="32" class="p-2 border border-gray-300 rounded-lg w-24">
+<button id="set-custom-size-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Set Size</button>
+</div>
+</div>
+
+<div class="flex flex-col lg:flex-row gap-6">
+
+<div class="lg:w-1/4 space-y-6 order-2 lg:order-1">
+
+<div id="tools-panel" class="p-4 bg-gray-50 rounded-lg shadow-md">
+    <h2 class="text-xl font-semibold text-gray-700 mb-3">2. Choose Your Tool:</h2>
+    <div id="tool-buttons" class="grid grid-cols-2 gap-2">
+        <button class="tool-btn bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 rounded-lg transition active-tool" data-tool="pencil">✏️ Pencil</button>
+        <button class="tool-btn bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 rounded-lg transition" data-tool="eraser">🗑️ Eraser</button>
+        <button class="tool-btn bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 rounded-lg transition" data-tool="brush">🖌️ 2x2 Brush</button>
+        <button class="tool-btn bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 rounded-lg transition" data-tool="bucket"> fill Bucket</button>
+        <button class="tool-btn bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 rounded-lg transition" data-tool="rectangle">🟪 Rectangle</button>
+        <button class="tool-btn bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 rounded-lg transition" data-tool="circle_tool">🔵 Circle Tool</button>
+    </div>
+</div>
+
+<div id="palette-panel" class="p-4 bg-gray-50 rounded-lg shadow-md">
+    <h2 class="text-xl font-semibold text-gray-700 mb-3">3. Pick Your Paint (256 Colors):</h2>
+    <div id="color-palette" class="grid grid-cols-8 gap-1 max-h-64 overflow-y-scroll p-1 border rounded-md border-gray-200">
+        </div>
+</div>
+
+<div id="shape-panel" class="p-4 bg-purple-50 rounded-lg shadow-md">
+    <h2 class="text-xl font-semibold text-purple-700 mb-3">4. Choose Canvas Shape:</h2>
+    <div id="shape-buttons" class="grid grid-cols-2 gap-2">
+        <button class="shape-btn bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg transition active-shape" data-shape="square">⬛ Square</button>
+        <button class="shape-btn bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg transition" data-shape="circle">⚪ Circle</button>
+        <button class="shape-btn bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg transition" data-shape="heart">❤️ Heart</button>
+        <button class="shape-btn bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg transition" data-shape="octagon">🔷 Octagon</button>
+    </div>
+</div>
+
+</div>
+
+<div id="canvas-container" class="lg:w-3/4 flex justify-center items-center p-4 bg-gray-200 rounded-lg shadow-xl order-1 lg:order-2">
+<canvas id="editorCanvas" data-tool="pencil" class="border-4 border-gray-600 rounded-lg shadow-inner bg-white"></canvas>
+</div>
+
+</div>
+
+<div id="export-panel" class="mt-6 p-4 bg-green-50 rounded-lg shadow-inner">
+<h2 class="text-xl font-semibold text-green-700 mb-3">5. Save Your Masterpiece:</h2>
+<div class="flex flex-wrap gap-3">
+<button id="export-png-btn" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition shadow-md hover:shadow-lg">
+Export as PNG
+</button>
+<button id="save-project-btn" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg transition shadow-md hover:shadow-lg">
+Save Project (.json)
+</button>
+<label class="flex-1 cursor-pointer bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg transition shadow-md hover:shadow-lg text-center">
+Load Project (.json)
+<input type="file" id="load-project-input" accept=".json" class="hidden">
+</label>
+</div>
+</div>
+
+<p id="message-box" class="mt-4 text-center text-red-600 font-medium"></p>
+
+</div>
+
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<script src="{% static 'js/pixelmaker.js' %}"></script>
+{% endblock extra_js %}

@@ -1,0 +1,65 @@
+<!-- /home/podcastmaker/mysite/templates/404.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Whoops - Page Not Found</title>
+    <link rel="stylesheet" href="{% static 'css/educator_dashboard.css' %}">
+    <style>
+        /* Optional overrides for 404 page */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f9fafb;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            margin: 0;
+        }
+        .error-container {
+            text-align: center;
+            max-width: 600px;
+            padding: 2rem;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 12px;
+        }
+        .error-code {
+            font-size: 6rem;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        .error-message {
+            font-size: 1.25rem;
+            margin: 1rem 0;
+            color: #374151;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .cta-button:hover {
+            background-color: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-code">404</div>
+        <div class="error-message">
+            Oops! The page you’re looking for doesn’t exist.<br>
+            It might be a module or topic that hasn’t been set up yet.
+        </div>
+        <a href="{% url 'igcse_dashboard' %}" class="cta-button">
+            ← Back to IGCSE Dashboard
+        </a>
+    </div>
+</body>
+</html>
