@@ -1,41 +1,134 @@
-{% extends "base.html" %}
+{% extends "learning/topic_base.html" %}
+{% load static %}
+
+{% block title %}{{ topic.title }} | {{ module.name }}{% endblock %}
+
 {% block content %}
-<h1>{{ topic.title }}</h1>
-<h2>Objectives</h2>
-<ul>
-{% for obj in topic.objectives %}
-    <li>{{ obj }}</li>
-{% endfor %}
-</ul>
 
-<h2>Presentation</h2>
-{{ topic.presentation|safe }}
+<!-- Breadcrumb / Back to Module -->
+<nav class="text-sm text-gray-600 mb-4">
+    <a href="{% url 'cam_igcse:module_detail' module.slug %}" class="hover:underline">&larr; Back to {{ module.name }}</a>
+</nav>
 
-<h2>Collaborative Tasks</h2>
-{{ topic.collaborative_tasks|safe }}
+<div class="space-y-6">
 
-<h2>Solo Tasks</h2>
-{{ topic.solo_tasks|safe }}
+    <!-- Lesson Objectives -->
+    {% block lesson_objectives %}
+    <section class="bg-gray-50 p-4 rounded-md shadow-sm">
+        <h2 class="text-lg font-semibold mb-2">Lesson Objectives</h2>
+        {% if topic.objectives %}
+            <ul class="list-disc ml-5">
+                {% for obj in topic.objectives %}
+                    <li>{{ obj }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="italic text-gray-500">Under Construction</p>
+        {% endif %}
+    </section>
+    {% endblock %}
 
-<h2>Reflection</h2>
-{{ topic.reflection|safe }}
+    <!-- Syllabus -->
+    {% block syllabus %}
+    <section class="bg-gray-50 p-4 rounded-md shadow-sm">
+        <h2 class="text-lg font-semibold mb-2">Syllabus / Curriculum</h2>
+        {% if topic.syllabus %}
+            {{ topic.syllabus|safe }}
+        {% else %}
+            <p class="italic text-gray-500">Under Construction</p>
+        {% endif %}
+    </section>
+    {% endblock %}
 
-<h2>Personalisation</h2>
-<h3>Secure</h3>
-{{ topic.personalisation.secure|safe }}
-<h3>Foundation</h3>
-{{ topic.personalisation.foundation|safe }}
-<h3>Support</h3>
-{{ topic.personalisation.support|safe }}
+    <!-- Spark Question -->
+    {% block spark_question %}
+    <section class="bg-gray-50 p-4 rounded-md shadow-sm">
+        <h2 class="text-lg font-semibold mb-2">Spark Question</h2>
+        {% if topic.spark_question %}
+            <p>{{ topic.spark_question }}</p>
+        {% else %}
+            <p class="italic text-gray-500">Under Construction</p>
+        {% endif %}
+    </section>
+    {% endblock %}
 
-{% if topic.downloads %}
-<h2>Downloads</h2>
-<ul>
-{% for file in topic.downloads %}
-    <li><a href="{{ file.url }}">{{ file.name }}</a></li>
-{% endfor %}
-</ul>
-{% endif %}
+    <!-- Teacher Presentation / Slides -->
+    {% block teacher_presentation %}
+    <section class="bg-gray-50 p-4 rounded-md shadow-sm">
+        <h2 class="text-lg font-semibold mb-2">Presentation / Slides</h2>
+        {% if topic.presentation %}
+            {{ topic.presentation|safe }}
+        {% else %}
+            <p class="italic text-gray-500">Under Construction</p>
+        {% endif %}
+    </section>
+    {% endblock %}
 
-<a href="{% url 'cam_igcse:module_detail' module.slug %}">← Back to Module</a>
+    <!-- Student Activities -->
+    {% block student_activities %}
+    <section class="bg-gray-50 p-4 rounded-md shadow-sm">
+        <h2 class="text-lg font-semibold mb-2">Student Activities</h2>
+
+        <!-- Collaborative Tasks -->
+        <h3 class="font-semibold mt-2">Collaborative Tasks:</h3>
+        {% if topic.collaborative_exercises.exists %}
+            <ul class="list-disc ml-5">
+                {% for ex in topic.collaborative_exercises.all %}
+                    <li>{{ ex.description|safe }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="italic text-gray-500">Under Construction</p>
+        {% endif %}
+
+        <!-- Solo Tasks -->
+        <h3 class="font-semibold mt-2">Solo Tasks:</h3>
+        {% if topic.solo_exercises.exists %}
+            <ul class="list-disc ml-5">
+                {% for ex in topic.solo_exercises.all %}
+                    <li>{{ ex.description|safe }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="italic text-gray-500">Under Construction</p>
+        {% endif %}
+    </section>
+    {% endblock %}
+
+    <!-- Reflection / Tips -->
+    {% block reflection %}
+    <section class="bg-gray-50 p-4 rounded-md shadow-sm">
+        <h2 class="text-lg font-semibold mb-2">Reflection / Tips</h2>
+        {% if topic.reflection %}
+            {{ topic.reflection|safe }}
+        {% else %}
+            <p class="italic text-gray-500">Under Construction</p>
+        {% endif %}
+    </section>
+    {% endblock %}
+
+    <!-- Personalisation -->
+    {% block personalisation %}
+    <section class="bg-gray-50 p-4 rounded-md shadow-sm">
+        <h2 class="text-lg font-semibold mb-2">Personalisation</h2>
+        <p><strong>Secure:</strong> {{ topic.personalisation.secure|default:"Under Construction"|safe }}</p>
+        <p><strong>Foundation:</strong> {{ topic.personalisation.foundation|default:"Under Construction"|safe }}</p>
+        <p><strong>Support:</strong> {{ topic.personalisation.support|default:"Under Construction"|safe }}</p>
+    </section>
+    {% endblock %}
+
+    <!-- Downloads -->
+    {% if topic.downloads.exists %}
+    <section class="bg-gray-50 p-4 rounded-md shadow-sm">
+        <h2 class="text-lg font-semibold mb-2">Downloads</h2>
+        <ul class="list-disc ml-5">
+            {% for file in topic.downloads.all %}
+                <li><a href="{{ file.url }}" class="text-blue-700 hover:underline">{{ file.name }}</a></li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+</div>
+
 {% endblock %}

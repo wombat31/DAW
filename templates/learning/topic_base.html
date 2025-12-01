@@ -1,41 +1,126 @@
 {% extends "learning/learning_base.html" %}
+{% load static %}
+
 {% block title %}{{ topic.title }} | {{ module.name }}{% endblock %}
 {% block module_name %}{{ module.name }} → {{ topic.title }}{% endblock %}
 
 {% block content %}
-<div class="module-header">
-    <h1>{{ topic.title }}</h1>
-    <p>{{ topic.short_description }}</p>
+<!-- Breadcrumb / Back link -->
+<div class="mb-4">
+    <a href="{% url 'cam_igcse:module_detail' module.slug %}" class="text-blue-600 hover:underline">
+        &larr; Back to {{ module.name }}
+    </a>
 </div>
 
-<div class="content-grid">
+<!-- Module header -->
+<div class="module-header mb-6">
+    <h1 class="text-2xl font-bold mb-2">{{ topic.title }}</h1>
+    <p class="text-gray-700">{{ topic.short_description }}</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
     <!-- Sidebar -->
-    <aside class="sidebar">
-        <h3>Topics</h3>
-        <ul>
+    <aside class="sidebar col-span-1 bg-gray-50 p-4 rounded shadow-sm">
+        <h3 class="font-semibold mb-2">Topics</h3>
+        <ul class="space-y-1">
             {% for t in module.topics.all %}
-                <li><a href="{% url 'topic_detail' module.slug t.slug %}" {% if t == topic %}class="active"{% endif %}>{{ t.title }}</a></li>
+                <li>
+                    <a href="{% url 'cam_igcse:topic_detail' module.slug t.slug %}" 
+                       class="{% if t == topic %}font-semibold underline{% endif %} text-gray-800 hover:text-blue-600">
+                        {{ t.title }}
+                    </a>
+                </li>
             {% endfor %}
         </ul>
+
         {% if topic.downloads.exists %}
-        <h3>Downloads</h3>
-        <ul>
+        <h3 class="font-semibold mt-4 mb-2">Downloads</h3>
+        <ul class="list-disc ml-5">
             {% for file in topic.downloads.all %}
-                <li><a href="{{ file.url }}">{{ file.name }}</a></li>
+                <li><a href="{{ file.url }}" class="text-blue-700 hover:underline">{{ file.name }}</a></li>
             {% endfor %}
         </ul>
         {% endif %}
     </aside>
 
     <!-- Main Content -->
-    <div class="content-container">
-        {% block lesson_objectives %}{% endblock %}
+    <div class="content-container col-span-3 space-y-6">
+        {% block lesson_objectives %}
+        {% if topic.objectives.exists %}
+            <div>
+                <h4 class="font-semibold">Objectives:</h4>
+                <ul class="list-disc ml-5">
+                    {% for obj in topic.objectives.all %}
+                        <li>{{ obj }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        {% endblock %}
+
         {% block syllabus %}{% endblock %}
-        {% block spark_question %}{% endblock %}
-        {% block teacher_presentation %}{% endblock %}
-        {% block student_activities %}{% endblock %}
-        {% block reflection %}{% endblock %}
-        {% block personalisation %}{% endblock %}
+
+        {% block spark_question %}
+        {% if topic.spark_question %}
+            <div>
+                <h4 class="font-semibold">Spark Question:</h4>
+                <p>{{ topic.spark_question }}</p>
+            </div>
+        {% endif %}
+        {% endblock %}
+
+        {% block teacher_presentation %}
+        {% if topic.presentation %}
+            <div>
+                <h4 class="font-semibold">Presentation / Slides:</h4>
+                {{ topic.presentation|safe }}
+            </div>
+        {% endif %}
+        {% endblock %}
+
+        {% block student_activities %}
+        {% if topic.collaborative_exercises.exists or topic.solo_exercises.exists %}
+            <div>
+                <h4 class="font-semibold">Activities:</h4>
+                {% if topic.collaborative_exercises.exists %}
+                    <h5 class="font-semibold mt-2">Collaborative</h5>
+                    <ul class="list-disc ml-5">
+                        {% for ex in topic.collaborative_exercises.all %}
+                            <li>{{ ex.description|safe }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                {% if topic.solo_exercises.exists %}
+                    <h5 class="font-semibold mt-2">Solo</h5>
+                    <ul class="list-disc ml-5">
+                        {% for ex in topic.solo_exercises.all %}
+                            <li>{{ ex.description|safe }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        {% endif %}
+        {% endblock %}
+
+        {% block reflection %}
+        {% if topic.reflection %}
+            <div>
+                <h4 class="font-semibold">Reflection / Tips:</h4>
+                {{ topic.reflection|safe }}
+            </div>
+        {% endif %}
+        {% endblock %}
+
+        {% block personalisation %}
+        {% if topic.personalisation %}
+            <div>
+                <h4 class="font-semibold">Personalisation:</h4>
+                <p><strong>Secure:</strong> {{ topic.personalisation.secure|default:"Under Construction"|safe }}</p>
+                <p><strong>Foundation:</strong> {{ topic.personalisation.foundation|default:"Under Construction"|safe }}</p>
+                <p><strong>Support:</strong> {{ topic.personalisation.support|default:"Under Construction"|safe }}</p>
+            </div>
+        {% endif %}
+        {% endblock %}
     </div>
 </div>
 {% endblock %}
