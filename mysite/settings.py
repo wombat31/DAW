@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-ah0hfe_15y!3viwl44i+66+ij3-cy=jn4gwn$6pvj!0j#x@un#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['podcastmaker.pythonanywhere.com']
+ALLOWED_HOSTS = ['www.archieandthewombat.co.uk']
 
 
 # Application definition
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'audio_recorder',
     'django_tailwind_cli',
     'cam_igcse',
+    'report',
 ]
 
 MIDDLEWARE = [

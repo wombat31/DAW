@@ -205,13 +205,31 @@ document.addEventListener("DOMContentLoaded", () => {
         const previewBtn = document.getElementById('preview-clip');
         previewBtn.addEventListener('click', () => {
             if (!window.selectedClip) return;
-
+        
             const clip = window.selectedClip;
+        
+            // Toggle: if playing, stop it
+            if (audioPlayer && !audioPlayer.paused && audioPlayer.dataset.currentClip === clip.file) {
+                audioPlayer.pause();
+                audioPlayer.currentTime = 0;
+                previewBtn.textContent = '▶ Preview';
+                return;
+            }
+        
+            // Otherwise, play it
             audioPlayer.pause();
             audioPlayer.src = clip.file;
-            audioPlayer.currentTime = clip.startTime || 0;
+            audioPlayer.dataset.currentClip = clip.file;
+            audioPlayer.currentTime = 0;
             audioPlayer.play();
+            previewBtn.textContent = '⏹ Stop Preview';
+        
+            // Reset button text when audio ends naturally
+            audioPlayer.addEventListener('ended', () => {
+                previewBtn.textContent = '▶ Preview';
+            }, { once: true });
         });
+        
 
 
         // ---------- Mobile touch drag ----------
@@ -601,10 +619,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 e.dataTransfer.setData('fromTrack', 'library');
                 e.dataTransfer.effectAllowed = 'copy';
             });
+            // Store currently playing clip for accurate comparison
             clipEl.addEventListener('click', () => {
-                audioPlayer.pause();
-                audioPlayer.src = clip.file;
-                audioPlayer.play();
+                // Check if this exact clip is currently playing
+                const isSameClip = audioPlayer.dataset.currentClip === clip.file;
+                
+                if (isSameClip && !audioPlayer.paused) {
+                    // Stop playback
+                    audioPlayer.pause();
+                    audioPlayer.currentTime = 0;
+                } else if (isSameClip && audioPlayer.paused) {
+                    // Resume playback
+                    audioPlayer.play();
+                } else {
+                    // Load and play new clip
+                    audioPlayer.pause();
+                    audioPlayer.src = clip.file;
+                    audioPlayer.dataset.currentClip = clip.file;
+                    audioPlayer.currentTime = 0;
+                    audioPlayer.play();
+                }
             });
             clipLibrary.appendChild(clipEl);
         });
@@ -650,10 +684,26 @@ document.addEventListener("DOMContentLoaded", () => {
                         e.dataTransfer.effectAllowed = 'copy';
                     });
 
+                    // Inside loadUserUploads() function - Replace the uploaded clip click handler (around line 633)
                     clipEl.addEventListener('click', () => {
-                        audioPlayer.pause();
-                        audioPlayer.src = file.file_url;
-                        audioPlayer.play();
+                        // Check if this exact clip is currently playing
+                        const isSameClip = audioPlayer.dataset.currentClip === file.file_url;
+                        
+                        if (isSameClip && !audioPlayer.paused) {
+                            // Stop playback
+                            audioPlayer.pause();
+                            audioPlayer.currentTime = 0;
+                        } else if (isSameClip && audioPlayer.paused) {
+                            // Resume playback
+                            audioPlayer.play();
+                        } else {
+                            // Load and play new clip
+                            audioPlayer.pause();
+                            audioPlayer.src = file.file_url;
+                            audioPlayer.dataset.currentClip = file.file_url;
+                            audioPlayer.currentTime = 0;
+                            audioPlayer.play();
+                        }
                     });
 
                     const deleteBtn = document.createElement('button');

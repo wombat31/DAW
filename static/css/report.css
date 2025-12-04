@@ -1,0 +1,13 @@
+/* This file assumes you have a Tailwind CSS build process running 
+   that generates the utilities based on your HTML usage. */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom class for the sticky table column to improve horizontal scrolling UX */
+.sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 10; 
+}

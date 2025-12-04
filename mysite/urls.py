@@ -49,7 +49,8 @@ urlpatterns = [
     #Cambridge IGCSE APP
     path('igcse/', include('cam_igcse.urls')),
 
-
+    # Report Writer App - New inclusion!
+    path('report/', include('report.urls')),
 
 ]
 

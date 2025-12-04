@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+    <!-- Load Tailwind CSS (compiled output) and report-specific styles -->
+    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+    <link rel="stylesheet" href="{% static 'css/report.css' %}">
+{% endblock extra_head %}
+
+{% block title %}MYP Design Report Writer{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 flex flex-col items-center py-8">
+
+    <!-- Header Section -->
+    <header class="w-full max-w-7xl px-4 mb-8">
+        <a href="{% url 'landing' %}" class="text-indigo-600 hover:text-indigo-800 transition duration-150 ease-in-out font-medium inline-flex items-center mb-4">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            ← Back to Main Page
+        </a>
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-2">MYP Design Report Writer</h1>
+        <p class="text-lg text-gray-600">Generate personalised, evidence-based report comments for MYP Design classes.</p>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="w-full max-w-7xl px-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Left Column: Report Generation Form (2/3 width on large screens) -->
+        <div class="lg:col-span-2 bg-white p-6 md:p-8 shadow-xl rounded-xl border border-gray-200">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">Single Student Report</h2>
+            
+            <form id="report-form" class="space-y-6">
+                {% csrf_token %}
+
+                <!-- Student Information - 3-COLUMN GRID -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <!-- Student Name -->
+                    <div>
+                        <label for="student_name" class="block text-sm font-medium text-gray-700">Student Name</label>
+                        <input type="text" id="student_name" name="student_name" placeholder="Enter student's full name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <!-- Gender -->
+                    <div>
+                        <label for="gender" class="block text-sm font-medium text-gray-700">Gender / Preferred Pronoun</label>
+                        <select id="gender" name="gender" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="Boy">Boy (he/him)</option>
+                            <option value="Girl">Girl (she/her)</option>
+                            <option value="They">Non-Binary / Plural (they/them)</option>
+                        </select>
+                    </div>
+                    <!-- MYP Grade Level -->
+                    <div>
+                        <label for="myp_grade_level" class="block text-sm font-medium text-gray-700">MYP Grade Level</label>
+                        <select id="myp_grade_level" name="myp_grade_level" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="6">MYP 6</option>
+                            <option value="7">MYP 7</option>
+                            <option value="8">MYP 8</option>
+                            <option value="9">MYP 9</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Grading Inputs (Detailed A-D Criteria) -->
+                <div class="space-y-4 mt-8">
+                    <h3 class="text-xl font-medium text-gray-800 pt-4 border-t">Detailed Project Scoring (Criteria A-D, 1-8 Scale)</h3>
+
+                    <!-- Project Score Reusable Block -->
+                    {% for i in "12345" %}
+                    <div class="p-6 shadow-lg rounded-xl border space-y-4 
+                        {% if i == '1' %}bg-indigo-50 border-indigo-300{% else %}bg-gray-50 border-gray-200{% endif %}">
+                        
+                        <h4 class="text-xl font-bold mb-4 pb-2 cursor-pointer flex justify-between items-center
+                            {% if i == '1' %}text-indigo-800 border-indigo-200{% else %}text-gray-700 border-gray-100{% endif %}"
+                            {% if i != '1' %}onclick="toggleProject('project-{{ i }}-content', 'project-{{ i }}-icon')"{% endif %}>
+                            Project {{ i }} Scores 
+                            {% if i == '1' %}(Primary Data Source){% else %}(Optional Data Source){% endif %}
+                            {% if i != '1' %}
+                                <span id="project-{{ i }}-icon" class="text-gray-500 transition-transform duration-300 transform rotate-0">+</span>
+                            {% endif %}
+                        </h4>
+
+                        <div id="project-{{ i }}-content" class="
+                            {% if i != '1' %}hidden pt-4 border-t mt-4 space-y-4{% endif %}
+                            {% if i == '1' %}space-y-4{% endif %}">
+                            
+                            <!-- Project Title Input -->
+                            <div>
+                                <label for="project_{{ i }}_title" class="block text-sm font-medium text-gray-700">Project Title</label>
+                                <input type="text" id="project_{{ i }}_title" name="project_{{ i }}_title" value="Project {{ i }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+
+                            <!-- 4-Column Grid for Criteria Scores -->
+                            <div>
+                                <p class="text-sm font-semibold text-gray-700 mb-2">Criterion Levels (1-8)</p>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <!-- Criterion A (Inquiring) -->
+                                    <div>
+                                        <label for="crit_a_{{ i }}" class="block text-xs font-medium text-gray-600">A (Inquiring)</label>
+                                        <select id="crit_a_{{ i }}" name="crit_a_{{ i }}" data-crit-type="A" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                                            <option value="">-- N/A --</option>
+                                            <option value="8">8 (High)</option><option value="7">7</option><option value="6">6</option>
+                                            <option value="5">5</option><option value="4">4 (Mid)</option><option value="3">3</option>
+                                            <option value="2">2</option><option value="1">1 (Low)</option>
+                                        </select>
+                                    </div>
+                                    <!-- Criterion B (Developing Ideas) -->
+                                    <div>
+                                        <label for="crit_b_{{ i }}" class="block text-xs font-medium text-gray-600">B (Developing)</label>
+                                        <select id="crit_b_{{ i }}" name="crit_b_{{ i }}" data-crit-type="B" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                                            <option value="">-- N/A --</option>
+                                            <option value="8">8 (High)</option><option value="7">7</option><option value="6">6</option>
+                                            <option value="5">5</option><option value="4">4 (Mid)</option><option value="3">3</option>
+                                            <option value="2">2</option><option value="1">1 (Low)</option>
+                                        </select>
+                                    </div>
+                                    <!-- Criterion C (Creating Solution) -->
+                                    <div>
+                                        <label for="crit_c_{{ i }}" class="block text-xs font-medium text-gray-600">C (Creating)</label>
+                                        <select id="crit_c_{{ i }}" name="crit_c_{{ i }}" data-crit-type="C" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                                            <option value="">-- N/A --</option>
+                                            <option value="8">8 (High)</option><option value="7">7</option><option value="6">6</option>
+                                            <option value="5">5</option><option value="4">4 (Mid)</option><option value="3">3</option>
+                                            <option value="2">2</option><option value="1">1 (Low)</option>
+                                        </select>
+                                    </div>
+                                    <!-- Criterion D (Evaluating) -->
+                                    <div>
+                                        <label for="crit_d_{{ i }}" class="block text-xs font-medium text-gray-600">D (Evaluating)</label>
+                                        <select id="crit_d_{{ i }}" name="crit_d_{{ i }}" data-crit-type="D" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500">
+                                            <option value="">-- N/A --</option>
+                                            <option value="8">8 (High)</option><option value="7">7</option><option value="6">6</option>
+                                            <option value="5">5</option><option value="4">4 (Mid)</option><option value="3">3</option>
+                                            <option value="2">2</option><option value="1">1 (Low)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <!-- INPUT CONTAINER 6: Final Overall MYP Grade -->
+                    <div class="p-6 bg-green-50 rounded-xl border border-green-300">
+                        <label for="overall_myp_grade" class="block text-base font-bold text-green-800 mb-2">Final Overall MYP Grade (1-7 Scale, Based on All Projects)</label>
+                        <select id="overall_myp_grade" name="overall_myp_grade" data-grade-type="overall" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-3 focus:ring-green-500 focus:border-green-500">
+                            <option value="7">7 (Highest Level - Excellent)</option>
+                            <option value="6">6</option>
+                            <option value="5">5</option>
+                            <option value="4">4 (Mid-Level Achievement - Good)</option>
+                            <option value="3">3</option>
+                            <option value="2">2</option>
+                            <option value="1">1 (Lowest Level - Needs Support)</option>
+                        </select>
+                        <p class="text-xs text-green-700 pt-2">*This score determines the tone of the opening and closing statement.</p>
+                    </div>
+
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" id="generate-button" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-lg text-lg font-bold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out mt-8">
+                    Generate Report 🚀
+                </button>
+            </form>
+        </div>
+
+        <!-- Right Column: Generated Output (1/3 width on large screens) -->
+        <div class="lg:col-span-1 bg-white p-6 md:p-8 shadow-xl rounded-xl border border-gray-200 sticky-output">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">Generated Output</h2>
+            
+            <label for="suggested_text" class="block text-sm font-medium text-gray-700">Suggested Text</label>
+            <textarea id="suggested_text" rows="10" placeholder="Report text will appear here..." readonly class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-3 bg-gray-50 resize-none text-gray-900"></textarea>
+
+            <button id="copy-button" disabled class="mt-4 w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-300 transition duration-150 ease-in-out">
+                Copy to Clipboard
+            </button>
+            <p id="copy-message" class="text-center text-sm text-green-600 mt-2 hidden transition-opacity duration-300">Copied!</p>
+
+        </div>
+    </main>
+
+    <!-- Class Report (Accordion/Collapsible) Section -->
+    <section class="w-full max-w-7xl px-4 mt-12">
+        <div class="bg-white p-6 md:p-8 shadow-xl rounded-xl border border-gray-200">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 cursor-pointer flex justify-between items-center" onclick="toggleClassReport()">
+                Class Report Processing (Coming Soon)
+                <span id="accordion-icon" class="text-gray-500 transition-transform duration-300 transform rotate-0">+</span>
+            </h2>
+            <div id="class-report-content" class="hidden space-y-4 pt-4 border-t mt-4">
+                <p class="text-gray-600">This feature will allow you to upload a spreadsheet of grades for an entire class and generate reports in bulk.</p>
+                <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p class="text-sm text-yellow-800 font-medium">To be implemented: File upload functionality and bulk report generation logic.</p>
+                </div>
+                <button disabled class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-400">
+                    Upload Class Data
+                </button>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<!-- CRITICAL: Renamed the script to script.js to match the HTML link -->
+<script src="{% static 'js/report.js' %}"></script>
+<script>
+    // Handles the collapsible sections
+    function toggleClassReport() {
+        const content = document.getElementById('class-report-content');
+        const icon = document.getElementById('accordion-icon');
+        _toggle(content, icon);
+    }
+
+    function toggleProject(contentId, iconId) {
+        const content = document.getElementById(contentId);
+        const icon = document.getElementById(iconId);
+        _toggle(content, icon);
+    }
+
+    // Generic toggle logic
+    function _toggle(content, icon) {
+        if (content.classList.contains('hidden')) {
+            content.classList.remove('hidden');
+            icon.classList.add('rotate-45');
+            icon.textContent = '–';
+        } else {
+            content.classList.add('hidden');
+            icon.classList.remove('rotate-45');
+            icon.textContent = '+';
+        }
+    }
+</script>
+{% endblock %}
