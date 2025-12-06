@@ -1,134 +1,200 @@
 {% extends "learning/topic_base.html" %}
 {% load static %}
+{% load exercise_filters %}
 
 {% block title %}{{ topic.title }} | {{ module.name }}{% endblock %}
 
 {% block content %}
 
-<!-- Breadcrumb / Back to Module -->
-<nav class="text-sm text-gray-600 mb-4">
-    <a href="{% url 'cam_igcse:module_detail' module.slug %}" class="hover:underline">&larr; Back to {{ module.name }}</a>
+<nav class="text-sm text-gray-600 mb-6 font-medium">
+    <a href="{% url 'cam_igcse:module_detail' module.slug %}" class="text-blue-600 hover:text-blue-800 transition duration-150">
+        &larr; Back to {{ module.name }} Module Overview
+    </a>
 </nav>
-<h2 class="bg-blue-500 text-red-600"><i><strong>This page is under development</strong></i></h2>
-<div class="space-y-6">
 
-    <!-- Lesson Objectives -->
-    {% block lesson_objectives %}
-    <section class="bg-gray-50 p-4 rounded-md shadow-sm">
-        <h2 class="text-lg font-semibold mb-2">Lesson Objectives</h2>
-        {% if topic.objectives %}
-            <ul class="list-disc ml-5">
-                {% for obj in topic.objectives %}
-                    <li>{{ obj }}</li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p class="italic text-gray-500">Under Construction</p>
-        {% endif %}
-    </section>
-    {% endblock %}
+<div class="mb-8 p-3 bg-yellow-100 border-l-4 border-yellow-500 rounded-md">
+    <div class="flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <p class="text-sm font-medium text-yellow-800">
+            **This resource page is currently under development.** Content and structure may change.
+        </p>
+    </div>
+</div>
 
-    <!-- Syllabus -->
-    {% block syllabus %}
-    <section class="bg-gray-50 p-4 rounded-md shadow-sm">
-        <h2 class="text-lg font-semibold mb-2">Syllabus / Curriculum</h2>
-        {% if topic.syllabus %}
-            {{ topic.syllabus|safe }}
-        {% else %}
-            <p class="italic text-gray-500">Under Construction</p>
-        {% endif %}
-    </section>
-    {% endblock %}
+<h1 class="text-4xl font-extrabold text-gray-900 border-b-2 border-blue-500 pb-3 mb-8">
+    {{ topic.title }}
+</h1>
+<div class="space-y-8">
+    
+        {% block lesson_objectives %}
+    <section class="bg-blue-50 p-6 rounded-lg shadow-md border-l-4 border-blue-500">
+        <h2 class="text-xl font-bold text-blue-700 mb-3 flex items-center">
+            <span class="mr-2">🎯</span> Lesson Objectives
+        </h2>
+        {% if topic.learning_objectives %}
+            <div class="text-gray-800 text-base space-y-2 list-disc ml-6">
+                {{ topic.learning_objectives|safe }}
+            </div>
+        {% else %}
+            <p class="italic text-gray-500">Under Construction</p>
+        {% endif %}
+    </section>
+    {% endblock %}
+    
+        {% block syllabus %}
+    <section class="bg-gray-50 p-6 rounded-lg shadow-md border-l-4 border-gray-300">
+        <h2 class="text-xl font-bold text-gray-700 mb-3 flex items-center">
+            <span class="mr-2">📘</span> Syllabus / Curriculum
+        </h2>
+        {% if topic.syllabus_snapshot %}
+            <p class="text-gray-700">{{ topic.syllabus_snapshot|safe }}</p>
+        {% else %}
+            <p class="italic text-gray-500">Under Construction</p>
+        {% endif %}
+    </section>
+    {% endblock %}
+    
+        {% block spark_question %}
+    <section class="bg-green-50 p-6 rounded-lg shadow-md border-l-4 border-green-500">
+        <h2 class="text-xl font-bold text-green-700 mb-3 flex items-center">
+            <span class="mr-2">💡</span> Spark Question
+        </h2>
+        {% if topic.spark_question %}
+            <p class="text-lg font-semibold text-gray-800">{{ topic.spark_question }}</p>
+        {% else %}
+            <p class="italic text-gray-500">Under Construction</p>
+        {% endif %}
+    </section>
+    {% endblock %}
+    
+        {% block teacher_presentation %}
+    <section class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Teacher Resources</h2>
+        <div class="space-y-6">
+            <div class="p-4 bg-gray-50 rounded-md border">
+                <h3 class="text-lg font-semibold mb-2 text-blue-600">🖥️ Presentation / Slides</h3>
+                {% if topic.teacher_presentation %}
+                    {{ topic.teacher_presentation|safe }}
+                {% else %}
+                    <p class="italic text-gray-500">Under Construction</p>
+                {% endif %}
+            </div>
+    {% endblock %}
 
-    <!-- Spark Question -->
-    {% block spark_question %}
-    <section class="bg-gray-50 p-4 rounded-md shadow-sm">
-        <h2 class="text-lg font-semibold mb-2">Spark Question</h2>
-        {% if topic.spark_question %}
-            <p>{{ topic.spark_question }}</p>
-        {% else %}
-            <p class="italic text-gray-500">Under Construction</p>
-        {% endif %}
-    </section>
-    {% endblock %}
+    {% block student_activities %}
+            <div class="p-4 bg-gray-50 rounded-md border">
+                <h3 class="text-lg font-semibold mb-2 text-blue-600">🧑‍🎓 Student Activities</h3>
 
-    <!-- Teacher Presentation / Slides -->
-    {% block teacher_presentation %}
-    <section class="bg-gray-50 p-4 rounded-md shadow-sm">
-        <h2 class="text-lg font-semibold mb-2">Presentation / Slides</h2>
-        {% if topic.presentation %}
-            {{ topic.presentation|safe }}
-        {% else %}
-            <p class="italic text-gray-500">Under Construction</p>
-        {% endif %}
-    </section>
-    {% endblock %}
+                {% with collaborative_tasks=topic.exercises|filter_by_type:'collaborative' %}
+                <h4 class="font-bold mt-4 text-gray-700">Collaborative Tasks:</h4>
+                {% if collaborative_tasks %}
+                    <ul class="list-disc ml-5 text-gray-800 space-y-1">
+                        {% for ex in collaborative_tasks %}
+                            <li>{{ ex.description|safe }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="italic text-gray-500 text-sm">Under Construction</p>
+                {% endif %}
+                {% endwith %}
 
-    <!-- Student Activities -->
-    {% block student_activities %}
-    <section class="bg-gray-50 p-4 rounded-md shadow-sm">
-        <h2 class="text-lg font-semibold mb-2">Student Activities</h2>
+                {% with solo_tasks=topic.exercises|filter_by_type:'solo' %}
+                <h4 class="font-bold mt-4 text-gray-700">Solo Tasks:</h4>
+                {% if solo_tasks %}
+                    <ul class="list-disc ml-5 text-gray-800 space-y-1">
+                        {% for ex in solo_tasks %}
+                            <li>{{ ex.description|safe }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="italic text-gray-500 text-sm">Under Construction</p>
+                {% endif %}
+                {% endwith %}
+            </div>
+    {% endblock %}
+        </div>
+    </section>
+    
+        {% block reflection %}
+    <section class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Differentiation & Review</h2>
+        <div class="space-y-6">
+            <div class="p-4 bg-gray-50 rounded-md border border-gray-200">
+                <h3 class="text-lg font-semibold mb-2 text-green-600">📝 Reflection / Tips</h3>
+                {% with reflection_notes=topic.exercises|filter_by_type:'reflection' %}
+                {% if reflection_notes %}
+                    <ul class="list-disc ml-5 text-gray-800 space-y-1">
+                        {% for note in reflection_notes %}
+                            <li>{{ note.description|safe }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="italic text-gray-500 text-sm">Under Construction</p>
+                {% endif %}
+                {% endwith %}
+            </div>
+    {% endblock %}
 
-        <!-- Collaborative Tasks -->
-        <h3 class="font-semibold mt-2">Collaborative Tasks:</h3>
-        {% if topic.collaborative_exercises.exists %}
-            <ul class="list-disc ml-5">
-                {% for ex in topic.collaborative_exercises.all %}
-                    <li>{{ ex.description|safe }}</li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p class="italic text-gray-500">Under Construction</p>
-        {% endif %}
-
-        <!-- Solo Tasks -->
-        <h3 class="font-semibold mt-2">Solo Tasks:</h3>
-        {% if topic.solo_exercises.exists %}
-            <ul class="list-disc ml-5">
-                {% for ex in topic.solo_exercises.all %}
-                    <li>{{ ex.description|safe }}</li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p class="italic text-gray-500">Under Construction</p>
-        {% endif %}
-    </section>
-    {% endblock %}
-
-    <!-- Reflection / Tips -->
-    {% block reflection %}
-    <section class="bg-gray-50 p-4 rounded-md shadow-sm">
-        <h2 class="text-lg font-semibold mb-2">Reflection / Tips</h2>
-        {% if topic.reflection %}
-            {{ topic.reflection|safe }}
-        {% else %}
-            <p class="italic text-gray-500">Under Construction</p>
-        {% endif %}
-    </section>
-    {% endblock %}
-
-    <!-- Personalisation -->
-    {% block personalisation %}
-    <section class="bg-gray-50 p-4 rounded-md shadow-sm">
-        <h2 class="text-lg font-semibold mb-2">Personalisation</h2>
-        <p><strong>Secure:</strong> {{ topic.personalisation.secure|default:"Under Construction"|safe }}</p>
-        <p><strong>Foundation:</strong> {{ topic.personalisation.foundation|default:"Under Construction"|safe }}</p>
-        <p><strong>Support:</strong> {{ topic.personalisation.support|default:"Under Construction"|safe }}</p>
-    </section>
-    {% endblock %}
-
-    <!-- Downloads -->
-    {% if topic.downloads.exists %}
-    <section class="bg-gray-50 p-4 rounded-md shadow-sm">
-        <h2 class="text-lg font-semibold mb-2">Downloads</h2>
-        <ul class="list-disc ml-5">
-            {% for file in topic.downloads.all %}
-                <li><a href="{{ file.url }}" class="text-blue-700 hover:underline">{{ file.name }}</a></li>
-            {% endfor %}
-        </ul>
-    </section>
-    {% endif %}
+    {% block personalisation %}
+            <div class="p-4 bg-gray-50 rounded-md border border-gray-200">
+                <h3 class="text-lg font-semibold mb-2 text-green-600">✨ Personalisation / Differentiation</h3>
+                <p class="mb-1 text-sm"><strong class="text-gray-900">Secure:</strong> {{ topic.personalisation_secure|default:"Under Construction"|safe }}</p>
+                <p class="mb-1 text-sm"><strong class="text-gray-900">Foundation:</strong> {{ topic.personalisation_foundation|default:"Under Construction"|safe }}</p>
+                <p class="text-sm"><strong class="text-gray-900">Support:</strong> {{ topic.personalisation_support|default:"Under Construction"|safe }}</p>
+            </div>
+        </div>
+    </section>
+    {% endblock %}
+    
+        {% if topic.download_list %}
+    <section class="bg-white p-6 rounded-lg shadow-lg border-t-2 border-blue-500">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+            <span class="mr-2">⬇️</span> Downloads & Resources
+        </h2>
+        <ul class="list-disc ml-5 space-y-2">
+            {% for file in topic.download_list %}
+                <li>
+                    <a href="{{ file.file.url }}" class="text-blue-600 hover:text-blue-800 hover:underline font-medium transition duration-150">
+                        {{ file.title }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
 
 </div>
+
+<section class="topic-navigation mt-12 pt-6 border-t-2 border-gray-200">
+    <div class="flex justify-between items-center">
+        
+        {% if previous_topic %}
+        <a href="{% url 'cam_igcse:topic_detail' module.slug previous_topic.slug %}"
+           class="inline-flex items-center px-4 py-2 text-sm font-semibold
+                  bg-gray-200 text-gray-700 rounded-lg shadow-md transition duration-300
+                  hover:bg-gray-300 hover:shadow-lg">
+            
+            &larr; Previous Topic
+        </a>
+        {% else %}
+        <span></span>
+        {% endif %}
+
+        {% if next_topic %}
+        <a href="{% url 'cam_igcse:topic_detail' module.slug next_topic.slug %}"
+           class="inline-flex items-center px-4 py-2 text-sm font-semibold
+                  bg-blue-500 text-white rounded-lg shadow-md transition duration-300
+                  hover:bg-blue-600 hover:shadow-lg">
+            
+            Next Topic &rarr;
+        </a>
+        {% else %}
+        <span></span>
+        {% endif %}
+
+    </div>
+</section>
 
 {% endblock %}

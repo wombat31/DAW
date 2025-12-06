@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
     <!-- Educator dashboard overrides -->
     <link rel="stylesheet" href="{% static 'css/educator_dashboard.css' %}">
-    
+
     {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -19,13 +19,10 @@
     <!-- ---------------- Navbar ---------------- -->
     <nav class="module-navbar bg-white shadow-md rounded-md">
         <div class="container mx-auto flex justify-between items-center p-4">
-            
+
             <!-- Brand / Dashboard Link -->
             <a href="{% url 'cam_igcse:dashboard' %}" class="nav-brand font-bold text-blue-700 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                </svg>
-                IGCSE Dashboard
+                < IGCSE Dashboard
             </a>
 
             <!-- Burger for Mobile -->
@@ -39,13 +36,13 @@
             <ul class="nav-links hidden md:flex gap-4">
                 {% for m in all_modules %}
                     <li class="nav-item relative group">
-                        <a href="{% url 'cam_igcse:module_detail' m.slug %}" 
+                        <a href="{% url 'cam_igcse:module_detail' m.slug %}"
                            class="px-3 py-2 rounded-md {% if module and m.slug == module.slug %}active{% endif %}">
                            {{ m.name }}
                         </a>
-                        {% if m.topics %}
+                        {% if m.topics.all %}
                             <ul class="dropdown hidden absolute top-full left-0 mt-1 bg-white shadow-lg rounded-md min-w-[200px] z-30 group-hover:flex flex-col">
-                                {% for topic in m.topics %}
+                                {% for topic in m.topics.all %}
                                     <li>
                                         <a href="{% url 'cam_igcse:topic_detail' m.slug topic.slug %}" class="px-4 py-2 hover:bg-blue-500 hover:text-white {% if topic.slug == request.resolver_match.kwargs.topic_slug %}font-bold{% endif %}">
                                             {{ topic.title }}
