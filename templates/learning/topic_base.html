@@ -25,7 +25,7 @@
         <ul class="space-y-1">
             {% for t in module.topics.all %}
                 <li>
-                    <a href="{% url 'cam_igcse:topic_detail' module.slug t.slug %}" 
+                    <a href="{% url 'cam_igcse:topic_detail' module.slug t.slug %}"
                        class="{% if t == topic %}font-semibold underline{% endif %} text-gray-800 hover:text-blue-600">
                         {{ t.title }}
                     </a>
@@ -124,3 +124,4 @@
     </div>
 </div>
 {% endblock %}
+
