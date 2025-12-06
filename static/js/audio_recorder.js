@@ -46,9 +46,18 @@ const MAX_RECORDING_TIME = 120; // 2 minutes in seconds
 const recordingTimer = document.getElementById('recordingTimer');
 
 // ---------------------------
-// Recording
+// Recording (Start/Continue)
 // ---------------------------
 startBtn.onclick = async () => {
+    // Check remaining time before starting
+    const currentDuration = audioBuffer ? audioBuffer.duration : 0;
+    const remainingTime = MAX_RECORDING_TIME - currentDuration;
+
+    if (remainingTime <= 0.1) { // Small buffer to prevent issues
+        alert("Maximum recording limit reached (2 minutes). Please clip or start over.");
+        return;
+    }
+
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorder = new MediaRecorder(stream);
     audioChunks = [];
@@ -59,17 +68,30 @@ startBtn.onclick = async () => {
     // Start timer
     recordingStartTime = Date.now();
     recordingTimer.style.display = 'block';
-    recordingTimer.textContent = '00:00';
+
+    // Initial timer display starts from the current duration
+    const initialMinutes = Math.floor(currentDuration / 60);
+    const initialSeconds = Math.floor(currentDuration % 60);
+    recordingTimer.textContent = `${String(initialMinutes).padStart(2, '0')}:${String(initialSeconds).padStart(2, '0')}`;
 
     recordingInterval = setInterval(() => {
-        const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
-        const minutes = Math.floor(elapsed / 60);
-        const seconds = elapsed % 60;
+        // Calculate elapsed time for the CURRENT recording session
+        const sessionElapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+
+        // Calculate total time
+        const totalElapsed = currentDuration + sessionElapsed;
+
+        const minutes = Math.floor(totalElapsed / 60);
+        const seconds = Math.floor(totalElapsed % 60);
         recordingTimer.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
         // Auto-stop at 2 minutes
-        if (elapsed >= MAX_RECORDING_TIME) {
-            stopBtn.click();
+        if (totalElapsed >= MAX_RECORDING_TIME) {
+            // Stop the media recorder directly to prevent exceeding the limit
+            if (mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+            clearInterval(recordingInterval);
         }
     }, 100); // Update every 100ms for smooth display
 
@@ -78,6 +100,9 @@ startBtn.onclick = async () => {
     startOverBtn.disabled = false;
 };
 
+// ---------------------------
+// Stop Recording (and Concatenate)
+// ---------------------------
 stopBtn.onclick = async () => {
     stopBtn.disabled = true;
 
@@ -85,6 +110,7 @@ stopBtn.onclick = async () => {
     clearInterval(recordingInterval);
     recordingTimer.style.display = 'none';
 
+    // 1. Get the new recorded Blob
     recordedBlob = await new Promise(resolve => {
         mediaRecorder.onstop = () => {
             const blob = new Blob(audioChunks, { type: 'audio/wav' });
@@ -99,17 +125,57 @@ stopBtn.onclick = async () => {
         await audioContext.resume();
     }
 
-    // Decode audio for waveform
     const arrayBuffer = await recordedBlob.arrayBuffer();
-    audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    const newAudioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    
+    // --- FIX: Normalize the new buffer's amplitude to prevent loudness spikes ---
+    normalizeAudioBuffer(newAudioBuffer); 
+    // --------------------------------------------------------------------------
 
-    // Initialize clip positions
+    let finalBuffer;
+
+    if (audioBuffer) {
+        // --- Concatenation Logic ---
+        const oldDuration = audioBuffer.duration;
+        const newDuration = newAudioBuffer.duration;
+        const totalDuration = oldDuration + newDuration;
+        const sampleRate = audioBuffer.sampleRate;
+
+        // Create a new buffer with the total length
+        finalBuffer = audioContext.createBuffer(
+            audioBuffer.numberOfChannels,
+            Math.floor(totalDuration * sampleRate),
+            sampleRate
+        );
+
+        // Copy audio data
+        for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
+            const oldChannelData = audioBuffer.getChannelData(ch);
+            const newChannelData = newAudioBuffer.getChannelData(ch);
+
+            // Copy old data to the start (offset 0)
+            finalBuffer.copyToChannel(oldChannelData, ch, 0);
+            // Copy new data immediately after the old data
+            finalBuffer.copyToChannel(newChannelData, ch, oldChannelData.length);
+        }
+        // ---------------------------
+    } else {
+        // First recording: use the new buffer directly
+        finalBuffer = newAudioBuffer;
+    }
+
+    // Update the global audioBuffer
+    audioBuffer = finalBuffer;
+
+    // Initialize/update clip positions
     clipStart = 0;
     clipEnd = audioBuffer.duration;
 
-    // Enable clip buttons
+    // Update button label
+    startBtn.textContent = 'Continue Recording';
+
+    // Enable buttons
     applyClipBtn.disabled = false;
-    undoBtn.disabled = true;
     downloadBtn.disabled = false;
 
     // Render waveform and update handles
@@ -152,6 +218,9 @@ startOverBtn.onclick = () => {
     // Hide handles when no audio
     startHandle.style.left = '0px';
     endHandle.style.left = '0px';
+
+    // Reset button label
+    startBtn.textContent = 'Start Recording';
 };
 // ---------------------------
 // Apply Clip
@@ -376,11 +445,48 @@ document.addEventListener('touchend', () => {
 });
 
 // ---------------------------
+// Helper: Normalization (Volume Consistency Fix)
+// ---------------------------
+function normalizeAudioBuffer(buffer) {
+    let maxAmplitude = 0;
+    
+    // Find the maximum absolute amplitude across all channels
+    for (let ch = 0; ch < buffer.numberOfChannels; ch++) {
+        const channelData = buffer.getChannelData(ch);
+        for (let i = 0; i < channelData.length; i++) {
+            const amplitude = Math.abs(channelData[i]);
+            if (amplitude > maxAmplitude) {
+                maxAmplitude = amplitude;
+            }
+        }
+    }
+
+    // Clamp max amplitude to 1.0 (to avoid scaling silent audio or audio already at max)
+    if (maxAmplitude > 1.0) {
+        maxAmplitude = 1.0; 
+    }
+    
+    // If the max amplitude is non-zero, scale the buffer data
+    if (maxAmplitude > 0.0) {
+        const scaleFactor = 1.0 / maxAmplitude;
+        for (let ch = 0; ch < buffer.numberOfChannels; ch++) {
+            const channelData = buffer.getChannelData(ch);
+            for (let i = 0; i < channelData.length; i++) {
+                // Apply the scaling factor to every sample
+                channelData[i] *= scaleFactor; 
+            }
+        }
+    }
+}
+
+
+// ---------------------------
 // Helper: AudioBuffer -> WAV Blob
 // ---------------------------
 function audioBufferToWavBlob(buffer) {
     const numChannels = buffer.numberOfChannels;
     const sampleRate = buffer.sampleRate;
+    // Calculate total length: 44 bytes for header + (total samples * num channels * 2 bytes/sample for 16-bit)
     const length = buffer.length * numChannels * 2 + 44;
     const arrayBuffer = new ArrayBuffer(length);
     const view = new DataView(arrayBuffer);
@@ -392,23 +498,28 @@ function audioBufferToWavBlob(buffer) {
     }
 
     let offset = 0;
+    // RIFF Chunk Descriptor
     writeString(view, offset, 'RIFF'); offset += 4;
     view.setUint32(offset, length - 8, true); offset += 4;
     writeString(view, offset, 'WAVE'); offset += 4;
+    // Format Chunk
     writeString(view, offset, 'fmt '); offset += 4;
-    view.setUint32(offset, 16, true); offset += 4;
-    view.setUint16(offset, 1, true); offset += 2;
-    view.setUint16(offset, numChannels, true); offset += 2;
-    view.setUint32(offset, sampleRate, true); offset += 4;
-    view.setUint32(offset, sampleRate * numChannels * 2, true); offset += 4;
-    view.setUint16(offset, numChannels * 2, true); offset += 2;
-    view.setUint16(offset, 16, true); offset += 2;
+    view.setUint32(offset, 16, true); offset += 4; // Sub-chunk size
+    view.setUint16(offset, 1, true); offset += 2; // Audio format (1=PCM)
+    view.setUint16(offset, numChannels, true); offset += 2; // Number of channels
+    view.setUint32(offset, sampleRate, true); offset += 4; // Sample rate
+    view.setUint32(offset, sampleRate * numChannels * 2, true); offset += 4; // Byte rate
+    view.setUint16(offset, numChannels * 2, true); offset += 2; // Block align (bytes/sample)
+    view.setUint16(offset, 16, true); offset += 2; // Bits per sample (16-bit)
+    // Data Chunk
     writeString(view, offset, 'data'); offset += 4;
-    view.setUint32(offset, length - 44, true); offset += 4;
+    view.setUint32(offset, length - 44, true); offset += 4; // Data size
 
+    // Write the actual audio data (16-bit PCM)
     for (let i = 0; i < buffer.length; i++) {
         for (let ch = 0; ch < numChannels; ch++) {
             let sample = buffer.getChannelData(ch)[i];
+            // Clamp and convert to 16-bit integer
             sample = Math.max(-1, Math.min(1, sample));
             view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
             offset += 2;
