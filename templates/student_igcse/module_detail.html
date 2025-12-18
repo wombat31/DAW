@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}{{ module.title }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-6">
+    <a href="{% url 'student_igcse:dashboard' %}" class="text-indigo-600 hover:text-indigo-800 text-sm">&larr; Back to Modules</a>
+    
+    <h1 class="text-4xl font-extrabold mt-4 mb-2">{{ module.title }}</h1>
+    <p class="text-gray-700 mb-8">{{ module.overview }}</p>
+    
+    {% if not access_granted %}
+        {# Access Denied Block #}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative my-6" role="alert">
+            <strong class="font-bold">Access Denied!</strong>
+            <span class="block sm:inline"> This module requires a subscription or login.</span>
+            <p class="mt-2"><a href="{{ login_url }}" class="text-red-800 underline font-semibold">Click here to log in or subscribe.</a></p>
+        </div>
+    {% else %}
+        <h2 class="text-2xl font-bold mb-4 border-b pb-2">Topic List</h2>
+        <div class="space-y-4">
+            {% for topic in topics %}
+            <div class="bg-white p-5 shadow-lg rounded-lg transition duration-300 hover:shadow-xl hover:border-indigo-400 border border-gray-200">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-4">
+                        
+                        {# Progress Status Indicator #}
+                        {% if topic.is_completed %}
+                            <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        {% else %}
+                            <span class="text-lg font-medium text-indigo-500 bg-indigo-50 p-2 rounded">T{{ topic.order }}</span>
+                        {% endif %}
+                        
+                        <div>
+                            <a href="{% url 'student_igcse:topic_detail' module_slug=module.slug topic_slug=topic.slug %}" class="text-xl font-semibold hover:text-indigo-600">
+                                {{ topic.title }}
+                                {% if topic.is_completed %}
+                                    <span class="text-xs text-green-500 font-normal ml-2">(Completed)</span>
+                                {% endif %}
+                            </a>
+                            <p class="text-sm text-gray-500 mt-1">{{ topic.short_description|truncatechars:100 }}</p>
+                        </div>
+                    </div>
+                    <a href="{% url 'student_igcse:topic_detail' module_slug=module.slug topic_slug=topic.slug %}" class="text-indigo-600 font-semibold hover:text-indigo-800">
+                        Read Topic &rarr;
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-gray-500">No topics have been added to this module yet.</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock content %}

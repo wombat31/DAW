@@ -46,11 +46,17 @@ urlpatterns = [
     #Pixelmaker
     path('pixelmaker/',include('pixelmaker.urls')),
 
-    #Cambridge IGCSE APP
+    #IGCSE APP
     path('igcse/', include('cam_igcse.urls')),
 
-    # Report Writer App - New inclusion!
+    #Report Writer App - New inclusion!
     path('report/', include('report.urls')),
+
+    #Student IGCSE
+    path('student/', include('student_igcse.urls')),
+
+    #Block Builder
+    path('builder/', include('blockbuilder.urls')),
 
 ]
 

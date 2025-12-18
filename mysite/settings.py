@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'django_tailwind_cli',
     'cam_igcse',
     'report',
+    'student_igcse',
+    'blockbuilder',
 ]
 
 MIDDLEWARE = [
@@ -81,15 +83,36 @@ LOGIN_REDIRECT_URL = '/dashboard/'   # logged-in landing page
 LOGOUT_REDIRECT_URL = '/login/'  # optional if using next_page in LogoutView
 
 WSGI_APPLICATION = "mysite.wsgi.application"
-
-
+'''
+# Old block to remove (or comment out)
+DATABASES = {
+    "default": {
+    "ENGINE": "django.db.backends.sqlite3",
+    "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
+'''
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "podcastmaker$default",
+        "USER": "podcastmaker",
+        "PASSWORD": "WelhamSql**",
+        "HOST": "podcastmaker.mysql.pythonanywhere-services.com",
+        "PORT": "3306",
+
+        "OPTIONS": {
+            # ** FIX FOR W002: This line activates MySQL Strict Mode **
+            'sql_mode': 'STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE',
+
+            # PythonAnywhere/MySQL connection options
+            "init_command": "SET default_storage_engine=INNODB",
+            'connect_timeout': 10,
+            'charset': 'utf8mb4',
+        }
     }
 }
 

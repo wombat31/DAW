@@ -41,10 +41,23 @@ class Profile(models.Model):
         return f"{self.user.username} Profile"
 
 @receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
+def create_user_profile(sender, instance, created, raw=False, **kwargs):
+    # Added 'raw=False' to the signature.
+    # We skip profile creation if the object is being created (created=True)
+    # AND it is coming from a fixture (raw=True).
+    if created and not raw:
         Profile.objects.create(user=instance)
 
 @receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
+def save_user_profile(sender, instance, raw=False, **kwargs):
+    # Added 'raw=False' to the signature.
+    # The 'instance.profile.save()' line can sometimes cause an issue when 'loaddata' is running,
+    # as the profile object might not exist yet when the user is being loaded.
+    # We skip this for fixture loading as well.
+    if not raw:
+        try:
+            instance.profile.save()
+        except Profile.DoesNotExist:
+            # Handle the case where the profile doesn't exist yet (e.g., first run)
+            # or if the user was loaded before its corresponding profile in the fixture.
+            pass

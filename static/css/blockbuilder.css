@@ -1,0 +1,292 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Comic Sans MS', cursive, sans-serif; overflow: hidden; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+#canvas-container { width: 100vw; height: 100vh; }
+#ui-panel { position: absolute; top: 20px; left: 20px; background: rgba(255, 255, 255, 0.95); padding: 20px; border-radius: 15px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); max-width: 280px; user-select: none; }
+
+/* Keep the UI panel usable on small screens: allow scrolling when content is taller than the viewport */
+#ui-panel {
+	max-height: calc(100vh - 40px);
+	overflow: auto;
+}
+h2 { color: #667eea; margin-bottom: 15px; font-size: 24px; }
+.section { margin-bottom: 20px; }
+.section-title { font-weight: bold; margin-bottom: 8px; color: #333; font-size: 14px; }
+.color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
+.color-btn { width: 100%; aspect-ratio: 1; border: 3px solid transparent; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+.color-btn:hover { transform: scale(1.1); }
+.color-btn.active { border-color: #333; box-shadow: 0 0 0 2px white, 0 0 0 4px #333; }
+.block-type-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.block-btn { padding: 12px; border: 3px solid #ddd; background: white; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; transition: all 0.2s; text-align: center; }
+.block-btn:hover { background: #f0f0f0; transform: translateY(-2px); }
+.block-btn.active { border-color: #667eea; background: #e8ebfe; }
+.rotation-controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+.rotation-btn { padding: 10px; border: 2px solid #667eea; background: white; border-radius: 6px; cursor: pointer; font-size: 20px; transition: all 0.2s; }
+.rotation-btn:hover { background: #e8ebfe; transform: scale(1.1); }
+.rotation-btn.active { background: #667eea; color: white; }
+.controls-hint { background: #fff3cd; padding: 10px; border-radius: 8px; font-size: 11px; color: #856404; margin-top: 10px; }
+.action-btn { width: 100%; padding: 12px; margin: 5px 0; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.2s; color: white; }
+.action-btn.add { background: #48bb78; }
+.action-btn.delete { background: #f56565; }
+.action-btn.clear { background: #ed8936; }
+.action-btn.undo { background: #4299e1; }
+.action-btn.save { background: #f6ad55; } /* amber/orange */
+.action-btn.load { background: #ecc94b; } /* yellow */
+.action-btn.export { background: #805ad5; } /* purple */
+.action-btn.redo { background: #63b3ed; } /* light blue for redo */
+.action-btn.add.active { box-shadow: 0 0 0 4px #48bb78, 0 4px 12px rgba(0,0,0,0.2); transform: scale(1.05); }
+.action-btn.delete.active { box-shadow: 0 0 0 4px #f56565, 0 4px 12px rgba(0,0,0,0.2); transform: scale(1.05); }
+.action-btn:hover:not(.active) { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+.action-btn:active { transform: translateY(0); }
+.layer-controls { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.layer-btn { padding: 8px 16px; border: none; background: #667eea; color: white; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 18px; }
+.layer-btn:hover { background: #5568d3; }
+.layer-display { flex: 1; text-align: center; font-size: 18px; font-weight: bold; color: #333; }
+.checkbox-label { display: flex; align-items: center; gap: 8px; cursor: pointer; margin-top: 10px; }
+.checkbox-label input { width: 20px; height: 20px; cursor: pointer; }
+/* CSS for the Fixed Floating Button */
+/* CSS for the Fixed Floating Button (Updated Color) */
+#back-to-home-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    /* --- COLOR CHANGE HERE --- */
+    background-color: #5a67d8; /* Deep Indigo (In keeping with the blue/purple theme) */
+    /* --- HOVER CHANGE HERE --- */
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    transition: background-color 0.2s;
+}
+
+#back-to-home-btn:hover {
+    background-color: #434190; /* A darker shade for hover effect */
+    transform: scale(1.05);
+}
+
+/* CSS for the Red Floating Label 🌟 */
+#builder-label {
+    /* Fixed Positioning */
+    position: fixed;
+    bottom: 20px; /* Offset from the bottom edge */
+    right: 20px;  /* Offset from the right edge */
+
+    /* Look & Feel */
+    background-color: #e53e3e; /* Bright Red */
+    color: white;
+    font-weight: bold;
+    font-size: 24px; /* Larger font for emphasis */
+
+    /* Square Shape & Padding (matching button height/padding) */
+    padding: 10px 15px; /* Matches the padding of the Home button */
+
+    /* Centering the 'A' */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Box Styling */
+    border-radius: 8px; /* Matching the border-radius of the Home button */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    user-select: none;
+}
+
+/*CSS for the Copyright Notice*/
+#copyright-notice {
+    margin-top: 15px; /* Spacing above the notice */
+    padding-top: 8px; /* Adds a bit of internal padding */
+    border-top: 1px solid #ddd; /* A subtle separator line */
+    text-align: center;
+    font-size: 10px; /* Very small text */
+    font-weight: 500; /* Medium weight, readable */
+    color: #667eea; /* Uses your primary blue for brand consistency */
+    opacity: 0.8; /* Slightly faded so it's not distracting */
+}
+
+/* ======================================================= */
+/* MEDIA QUERY FOR SMALL SCREENS (RESPONSIVENESS FIX)      */
+/* ======================================================= */
+@media (max-width: 600px) {
+    #ui-panel {
+        top: auto;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        max-width: 100%;
+        max-height: 50vh; /* Increased from 40vh for more breathing room */
+        padding: 12px;
+        border-radius: 15px 15px 0 0;
+        overflow-y: auto;
+        background: rgba(255, 255, 255, 0.98); /* Slightly more opaque */
+        z-index: 999;
+    }
+
+    /* Make headings more compact */
+    h2 {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .section {
+        margin-bottom: 12px; /* Reduced spacing */
+    }
+
+    .section-title {
+        font-size: 12px;
+        margin-bottom: 6px;
+    }
+
+    /* Improve color grid for touch */
+    .color-grid {
+        gap: 6px;
+    }
+
+    .color-btn {
+        min-width: 44px; /* Touch-friendly minimum */
+        min-height: 44px;
+        aspect-ratio: 1;
+        border-width: 2px;
+    }
+
+    /* Block type buttons - keep more recognizable */
+    .block-type-grid {
+        gap: 8px;
+    }
+
+    .block-btn {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 8px;
+        font-size: 18px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+    }
+
+    .block-btn .btn-text {
+        font-size: 9px;
+        line-height: 1.1;
+        text-align: center;
+    }
+
+    /* Rotation controls */
+    .rotation-controls {
+        gap: 6px;
+    }
+
+    .rotation-btn {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 8px;
+        font-size: 20px;
+    }
+
+    .rotation-btn .btn-text {
+        display: none; /* These are clear enough with arrows */
+    }
+
+    /* Action buttons - stack vertically for clarity */
+    .action-btn {
+        height: 44px;
+        padding: 10px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin: 4px 0;
+    }
+
+    .action-btn .btn-text {
+        display: inline; /* Keep text for actions - they're important */
+        font-size: 12px;
+    }
+
+    /* Layer controls */
+    .layer-controls {
+        gap: 6px;
+        margin-top: 8px;
+    }
+
+    .layer-btn {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 8px;
+        font-size: 16px;
+    }
+
+    .layer-display {
+        font-size: 14px;
+    }
+
+    /* Checkbox */
+    .checkbox-label {
+        font-size: 12px;
+        margin-top: 8px;
+    }
+
+    .checkbox-label input {
+        width: 18px;
+        height: 18px;
+    }
+
+    /* Controls hint - make more compact */
+    .controls-hint {
+        font-size: 10px;
+        padding: 8px;
+        margin-top: 8px;
+        line-height: 1.3;
+    }
+
+    /* Copyright */
+    #copyright-notice {
+        font-size: 9px;
+        margin-top: 10px;
+        padding-top: 6px;
+    }
+
+    /* Adjust canvas */
+    #canvas-container {
+        height: calc(100vh - 50vh);
+    }
+
+    /* Floating buttons - more touch-friendly */
+    #back-to-home-btn {
+        top: 10px;
+        right: 10px;
+        padding: 10px 12px;
+        font-size: 14px;
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    /* Builder label - moves to TOP-LEFT on mobile */
+    #builder-label {
+        top: 10px;
+        left: 10px;
+        bottom: auto;
+        right: auto;
+        padding: 10px 15px;
+        font-size: 24px;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 400px) {
+    #ui-panel {
+        max-height: 55vh; /* Even more space on tiny screens */
+    }
+
+    #canvas-container {
+        height: calc(100vh - 55vh);
+    }
+}

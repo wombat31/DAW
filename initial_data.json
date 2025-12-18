@@ -1,0 +1,1869 @@
+[
+{
+  "model": "admin.logentry",
+  "pk": 1,
+  "fields": {
+    "action_time": "2025-11-13T19:56:55.214Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "2",
+    "object_repr": "testStudent1",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2,
+  "fields": {
+    "action_time": "2025-11-13T19:57:37.007Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "2",
+    "object_repr": "testStudent1",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"First name\", \"Last name\", \"Email address\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 3,
+  "fields": {
+    "action_time": "2025-11-13T19:58:17.388Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "3",
+    "object_repr": "staffOne",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 4,
+  "fields": {
+    "action_time": "2025-11-13T19:58:41.486Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "3",
+    "object_repr": "staffOne",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"First name\", \"Last name\", \"Email address\", \"Staff status\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 5,
+  "fields": {
+    "action_time": "2025-11-21T23:22:09.271Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "4",
+    "object_repr": "testStudentTwo",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 6,
+  "fields": {
+    "action_time": "2025-11-22T02:04:26.240Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "3",
+    "object_repr": "staffOne",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"password\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 7,
+  "fields": {
+    "action_time": "2025-11-22T02:18:09.299Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "5",
+    "object_repr": "studentThree",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 8,
+  "fields": {
+    "action_time": "2025-11-22T18:56:53.189Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "6",
+    "object_repr": "studentFour",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 9,
+  "fields": {
+    "action_time": "2025-11-22T20:42:35.352Z",
+    "user": 1,
+    "content_type": 7,
+    "object_id": "6",
+    "object_repr": "mary-had-a-little-lamb-old-radio-feel-91206.mp3 (studentFour)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 10,
+  "fields": {
+    "action_time": "2025-11-22T20:42:35.352Z",
+    "user": 1,
+    "content_type": 7,
+    "object_id": "4",
+    "object_repr": "mary-had-a-little-lamb-old-radio-feel-91206.mp3 (studentThree)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 11,
+  "fields": {
+    "action_time": "2025-11-22T20:52:04.836Z",
+    "user": 1,
+    "content_type": 7,
+    "object_id": "7",
+    "object_repr": "mary-had-a-little-lamb-old-radio-feel-91206.mp3 (studentFour)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 12,
+  "fields": {
+    "action_time": "2025-11-22T20:58:30.741Z",
+    "user": 1,
+    "content_type": 7,
+    "object_id": "8",
+    "object_repr": "mary-had-a-little-lamb-old-radio-feel-91206.mp3 (studentFour)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 13,
+  "fields": {
+    "action_time": "2025-11-22T21:01:22.014Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "6",
+    "object_repr": "studentFour",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 14,
+  "fields": {
+    "action_time": "2025-11-22T21:01:22.014Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "5",
+    "object_repr": "studentThree",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 15,
+  "fields": {
+    "action_time": "2025-11-22T21:01:22.014Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "2",
+    "object_repr": "testStudent1",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 16,
+  "fields": {
+    "action_time": "2025-11-22T21:01:22.014Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "4",
+    "object_repr": "testStudentTwo",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 17,
+  "fields": {
+    "action_time": "2025-11-22T21:01:45.514Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "7",
+    "object_repr": "studentFive",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 18,
+  "fields": {
+    "action_time": "2025-11-24T14:23:48.430Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "3",
+    "object_repr": "staffOne",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"password\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 19,
+  "fields": {
+    "action_time": "2025-12-01T18:31:59.004Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "8",
+    "object_repr": "smondrone",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 20,
+  "fields": {
+    "action_time": "2025-12-01T19:00:09.386Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "8",
+    "object_repr": "smondrone",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"name\": \"profile\", \"object\": \"smondrone Profile\", \"fields\": [\"Is teacher\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 21,
+  "fields": {
+    "action_time": "2025-12-02T14:03:26.293Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "9",
+    "object_repr": "teamOne",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 22,
+  "fields": {
+    "action_time": "2025-12-02T14:03:46.638Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "9",
+    "object_repr": "teamOne",
+    "action_flag": 2,
+    "change_message": "[]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 23,
+  "fields": {
+    "action_time": "2025-12-02T14:04:21.166Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "10",
+    "object_repr": "teamTwo",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 24,
+  "fields": {
+    "action_time": "2025-12-02T14:04:55.791Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "11",
+    "object_repr": "teamThree",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 25,
+  "fields": {
+    "action_time": "2025-12-02T14:06:07.718Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "12",
+    "object_repr": "teamFour",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 26,
+  "fields": {
+    "action_time": "2025-12-02T14:06:43.491Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "13",
+    "object_repr": "teamFive",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 27,
+  "fields": {
+    "action_time": "2025-12-02T14:07:07.092Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "14",
+    "object_repr": "teamSix",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 28,
+  "fields": {
+    "action_time": "2025-12-02T14:07:38.991Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "15",
+    "object_repr": "teamSeven",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 29,
+  "fields": {
+    "action_time": "2025-12-02T14:08:07.881Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "16",
+    "object_repr": "teamEight",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 30,
+  "fields": {
+    "action_time": "2025-12-02T14:08:43.666Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "17",
+    "object_repr": "teamNine",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 31,
+  "fields": {
+    "action_time": "2025-12-02T14:09:19.892Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "18",
+    "object_repr": "teamTen",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 32,
+  "fields": {
+    "action_time": "2025-12-02T14:15:41.238Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "19",
+    "object_repr": "teamTester",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 33,
+  "fields": {
+    "action_time": "2025-12-02T14:28:31.940Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "20",
+    "object_repr": "justinStudent",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 34,
+  "fields": {
+    "action_time": "2025-12-02T14:29:05.560Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "21",
+    "object_repr": "justinTeacher",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 35,
+  "fields": {
+    "action_time": "2025-12-03T17:41:07.153Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "21",
+    "object_repr": "justinTeacher",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"name\": \"profile\", \"object\": \"justinTeacher Profile\", \"fields\": [\"Is teacher\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 36,
+  "fields": {
+    "action_time": "2025-12-06T18:18:58.496Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "1",
+    "object_repr": "Module 1: Data Representation",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Description\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 37,
+  "fields": {
+    "action_time": "2025-12-06T18:23:08.269Z",
+    "user": 1,
+    "content_type": 13,
+    "object_id": "1",
+    "object_repr": "Module 1: Data Representation - 1.1 Number Systems",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Title\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 38,
+  "fields": {
+    "action_time": "2025-12-06T18:23:57.810Z",
+    "user": 1,
+    "content_type": 13,
+    "object_id": "2",
+    "object_repr": "Module 1: Data Representation - 1.2 Binary Arithmetic",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Title\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 39,
+  "fields": {
+    "action_time": "2025-12-06T18:25:04.617Z",
+    "user": 1,
+    "content_type": 13,
+    "object_id": "2",
+    "object_repr": "Module 1: Data Representation - 1.2 Binary Arithmetic",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Is free\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 40,
+  "fields": {
+    "action_time": "2025-12-06T20:53:09.444Z",
+    "user": 1,
+    "content_type": 13,
+    "object_id": "5",
+    "object_repr": "Module 1: Data Representation - 1.1.1 Binary",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 41,
+  "fields": {
+    "action_time": "2025-12-06T20:53:33.113Z",
+    "user": 1,
+    "content_type": 13,
+    "object_id": "5",
+    "object_repr": "Module 1: Data Representation - 1.1.1 Binary",
+    "action_flag": 2,
+    "change_message": "[]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 42,
+  "fields": {
+    "action_time": "2025-12-06T21:10:14.226Z",
+    "user": 1,
+    "content_type": 13,
+    "object_id": "1",
+    "object_repr": "Module 1: Data Representation - 1.1 Number Systems",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 43,
+  "fields": {
+    "action_time": "2025-12-06T21:10:14.226Z",
+    "user": 1,
+    "content_type": 13,
+    "object_id": "2",
+    "object_repr": "Module 1: Data Representation - 1.2 Binary Arithmetic",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 44,
+  "fields": {
+    "action_time": "2025-12-06T21:17:17.805Z",
+    "user": 1,
+    "content_type": 13,
+    "object_id": "6",
+    "object_repr": "Module 1: Data Representation - 1.1.2 Binary to denary conversion",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 45,
+  "fields": {
+    "action_time": "2025-12-06T21:17:43.509Z",
+    "user": 1,
+    "content_type": 13,
+    "object_id": "3",
+    "object_repr": "Module 2: Data Transmission - Network Basics",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Order\", \"Personalisation secure\", \"Personalisation foundation\", \"Personalisation support\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 46,
+  "fields": {
+    "action_time": "2025-12-06T21:17:59.334Z",
+    "user": 1,
+    "content_type": 13,
+    "object_id": "3",
+    "object_repr": "Module 2: Data Transmission - Network Basics",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Order\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 47,
+  "fields": {
+    "action_time": "2025-12-06T21:28:20.240Z",
+    "user": 1,
+    "content_type": 13,
+    "object_id": "7",
+    "object_repr": "Module 1: Data Representation - 1.1.3 Hexadecimal conversion and its uses",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 48,
+  "fields": {
+    "action_time": "2025-12-06T21:28:33.997Z",
+    "user": 1,
+    "content_type": 13,
+    "object_id": "4",
+    "object_repr": "Module 2: Data Transmission - The Internet",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Order\", \"Is free\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 49,
+  "fields": {
+    "action_time": "2025-12-06T21:28:41.440Z",
+    "user": 1,
+    "content_type": 13,
+    "object_id": "3",
+    "object_repr": "Module 2: Data Transmission - Network Basics",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Order\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 50,
+  "fields": {
+    "action_time": "2025-12-06T21:31:17.817Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "1",
+    "object_repr": "Module 1: Data Representation",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Description\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 51,
+  "fields": {
+    "action_time": "2025-12-06T21:32:20.721Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "1",
+    "object_repr": "Module 1: Data Representation",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Description\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 52,
+  "fields": {
+    "action_time": "2025-12-06T22:27:20.394Z",
+    "user": 1,
+    "content_type": 11,
+    "object_id": "1",
+    "object_repr": "1.1.1 Binary - Test Lesson Plan",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 53,
+  "fields": {
+    "action_time": "2025-12-06T22:28:10.917Z",
+    "user": 1,
+    "content_type": 11,
+    "object_id": "1",
+    "object_repr": "1.1.1 Binary - 1.1.1 Test Lesson Plan",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Title\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 54,
+  "fields": {
+    "action_time": "2025-12-06T22:34:09.923Z",
+    "user": 1,
+    "content_type": 11,
+    "object_id": "2",
+    "object_repr": "1.1.1 Binary - 1.1.1 Test Slide Deck",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$VAhYqypP0HRjL3jyLOWktL$2D+373knBTB4AsDhyIlPAq9H5gEQdm4cQnbj1g8fD/8=",
+    "last_login": "2025-12-06T20:46:19.593Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-11-13T19:55:44.575Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$h3mUDzqRRSDHdmpIyYI61Q$Tfw/dUdZtio/oPaigkuBgdtng8BZlE+/ZrMkr7OzsvI=",
+    "last_login": "2025-12-01T18:34:57.813Z",
+    "is_superuser": false,
+    "username": "staffOne",
+    "first_name": "staff",
+    "last_name": "one",
+    "email": "staffone@mail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-11-13T19:58:16Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 7,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$7Ugtk9pk5u9cVcVUhCjW9i$rgyzUVznOWKmE4wzTtATsC1fQaw4a+VWX0A6YEvo9m0=",
+    "last_login": "2025-11-25T14:52:09.345Z",
+    "is_superuser": false,
+    "username": "studentFive",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-22T21:01:44.607Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 8,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$UvDOBL8OyGLefMVC9d7aAD$ZtJHVxymL3z1C35Up9FYQ9cXjNZVyGIDHOXtntQuW/w=",
+    "last_login": "2025-12-03T17:38:51.753Z",
+    "is_superuser": false,
+    "username": "smondrone",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-12-01T18:31:57Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 9,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$VUq02hEIIrDEcYjgrKloc3$K5mEzZcSQsdPM5SYdMu8ClNAB2In/ejh7u69k8Y7iBg=",
+    "last_login": "2025-12-03T14:04:08.406Z",
+    "is_superuser": false,
+    "username": "teamOne",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-12-02T14:03:23Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 10,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$LwTIGLJcIPAwQgWkwdbnUu$PVMTPlKfYWScOLGVCmvX/1oS+Y+LP5iJwu7J7reg59o=",
+    "last_login": "2025-12-03T14:17:34.131Z",
+    "is_superuser": false,
+    "username": "teamTwo",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-12-02T14:04:18.428Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 11,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$6kBa6yhhbDfnMJoIBIdRu3$80QJYDjZOoKIfcagSNRWfjIIApakf+9uhyB92MA/Udc=",
+    "last_login": "2025-12-03T14:24:55.595Z",
+    "is_superuser": false,
+    "username": "teamThree",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-12-02T14:04:50.629Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 12,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$gtBKiZ9aKDJGwcK93EVDN9$jhKg31JepT4LrgVOr7lYg4bdGPfz2D60uZ6lay0riYA=",
+    "last_login": "2025-12-03T13:59:59.077Z",
+    "is_superuser": false,
+    "username": "teamFour",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-12-02T14:06:04.354Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 13,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$FX4ZMe7zfZP2H4uWL5Jt74$DLHPFiZKlmHFjPyL0qskYb+pRtUQ8YRvwuRgNxYY1E4=",
+    "last_login": "2025-12-03T14:02:58.327Z",
+    "is_superuser": false,
+    "username": "teamFive",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-12-02T14:06:38.214Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 14,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$U6dlRfnEaBWkmTOXMifUjo$Pm4bv42xYNctFpo489eev0O8t95mzniJ6b2Iqk5WwaQ=",
+    "last_login": "2025-12-03T14:28:17.629Z",
+    "is_superuser": false,
+    "username": "teamSix",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-12-02T14:07:03.837Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 15,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$z8rPrKYH8j5KK9qZvFgek0$rUcdUuc6X1r0n3FWdqM0xmMDQc0qzotTxOF/qSRjR34=",
+    "last_login": "2025-12-02T14:13:33.090Z",
+    "is_superuser": false,
+    "username": "teamSeven",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-12-02T14:07:36.673Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 16,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$Uga3rQ0sABUDRJgDKyNFnP$Imiddt3VoD4Px1HeYNBnsi+2ICc9VuF1nKJsThBm2b0=",
+    "last_login": "2025-12-02T14:13:51.616Z",
+    "is_superuser": false,
+    "username": "teamEight",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-12-02T14:08:05.725Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 17,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$IvdM1zH3St1sIJSf9Ml1G2$bcjCcWB7vJCpIXKMjBU604KZmsikXiLhnRaLBjiIb14=",
+    "last_login": "2025-12-02T14:14:12.588Z",
+    "is_superuser": false,
+    "username": "teamNine",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-12-02T14:08:39.288Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 18,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$fQ5DDbtaA9myWAoWLL9l43$nxU3+eGd7Caxrc7hrnil1etPMmi12JUI+++DqiJXyVE=",
+    "last_login": "2025-12-02T14:14:29.398Z",
+    "is_superuser": false,
+    "username": "teamTen",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-12-02T14:09:16.556Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 19,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$UA8sc2MFO2sYYBZnyYalaz$TLWi5WRoq1MQlF8OjxV0Uzxsu2L6EmUo1PSPOLRDfKE=",
+    "last_login": "2025-12-03T13:50:21.215Z",
+    "is_superuser": false,
+    "username": "teamTester",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-12-02T14:15:38.711Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 20,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$nlRqeI8bu5RlDZAUlAmb5k$rejOjmrs4Ju8Z2mohV/zwE22RvH1Ixy3DzsBagBgXbU=",
+    "last_login": "2025-12-04T01:44:33.720Z",
+    "is_superuser": false,
+    "username": "justinStudent",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-12-02T14:28:29.900Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 21,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$zxopFZg8oLxD0KB5J5KBRQ$5F55tTJS7MBuw7lposwpsOGCjF3gwa3AVuoplRAU2nw=",
+    "last_login": "2025-12-04T01:37:22.604Z",
+    "is_superuser": false,
+    "username": "justinTeacher",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-12-02T14:29:02Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "dawapp.project",
+  "pk": 15,
+  "fields": {
+    "owner": 7,
+    "title": "The Best",
+    "project_uuid": "b64dc51d-d77d-460e-9300-b8909ac896a1",
+    "project_json": {
+      "tracks": [
+        {
+          "clips": [
+            {
+              "filename": "radio-signal-264961",
+              "file": "/media/effects/radio-signal-264961.mp3",
+              "duration": 22.032,
+              "startTime": 10,
+              "instanceId": "17638453659075082",
+              "trackIndex": 0,
+              "start_time": 10,
+              "effects": {
+                "fadeIn": 0,
+                "fadeOut": 0,
+                "echo": false,
+                "radio1910": false
+              }
+            }
+          ],
+          "volume": 35
+        },
+        {
+          "clips": [
+            {
+              "filename": "war-drum-loop-103870",
+              "file": "/media/effects/war-drum-loop-103870.mp3",
+              "duration": 7.08,
+              "startTime": 17,
+              "instanceId": "17646819398772000",
+              "trackIndex": 1,
+              "effects": {
+                "fadeIn": 1.2,
+                "fadeOut": 1.2,
+                "echo": false,
+                "radio1910": false
+              },
+              "start_time": 17
+            }
+          ],
+          "volume": 55
+        },
+        {
+          "clips": [
+            {
+              "filename": "mary-had-a-little-lamb-old-radio-feel-91206.mp3",
+              "file": "/media/user_7/mary-had-a-little-lamb-old-radio-feel-91206.mp3",
+              "duration": 10.368,
+              "startTime": 0,
+              "instanceId": "17638469252298894",
+              "trackIndex": 2,
+              "start_time": 0,
+              "effects": {
+                "fadeIn": 2,
+                "fadeOut": 2,
+                "echo": true,
+                "radio1910": false
+              }
+            },
+            {
+              "filename": "radio-signal-264961",
+              "file": "/media/effects/radio-signal-264961.mp3",
+              "duration": 22.032,
+              "startTime": 33,
+              "instanceId": "17639371460531340",
+              "trackIndex": 2,
+              "start_time": 33,
+              "effects": {
+                "fadeIn": 0,
+                "fadeOut": 0,
+                "echo": false,
+                "radio1910": false
+              }
+            }
+          ],
+          "volume": 35
+        },
+        {
+          "clips": [
+            {
+              "filename": "air-raid-siren-225303",
+              "file": "/media/effects/air-raid-siren-225303.mp3",
+              "duration": 12.094688,
+              "startTime": 39,
+              "instanceId": "17638453771136431",
+              "trackIndex": 3,
+              "start_time": 39,
+              "effects": {
+                "fadeIn": 0,
+                "fadeOut": 0,
+                "echo": false,
+                "radio1910": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "created": "2025-11-22T21:02:33.565Z",
+    "updated": "2025-12-02T13:27:07.448Z"
+  }
+},
+{
+  "model": "dawapp.project",
+  "pk": 16,
+  "fields": {
+    "owner": 20,
+    "title": "TestProject",
+    "project_uuid": "25af37e8-3e1e-4cb8-b5ff-3b5fcae111fb",
+    "project_json": {
+      "tracks": [
+        {
+          "clips": [
+            {
+              "filename": "Fanfare",
+              "file": "/media/effects/Fanfare.mp3",
+              "duration": 4.032,
+              "startTime": 5,
+              "instanceId": "17646858654001559",
+              "trackIndex": 0,
+              "effects": {
+                "fadeIn": 0,
+                "fadeOut": 0,
+                "echo": false,
+                "radio1910": false
+              },
+              "start_time": 5
+            }
+          ],
+          "volume": 42
+        },
+        {
+          "clips": [
+            {
+              "filename": "War Sound",
+              "file": "/media/effects/War Sound.mp3",
+              "duration": 97.368,
+              "startTime": 0,
+              "instanceId": "17646858364338561",
+              "trackIndex": 1,
+              "effects": {
+                "fadeIn": 0,
+                "fadeOut": 0,
+                "echo": false,
+                "radio1910": false
+              },
+              "start_time": 0
+            }
+          ],
+          "volume": 15
+        },
+        {
+          "clips": [
+            {
+              "filename": "Crackle",
+              "file": "/media/effects/Crackle.mp3",
+              "duration": 3.0041,
+              "startTime": 0,
+              "instanceId": "17646858041398932",
+              "trackIndex": 2,
+              "effects": {
+                "fadeIn": 0,
+                "fadeOut": 0,
+                "echo": false,
+                "radio1910": false
+              },
+              "start_time": 0
+            },
+            {
+              "filename": "Crackle",
+              "file": "/media/effects/Crackle.mp3",
+              "duration": 3.0041,
+              "startTime": 3,
+              "instanceId": "17646858164340966",
+              "trackIndex": 2,
+              "effects": {
+                "fadeIn": 0,
+                "fadeOut": 0,
+                "echo": false,
+                "radio1910": false
+              },
+              "start_time": 3
+            },
+            {
+              "filename": "Crackle",
+              "file": "/media/effects/Crackle.mp3",
+              "duration": 3.0041,
+              "startTime": 6,
+              "instanceId": "17646858241192071",
+              "trackIndex": 2,
+              "effects": {
+                "fadeIn": 0,
+                "fadeOut": 0,
+                "echo": false,
+                "radio1910": false
+              },
+              "start_time": 6
+            }
+          ],
+          "volume": 69
+        },
+        {
+          "clips": [
+            {
+              "filename": "Music Box",
+              "file": "/media/effects/Music Box.mp3",
+              "duration": 56.208,
+              "startTime": 9,
+              "instanceId": "17646858520988405",
+              "trackIndex": 3,
+              "effects": {
+                "fadeIn": 0,
+                "fadeOut": 0,
+                "echo": false,
+                "radio1910": false
+              },
+              "start_time": 9
+            }
+          ],
+          "volume": 27
+        }
+      ]
+    },
+    "created": "2025-12-02T14:29:43.826Z",
+    "updated": "2025-12-02T14:32:33.939Z"
+  }
+},
+{
+  "model": "dawapp.project",
+  "pk": 17,
+  "fields": {
+    "owner": 9,
+    "title": "test1",
+    "project_uuid": "84641671-ce7c-42b5-8530-13a805655019",
+    "project_json": {
+      "tracks": [
+        {
+          "clips": []
+        },
+        {
+          "clips": []
+        },
+        {
+          "clips": []
+        },
+        {
+          "clips": []
+        }
+      ]
+    },
+    "created": "2025-12-02T17:52:47.687Z",
+    "updated": "2025-12-02T17:52:47.690Z"
+  }
+},
+{
+  "model": "dawapp.project",
+  "pk": 18,
+  "fields": {
+    "owner": 19,
+    "title": "Test2",
+    "project_uuid": "4e86ab23-01f2-4f8b-a527-d2864f16bb4a",
+    "project_json": {
+      "tracks": [
+        {
+          "clips": []
+        },
+        {
+          "clips": []
+        },
+        {
+          "clips": []
+        },
+        {
+          "clips": []
+        }
+      ]
+    },
+    "created": "2025-12-03T13:50:31.134Z",
+    "updated": "2025-12-03T13:50:31.134Z"
+  }
+},
+{
+  "model": "dawapp.project",
+  "pk": 20,
+  "fields": {
+    "owner": 12,
+    "title": "World War 2 Radio Team Bea & Anna Laura",
+    "project_uuid": "345bd0b4-ce3a-4d02-8d7d-fdc964e28f8a",
+    "project_json": {
+      "tracks": [
+        {
+          "clips": []
+        },
+        {
+          "clips": []
+        },
+        {
+          "clips": []
+        },
+        {
+          "clips": []
+        }
+      ]
+    },
+    "created": "2025-12-03T14:01:33.502Z",
+    "updated": "2025-12-03T14:01:33.502Z"
+  }
+},
+{
+  "model": "dawapp.project",
+  "pk": 21,
+  "fields": {
+    "owner": 13,
+    "title": "WW2 teamFive",
+    "project_uuid": "46944f55-ab7e-477b-b44c-6980cb7d93ae",
+    "project_json": {
+      "tracks": [
+        {
+          "clips": []
+        },
+        {
+          "clips": []
+        },
+        {
+          "clips": []
+        },
+        {
+          "clips": []
+        }
+      ]
+    },
+    "created": "2025-12-03T14:03:26.652Z",
+    "updated": "2025-12-03T14:03:26.652Z"
+  }
+},
+{
+  "model": "dawapp.project",
+  "pk": 22,
+  "fields": {
+    "owner": 9,
+    "title": "WW2 Radio analysis",
+    "project_uuid": "6aa1235d-f37e-4c91-95c6-883d95e8854d",
+    "project_json": {
+      "tracks": [
+        {
+          "clips": [
+            {
+              "filename": "recording (3).mp3",
+              "file": "/media/user_9/recording_3.mp3",
+              "duration": 8.88,
+              "startTime": 0,
+              "instanceId": "17647718003138133",
+              "trackIndex": 0,
+              "effects": {
+                "fadeIn": 0,
+                "fadeOut": 0,
+                "echo": false,
+                "radio1910": false
+              },
+              "start_time": 0
+            }
+          ],
+          "volume": 36
+        },
+        {
+          "clips": [
+            {
+              "filename": "radio-signal-264961",
+              "file": "/media/effects/radio-signal-264961.mp3",
+              "duration": 22.032,
+              "startTime": 0,
+              "instanceId": "17647713945026955",
+              "trackIndex": 1,
+              "effects": {
+                "fadeIn": 0,
+                "fadeOut": 0,
+                "echo": false,
+                "radio1910": false
+              },
+              "start_time": 0
+            }
+          ],
+          "volume": 4
+        },
+        {
+          "clips": [
+            {
+              "filename": "Crackle",
+              "file": "/media/effects/Crackle.mp3",
+              "duration": 3.0041,
+              "startTime": 7,
+              "instanceId": "17647714558476454",
+              "start_time": 7,
+              "trackIndex": 2,
+              "effects": {
+                "fadeIn": 0,
+                "fadeOut": 0,
+                "echo": false,
+                "radio1910": false
+              }
+            },
+            {
+              "filename": "War Horn",
+              "file": "/media/effects/War Horn.mp3",
+              "duration": 5,
+              "startTime": 43,
+              "instanceId": "17647722925318701",
+              "start_time": 43
+            }
+          ],
+          "volume": 100
+        },
+        {
+          "clips": [
+            {
+              "filename": "Music Box",
+              "file": "/media/effects/Music Box.mp3",
+              "duration": 56.208,
+              "startTime": 10,
+              "instanceId": "17647718314701427",
+              "start_time": 10,
+              "trackIndex": 3,
+              "effects": {
+                "fadeIn": 2.2,
+                "fadeOut": 0,
+                "echo": false,
+                "radio1910": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "created": "2025-12-03T14:04:52.844Z",
+    "updated": "2025-12-03T14:31:35.958Z"
+  }
+},
+{
+  "model": "dawapp.project",
+  "pk": 23,
+  "fields": {
+    "owner": 10,
+    "title": "Stella and Freya Radio News",
+    "project_uuid": "b61c2503-ed4e-4fc5-84f1-820cf188f6d2",
+    "project_json": {
+      "tracks": [
+        {
+          "clips": []
+        },
+        {
+          "clips": []
+        },
+        {
+          "clips": []
+        },
+        {
+          "clips": []
+        }
+      ]
+    },
+    "created": "2025-12-03T14:17:54.610Z",
+    "updated": "2025-12-03T14:21:40.811Z"
+  }
+},
+{
+  "model": "dawapp.project",
+  "pk": 24,
+  "fields": {
+    "owner": 11,
+    "title": "WW2 Radio - Team 3",
+    "project_uuid": "7d10b688-fea6-4e3f-bc5d-4f70291b6d0a",
+    "project_json": {
+      "tracks": [
+        {
+          "clips": []
+        },
+        {
+          "clips": []
+        },
+        {
+          "clips": []
+        },
+        {
+          "clips": []
+        }
+      ]
+    },
+    "created": "2025-12-03T14:25:22.953Z",
+    "updated": "2025-12-03T14:25:22.953Z"
+  }
+},
+{
+  "model": "dawapp.project",
+  "pk": 25,
+  "fields": {
+    "owner": 14,
+    "title": "WW2 Radio team 6",
+    "project_uuid": "d9475da8-b347-4b81-8074-262ebe661c8d",
+    "project_json": {
+      "tracks": [
+        {
+          "clips": []
+        },
+        {
+          "clips": []
+        },
+        {
+          "clips": []
+        },
+        {
+          "clips": []
+        }
+      ]
+    },
+    "created": "2025-12-03T14:29:30.137Z",
+    "updated": "2025-12-03T14:38:04.313Z"
+  }
+},
+{
+  "model": "dawapp.mediafile",
+  "pk": 9,
+  "fields": {
+    "owner": 7,
+    "file": "user_7/mary-had-a-little-lamb-old-radio-feel-91206.mp3",
+    "filename": "mary-had-a-little-lamb-old-radio-feel-91206.mp3",
+    "uploaded": "2025-11-22T21:28:41.664Z"
+  }
+},
+{
+  "model": "dawapp.mediafile",
+  "pk": 10,
+  "fields": {
+    "owner": 19,
+    "file": "user_19/recording.mp3",
+    "filename": "recording.mp3",
+    "uploaded": "2025-12-03T13:51:00.800Z"
+  }
+},
+{
+  "model": "dawapp.mediafile",
+  "pk": 17,
+  "fields": {
+    "owner": 10,
+    "file": "user_10/recording_2.mp3",
+    "filename": "recording (2).mp3",
+    "uploaded": "2025-12-03T14:20:29.867Z"
+  }
+},
+{
+  "model": "dawapp.mediafile",
+  "pk": 18,
+  "fields": {
+    "owner": 9,
+    "file": "user_9/recording_3.mp3",
+    "filename": "recording (3).mp3",
+    "uploaded": "2025-12-03T14:23:10.051Z"
+  }
+},
+{
+  "model": "dawapp.mediafile",
+  "pk": 20,
+  "fields": {
+    "owner": 11,
+    "file": "user_11/recording.mp3",
+    "filename": "recording.mp3",
+    "uploaded": "2025-12-03T14:30:52.983Z"
+  }
+},
+{
+  "model": "dawapp.profile",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "is_teacher": false
+  }
+},
+{
+  "model": "dawapp.profile",
+  "pk": 3,
+  "fields": {
+    "user": 3,
+    "is_teacher": true
+  }
+},
+{
+  "model": "dawapp.profile",
+  "pk": 7,
+  "fields": {
+    "user": 7,
+    "is_teacher": false
+  }
+},
+{
+  "model": "dawapp.profile",
+  "pk": 8,
+  "fields": {
+    "user": 8,
+    "is_teacher": true
+  }
+},
+{
+  "model": "dawapp.profile",
+  "pk": 9,
+  "fields": {
+    "user": 9,
+    "is_teacher": false
+  }
+},
+{
+  "model": "dawapp.profile",
+  "pk": 10,
+  "fields": {
+    "user": 10,
+    "is_teacher": false
+  }
+},
+{
+  "model": "dawapp.profile",
+  "pk": 11,
+  "fields": {
+    "user": 11,
+    "is_teacher": false
+  }
+},
+{
+  "model": "dawapp.profile",
+  "pk": 12,
+  "fields": {
+    "user": 12,
+    "is_teacher": false
+  }
+},
+{
+  "model": "dawapp.profile",
+  "pk": 13,
+  "fields": {
+    "user": 13,
+    "is_teacher": false
+  }
+},
+{
+  "model": "dawapp.profile",
+  "pk": 14,
+  "fields": {
+    "user": 14,
+    "is_teacher": false
+  }
+},
+{
+  "model": "dawapp.profile",
+  "pk": 15,
+  "fields": {
+    "user": 15,
+    "is_teacher": false
+  }
+},
+{
+  "model": "dawapp.profile",
+  "pk": 16,
+  "fields": {
+    "user": 16,
+    "is_teacher": false
+  }
+},
+{
+  "model": "dawapp.profile",
+  "pk": 17,
+  "fields": {
+    "user": 17,
+    "is_teacher": false
+  }
+},
+{
+  "model": "dawapp.profile",
+  "pk": 18,
+  "fields": {
+    "user": 18,
+    "is_teacher": false
+  }
+},
+{
+  "model": "dawapp.profile",
+  "pk": 19,
+  "fields": {
+    "user": 19,
+    "is_teacher": false
+  }
+},
+{
+  "model": "dawapp.profile",
+  "pk": 20,
+  "fields": {
+    "user": 20,
+    "is_teacher": false
+  }
+},
+{
+  "model": "dawapp.profile",
+  "pk": 21,
+  "fields": {
+    "user": 21,
+    "is_teacher": true
+  }
+},
+{
+  "model": "cam_igcse.module",
+  "pk": 1,
+  "fields": {
+    "name": "Module 1: Data Representation",
+    "slug": "module-1-data-representation",
+    "description": "Teacher resources : Binary, denary, hexadecimal and computers use of it.",
+    "order": 1
+  }
+},
+{
+  "model": "cam_igcse.module",
+  "pk": 2,
+  "fields": {
+    "name": "Module 2: Data Transmission",
+    "slug": "module-2-data-transmission",
+    "description": "Teacher resources for networking, protocols, and data transfer.",
+    "order": 2
+  }
+},
+{
+  "model": "cam_igcse.topic",
+  "pk": 3,
+  "fields": {
+    "module": 2,
+    "title": "Network Basics",
+    "slug": "network-basics",
+    "short_description": "Understanding LAN, WAN, and internet basics.",
+    "order": 5,
+    "is_free": true,
+    "learning_objectives": "<ul><li>Explain LAN vs WAN</li><li>Describe internet architecture</li></ul>",
+    "syllabus_snapshot": "2.1 Network Basics",
+    "spark_question": "How does data travel across networks?",
+    "teacher_presentation": "",
+    "personalisation_secure": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Sit amet consectetur adipiscing elit quisque faucibus ex. Adipiscing elit quisque faucibus ex sapien vitae pellentesque.",
+    "personalisation_foundation": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Sit amet consectetur adipiscing elit quisque faucibus ex. Adipiscing elit quisque faucibus ex sapien vitae pellentesque.",
+    "personalisation_support": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Sit amet consectetur adipiscing elit quisque faucibus ex. Adipiscing elit quisque faucibus ex sapien vitae pellentesque."
+  }
+},
+{
+  "model": "cam_igcse.topic",
+  "pk": 4,
+  "fields": {
+    "module": 2,
+    "title": "The Internet",
+    "slug": "the-internet",
+    "short_description": "Protocols (TCP/IP, HTTP) and the World Wide Web.",
+    "order": 4,
+    "is_free": true,
+    "learning_objectives": "<ul><li>Explain the role of protocols</li><li>Describe DNS</li></ul>",
+    "syllabus_snapshot": "2.2 Internet Protocols",
+    "spark_question": "How does DNS turn a website name into an address?",
+    "teacher_presentation": "",
+    "personalisation_secure": "",
+    "personalisation_foundation": "",
+    "personalisation_support": ""
+  }
+},
+{
+  "model": "cam_igcse.topic",
+  "pk": 5,
+  "fields": {
+    "module": 1,
+    "title": "1.1.1 Binary",
+    "slug": "Binary",
+    "short_description": "Introduction to the binary number system.",
+    "order": 1,
+    "is_free": true,
+    "learning_objectives": "Understand how and why computers use binary to represent data.\r\nConvert positive denary integers to binary.",
+    "syllabus_snapshot": "Understand how and why computers use binary to represent all forms of data.",
+    "spark_question": "How do computers store and process the photos that we take, music when we listen to it, or messages that we send?",
+    "teacher_presentation": "Introduction to base 2 with direct comparison to base 10.\r\nModel converting a denary number to binary.",
+    "personalisation_secure": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Sit amet consectetur adipiscing elit quisque faucibus ex. Adipiscing elit quisque faucibus ex sapien vitae pellentesque.",
+    "personalisation_foundation": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Sit amet consectetur adipiscing elit quisque faucibus ex. Adipiscing elit quisque faucibus ex sapien vitae pellentesque.",
+    "personalisation_support": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Sit amet consectetur adipiscing elit quisque faucibus ex. Adipiscing elit quisque faucibus ex sapien vitae pellentesque."
+  }
+},
+{
+  "model": "cam_igcse.topic",
+  "pk": 6,
+  "fields": {
+    "module": 1,
+    "title": "1.1.2 Binary to denary conversion",
+    "slug": "binary-to-denary-conversion",
+    "short_description": "Conversion between number systems",
+    "order": 2,
+    "is_free": true,
+    "learning_objectives": "Convert positive decimal (denary) integers to binary and binary and back again.",
+    "syllabus_snapshot": "Convert between positive denary and positive binary.",
+    "spark_question": "How can a number system with only two symbols represent any number?",
+    "teacher_presentation": "Introduction to binary and denary conversion.\r\n\r\nModel converting a denary number to binary.\r\n\r\nModel converting a binary number to denary.",
+    "personalisation_secure": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Sit amet consectetur adipiscing elit quisque faucibus ex. Adipiscing elit quisque faucibus ex sapien vitae pellentesque.",
+    "personalisation_foundation": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Sit amet consectetur adipiscing elit quisque faucibus ex. Adipiscing elit quisque faucibus ex sapien vitae pellentesque.",
+    "personalisation_support": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Sit amet consectetur adipiscing elit quisque faucibus ex. Adipiscing elit quisque faucibus ex sapien vitae pellentesque."
+  }
+},
+{
+  "model": "cam_igcse.topic",
+  "pk": 7,
+  "fields": {
+    "module": 1,
+    "title": "1.1.3 Hexadecimal conversion and its uses",
+    "slug": "hexadecimal-conversion-and-its-uses",
+    "short_description": "Computers use binary. Hexadecimal is a short form of representing binary numbers.",
+    "order": 3,
+    "is_free": true,
+    "learning_objectives": "Convert between denary, binary, and hexadecimal number systems.\r\nUnderstand why hexadecimal is used as a method of data representation.\r\nPerform basic operations involving hexadecimal numbers.",
+    "syllabus_snapshot": "Convert between positive denary and positive hexadecimal. Convert between positive hexadecimal and positive binary.",
+    "spark_question": "Why do we need different number systems in computer science? Can anyone explain how binary, decimal, and hexadecimal numbers differ?",
+    "teacher_presentation": "Overview of Number Systems:\r\n- Denary (Base 10): Digits 0-9.\r\n- Binary (Base 2): Digits 0 and 1.\r\n- Hexadecimal (Base 16): Digits 0-9 and letters A-F.\r\n- Hexadecimal Conversion:\r\n- Conversion between denary and hexadecimal.\r\n- Conversion between binary and hexadecimal.\r\n- Usage of Hexadecimal:\r\n  . Explain why hexadecimal is used (e.g., easier for humans to read than binary, compact representation).",
+    "personalisation_secure": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Sit amet consectetur adipiscing elit quisque faucibus ex. Adipiscing elit quisque faucibus ex sapien vitae pellentesque.",
+    "personalisation_foundation": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Sit amet consectetur adipiscing elit quisque faucibus ex. Adipiscing elit quisque faucibus ex sapien vitae pellentesque.",
+    "personalisation_support": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Sit amet consectetur adipiscing elit quisque faucibus ex. Adipiscing elit quisque faucibus ex sapien vitae pellentesque."
+  }
+},
+{
+  "model": "cam_igcse.material",
+  "pk": 1,
+  "fields": {
+    "topic": 5,
+    "title": "1.1.1 Test Lesson Plan",
+    "file": "learning_materials/1.1.1_Binary_-_Lesson_Plan.pdf",
+    "material_type": "lesson_plan",
+    "order": 1
+  }
+},
+{
+  "model": "cam_igcse.material",
+  "pk": 2,
+  "fields": {
+    "topic": 5,
+    "title": "1.1.1 Test Slide Deck",
+    "file": "learning_materials/1.1.1_Test_Slides.pptx",
+    "material_type": "teaching_strategy",
+    "order": 2
+  }
+},
+{
+  "model": "cam_igcse.exercise",
+  "pk": 5,
+  "fields": {
+    "topic": 3,
+    "title": "Network Mapping",
+    "description": "Classroom activity: Network mapping of the school.",
+    "exercise_type": "collaborative",
+    "order": 1
+  }
+}
+]

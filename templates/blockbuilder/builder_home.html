@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/blockbuilder.css' %}">
+
+    <div id="canvas-container"></div>
+    <div id="ui-panel">
+        <h2>🎨 Block Builder</h2>
+        <div class="section">
+            <div class="section-title">Choose Color:</div>
+            <div class="color-grid" id="color-picker"></div>
+        </div>
+        <div class="section">
+            <div class="section-title">Block Type:</div>
+            <div class="block-type-grid">
+                <div class="block-btn" data-type="cube">📦 <span class="btn-text">Cube</span></div>
+                <div class="block-btn active" data-type="ramp">📐 <span class="btn-text">Ramp</span></div>
+                <div class="block-btn" data-type="int_junction">◪ <span class="btn-text">Internal Ramp Corner</span></div>
+                <div class="block-btn" data-type="ext_junction">◇ <span class="btn-text">External Ramp Corner</span></div>
+            </div>
+            <div class="section-title" style="margin-top: 15px;">Ramp Direction:</div>
+            <div class="rotation-controls" id="rotation-y-controls">
+                <div class="rotation-btn active" data-rotation="0" title="North">↑ <span class="btn-text">North</span></div>
+                <div class="rotation-btn" data-rotation="90" title="East">→ <span class="btn-text">East</span></div>
+                <div class="rotation-btn" data-rotation="180" title="South">↓ <span class="btn-text">South</span></div>
+                <div class="rotation-btn" data-rotation="270" title="West">← <span class="btn-text">West</span></div>
+            </div>
+            <div class="section-title" style="margin-top: 10px;">Flip Ramp:</div>
+            <div class="rotation-controls" id="rotation-z-controls" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="rotation-btn active" data-zrotation="0" title="Normal">⬆️ <span class="btn-text">Up</span></div>
+                <div class="rotation-btn" data-zrotation="180" title="Inverted">⬇️ <span class="btn-text">Down</span></div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Actions:</div>
+            <button class="action-btn add" id="add-mode">➕ <span class="btn-text">Add Block</span></button>
+            <button class="action-btn delete" id="delete-mode">🗑️ <span class="btn-text">Delete Block</span></button>
+            <button class="action-btn undo" id="undo-btn">↩️ <span class="btn-text">Undo</span></button>
+            <button class="action-btn redo" id="redo-btn">↪️ <span class="btn-text">Redo</span></button>
+            <button class="action-btn save" id="save-btn">💾 <span class="btn-text">Save</span></button>
+            <button class="action-btn load" id="load-btn">📂 <span class="btn-text">Load</span></button>
+            <button class="action-btn export" id="export-stl-btn">🔧 <span class="btn-text">Export STL</span></button>
+            <button class="action-btn clear" id="clear-btn">🧹 <span class="btn-text">Clear All</span></button>
+        </div>
+        <div class="section">
+            <div class="section-title">Layer View:</div>
+            <div class="layer-controls">
+                <button class="layer-btn" id="layer-down">− <span class="btn-text">Layer Down</span></button>
+                <div class="layer-display" id="layer-display">All Layers</div>
+                <button class="layer-btn" id="layer-up">+ <span class="btn-text">Layer Up</span></button>
+            </div>
+            <label class="checkbox-label">
+                <input type="checkbox" id="show-all-layers" checked>
+                <span>Show All Layers</span>
+            </label>
+        </div>
+        <div class="controls-hint">
+            🖱️ <strong>Left-click:</strong> Add/Delete<br>
+            ➡️ ⬅️ <strong>Arrow Keys:</strong> Rotate Block Direction<br>
+            ⬆️ ⬇️ <strong>Arrow Keys:</strong> Flip Block Up/Down<br>
+            🖱️ <strong>Right-click + drag:</strong> Rotate View<br>
+            🖱️ <strong>Scroll wheel:</strong> Zoom
+        </div>
+        <div id="copyright-notice">
+        © Archie and the Wombat 2025
+        </div>
+    </div>
+
+    <a href="{% url 'landing' %}" id="back-to-home-btn" title="Back to Landing Page">
+    ❌ Close / Home
+    </a>
+
+    <div id="builder-label">
+    A
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script src="{% static 'js/blockbuilder.js' %}"></script>
+
+{% endblock content %}
